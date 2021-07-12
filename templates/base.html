@@ -5,11 +5,24 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename = 'base.css')}}">
     <title>{% block title %} {% endblock %}</title>
 </head>
 
 <body>
-    <h1>Kevin's Website</h1>
+
+
+    <div class="nav-bar">
+        <div> <a href="/">HomePage</a> </div>
+        <div> <a href="/vehinventory">Vehicle Inventory</a> </div>
+        <div> <a href="/modinventory">Modify Inventory</a> </div>
+        <div> <a href="/modsales">Add/Modify Sales Record</a> </div>
+        <div> <a href="/searchsales">Search Sales Record</a> </div>
+        <div> <a href="/testdrive">Search/Add Test Drive Record</a></div>
+        <div> <a href="/cfproject">Cashflow Projection</a></div>
+
+    </div>
+
     {% block content %}
     {% endblock %}
 
