@@ -1,0 +1,15 @@
+cd CS340_starter_flask_app
+bash
+virtualenv venv -p $(which python3) 
+source ./venv/bin/activate
+pip3 install --upgrade pip
+pip install -r requirements.txt
+
+
+
+source ./venv/bin/activate
+export FLASK_APP=webpage.py
+python -m flask run -h 0.0.0.0 -p 7695 --reload
+
+
+gunicorn webpage -b 0.0.0.0:7695 -D 
