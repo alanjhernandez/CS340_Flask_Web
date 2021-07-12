@@ -57,8 +57,8 @@ def user():
 @app.route("/logout")
 def logout():
     session.pop("user",None)
-'''
 
 
 if __name__ == "__main__":
     app.run(debug = True)
+'''
