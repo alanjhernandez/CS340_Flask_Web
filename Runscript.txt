@@ -12,4 +12,7 @@ export FLASK_APP=run.py
 python -m flask run -h 0.0.0.0 -p 7695 --reload
 
 
-gunicorn webpage -b 0.0.0.0:7695 -D 
+gunicorn run:app -b 0.0.0.0:7695 -D 
+
+
+https://github.com/knightsamar/CS340_starter_flask_app
