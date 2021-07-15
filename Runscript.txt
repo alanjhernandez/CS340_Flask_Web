@@ -14,5 +14,7 @@ python -m flask run -h 0.0.0.0 -p 7695 --reload
 
 gunicorn run:app -b 0.0.0.0:7695 -D 
 
+kill -9 XXXX
+
 
 https://github.com/knightsamar/CS340_starter_flask_app
