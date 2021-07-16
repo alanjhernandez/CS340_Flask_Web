@@ -1,13 +1,37 @@
 {% extends "base.html" %}
 
 {% block title%}
-HomePage
+Test Drive Record
 {% endblock %}
 
 
 
 {% block content%}
 
-This is test_drive
+<div class = "test_drive">
+    <h1 style="text-align: center">Test Drive Record</h1>
+    <table>
+        <tr>
+            <th>Vehicle</th>
+
+        </tr>
+        {% for cars in testdrive %}
+            <tr>
+                <td>{{ cars.content }}</td>
+            </tr>
+
+
+        {% endfor %}
+    </table>
+    <div class="form">
+        <form action="/" method="POST">
+            <input type="text" name="content" id="content">
+            <input type="submit" value="Add Test Drive Record">
+        </form>
+    </div>
+    
+        <!-- work in progress. connect with webpage.py. process data in a loop-->
+
+</div>
 
 {% endblock %}

@@ -1,5 +1,6 @@
 from flask import Flask, redirect, url_for, render_template, request, session
 
+
 app = Flask(__name__)
 app.secret_key = "3546*&^*dsflk1234"
 
@@ -12,20 +13,15 @@ def home():
 def vehicle_inventory():
     return render_template("vehicle_inventory.html")
 
-
-@app.route("/modinventory")
-def modify_inventory():
-    return render_template("modify_inventory.html")
-
 @app.route("/modsales")
 def modify_sales():
+    '''
+    if request.method == 'POST':
+        task_content = request.form[''] <-Add
+    '''
     return render_template("modify_sales.html")
 
-@app.route("/searchsales")
-def search_sales():
-    return render_template("search_sales.html")
-
-
+    #add update route for sales
 @app.route("/testdrive")
 def test_drive():
     return render_template("test_drive.html")
@@ -34,6 +30,8 @@ def test_drive():
 def cf_projection():
     return render_template("cf_projection.html")
 
+if __name__ == "__main__":
+    app.run()
 
 
 '''

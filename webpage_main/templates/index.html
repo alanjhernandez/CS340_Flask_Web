@@ -1,3 +1,6 @@
+
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename = 'index.css')}}">
+
 {% extends "base.html" %}
 
 {% block title%}
@@ -8,6 +11,13 @@ HomePage
 
 {% block content%}
 
-This is homepage
+
+<img src="https://i.ibb.co/hHNwhHM/dealership-image.jpg" alt = "Cars" class = "center" style="width:55%" loading="lazy">
+<div class = "center">
+    <p>
+        Welcome to Quality Auto Sales. We are the #1 dealership in Oregon. With 10 locations spread out accross the state, we have plenty of cars to choose some. We have plenty of financing options to help you get the car you want. Stop by and test drive a car today.
+    </p>
+</div>
+
 
 {% endblock %}
