@@ -27,7 +27,7 @@ Vehicle Inventory
 
 
 
-
+{% if prev_url is defined %}
 <div class="content-table">
     <table>
         <thead>
@@ -45,9 +45,11 @@ Vehicle Inventory
                 <th>Parking Location</th>
                 <th>Delete</th>
                 <th>Update</th>
+                <th>Test Drive</th>
 
             </tr>
         </thead>
+        {% if content is defined %}
         <tbody id="content-table">
             {% for i in content %}
             <tr>
@@ -64,11 +66,23 @@ Vehicle Inventory
                 <td>{{i[10]}}</td>
                 <td><button>Delete</button></td>
                 <td><button>Edit</button></td>
+                <td><button>Record</button></td>
             </tr>
             {% endfor %}
         </tbody>
-
+        {% endif %}
     </table>
+
+
+    <a href="{{ prev_url }}">Prev</a> <a href="{{ next_url }}">Next</a>
+
 </div>
+{% endif %}
+
+
+
+
+
+
 
 {% endblock %}
