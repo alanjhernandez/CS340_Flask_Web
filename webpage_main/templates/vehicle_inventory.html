@@ -8,6 +8,67 @@ Vehicle Inventory
 
 {% block content%}
 
-This is vehicle inventory
+<form action="#" method="post">
+
+    <p>Make:</p>
+    <p><input type="text" name="make"></p>
+    <p>Model:</p>
+    <p><input type="text" name="model"></p>
+    <p>year:</p>
+    <p><input type="text" name="year"></p>
+    <p>color:</p>
+    <p><input type="text" name="color"></p>
+    <p>trim:</p>
+    <p><input type="text" name="trim"></p>
+
+    <p><input type="submit" value="Submit"></p>
+
+</form>
+
+
+
+
+<div class="content-table">
+    <table>
+        <thead>
+            <tr>
+                <th>VIN</th>
+                <th>Type</th>
+                <th>Make</th>
+                <th>Model</th>
+                <th>Year</th>
+                <th>Color</th>
+                <th>Trim</th>
+                <th>Price</th>
+                <th>Used/New</th>
+                <th>Store Location</th>
+                <th>Parking Location</th>
+                <th>Delete</th>
+                <th>Update</th>
+
+            </tr>
+        </thead>
+        <tbody id="content-table">
+            {% for i in content %}
+            <tr>
+                <td>{{i[0]}}</td>
+                <td>{{i[1]}}</td>
+                <td>{{i[2]}}</td>
+                <td>{{i[3]}}</td>
+                <td>{{i[4]}}</td>
+                <td>{{i[5]}}</td>
+                <td>{{i[6]}}</td>
+                <td>{{i[7]}}</td>
+                <td>{{i[8]}}</td>
+                <td>{{i[9]}}</td>
+                <td>{{i[10]}}</td>
+                <td><button>Delete</button></td>
+                <td><button>Edit</button></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+
+    </table>
+</div>
 
 {% endblock %}
