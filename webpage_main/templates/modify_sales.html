@@ -1,13 +1,48 @@
 {% extends "base.html" %}
 
 {% block title%}
-HomePage
+Add/Modify/Search Sales Record
 {% endblock %}
 
 
 
 {% block content%}
 
-This is modify_sales
+<div class = "sales">
+    <h1 style="text-align: center">Sales Records</h1>
+    <table>
+        <tr>
+            <th>Invoice ID</th>
+            <th>Purchase Date</th>
+            <th>Vehicle Type ID</th>
+            <th>Vin</th>
+            <th>Vehicle Price</th>
+            <th>Financial Option ID</th>
+            <th>Monthy Payment Amount</th>
+            <th>Down Payment Amount</th>
+            <th>Actions</th>
+        </tr>
+        {% for sale in sales %}
+            <tr>
+                <td>{{ sale.content }}</td>
+                <td>
+                    <a href="/delete/{{sale.id}}">Delete</a>
+                    <br>
+                    <a href="/update/{{sale.id}}">Update</a>
+                </td>
+        {% endfor %}
+
+        
+        <!--work in progress. add, modify, search records. create update page-->
+        <!--connect with webpage.py-->
+    </table>
+    <div class="form">
+        <form action="/" method="POST">
+            <input type="text" name="content" id="content">
+            <input type="submit" value="Add Sales Record">
+        </form>
+    </div>
+
+</div>
 
 {% endblock %}
