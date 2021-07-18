@@ -4,30 +4,65 @@
 Vehicle Inventory
 {% endblock %}
 
+{% block style%}
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename = 'inventory.css')}}">
+{% endblock %}
+
 
 
 {% block content%}
 
 <form action="#" method="post">
+    <fieldset>
+        <legend>Vehicle Information</legend>
 
-    <p>Make:</p>
-    <p><input type="text" name="make"></p>
-    <p>Model:</p>
-    <p><input type="text" name="model"></p>
-    <p>year:</p>
-    <p><input type="text" name="year"></p>
-    <p>color:</p>
-    <p><input type="text" name="color"></p>
-    <p>trim:</p>
-    <p><input type="text" name="trim"></p>
+        <table>
+            <tr>
+                <td><label for="make">Vehicle Make</label></td>
+                <td><input type="radio" name="make" value="Honda" checked>Honda</input></td>
+                <td><input type="radio" name="make" value="Toyota">Toyota</input></td>
+            </tr>
 
-    <p><input type="submit" value="Submit"></p>
+            <tr>
+                <td><label for="model">Vehicle Model</label></td>
+                <td colspan="3"><input type="text" name="model"></td>
+            </tr>
 
+            <tr>
+                <td><label for="year">Vehicle Year</label></td>
+                <td><input type="radio" name="year" value="2016">2016</input></td>
+                <td><input type="radio" name="year" value="2017">2017</input></td>
+                <td><input type="radio" name="year" value="2018">2018</input></td>
+                <td><input type="radio" name="year" value="2019">2019</input></td>
+                <td><input type="radio" name="year" value="2020">2020</input></td>
+                <input type="hidden" name="year" value=""></input>
+            </tr>
+
+            <tr>
+                <td><label for="color">Vehicle Colour</label></td>
+                <td><input type="radio" name="color" value="Black">Black</input></td>
+                <td><input type="radio" name="color" value="Blue">Blue</input></td>
+                <td><input type="radio" name="color" value="Silver">Silver</input></td>
+                <input type="hidden" name="color" value=""></input>
+            </tr>
+
+            <tr>
+                <td><label for="trim">Vehicle Trim</label></td>
+                <td colspan="3"><input type="text" name="trim"></td>
+            </tr>
+
+
+
+
+        </table>
+        <input type="hidden" name="request_type" value="new_search">
+        <input type="submit" value="Submit">
+    </fieldset>
 </form>
 
 
-
-{% if prev_url is defined %}
+<br>
+{% if prev_page is defined %}
 <div class="content-table">
     <table>
         <thead>
@@ -66,21 +101,165 @@ Vehicle Inventory
                 <td>{{i[10]}}</td>
                 <td><button>Delete</button></td>
                 <td><button>Edit</button></td>
-                <td><button>Record</button></td>
+                <td><button onclick="test_drive_review('{{i[0]}}');">Record</button></td>
             </tr>
             {% endfor %}
         </tbody>
         {% endif %}
     </table>
 
+    <div class="page_button" style="margin: 0 auto; display:inline;">
+        <form action="#" method="POST" style="margin: 0 auto;display: inline;">
+            <input type="hidden" name="page_num" value={{prev_page}}>
+            <input type="hidden" name="request_type" value="continue_search">
+            <input type="submit" value="Prev">
+        </form>
 
-    <a href="{{ prev_url }}">Prev</a> <a href="{{ next_url }}">Next</a>
+        <form action="#" method="POST" style="margin: 0 auto;display: inline;">
+            <input type="hidden" name="page_num" value={{next_page}}>
+            <input type="hidden" name="request_type" value="continue_search">
+            <input type="submit" value="Next">
+        </form>
+    </div>
+
+
+
+    <!-- The Modal -->
+    <div id="testdrive_modal" class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="testdrive_title"></h2>
+            <div id="testdrive_record"></div>
+        </div>
+
+    </div>
+
 
 </div>
 {% endif %}
 
 
+<script>
 
+
+
+    var modal = document.getElementById("testdrive_modal");
+    var span = document.getElementsByClassName("close")[0];
+
+    function test_drive_review(vin) {
+        modal.style.display = "block";
+        console.log(vin);
+        var testdrive_title = document.getElementById("testdrive_title");
+        testdrive_title.textContent = "Test Drive Record for Vehicle " + vin;
+        testdrive_title.style = "text-align: center;"
+
+
+        var req = new XMLHttpRequest();
+        var testdrive_request = {}
+        testdrive_request.request_type = "testdrive_check"
+        testdrive_request.vin = vin
+        console.log(testdrive_request)
+
+        req.open('POST', '/vehinventory', true);
+        req.setRequestHeader('Content-Type', 'application/json');
+        req.addEventListener('load', function () {
+            if (req.status >= 200 && req.status < 400) {
+                var response = JSON.parse(req.responseText);
+                console.log("Test Drive Pulled")
+
+                var testdrive_record = document.getElementById("testdrive_record");
+
+                if (response.result == 'Y') {
+                    testdrive_record.innerHTML = ""
+                    var testdrive_table = document.createElement("table")
+                    testdrive_record.appendChild(testdrive_table)
+
+                    var testdrive_table_header = document.createElement("thead")
+                    testdrive_table.appendChild(testdrive_table_header)
+
+                    var testdrive_table_tr = document.createElement("tr")
+                    testdrive_table_header.appendChild(testdrive_table_tr)
+
+                    var testdrive_table_td = document.createElement("td")
+                    testdrive_table_td.textContent = "ID"
+                    testdrive_table_tr.appendChild(testdrive_table_td)
+
+                    var testdrive_table_td = document.createElement("td")
+                    testdrive_table_td.textContent = "Date"
+                    testdrive_table_tr.appendChild(testdrive_table_td)
+
+                    var testdrive_table_td = document.createElement("td")
+                    testdrive_table_td.textContent = "Checkout Time"
+                    testdrive_table_tr.appendChild(testdrive_table_td)
+
+                    var testdrive_table_td = document.createElement("td")
+                    testdrive_table_td.textContent = "Return Time"
+                    testdrive_table_tr.appendChild(testdrive_table_td)
+
+
+
+                    var testdrive_table_body = document.createElement("tbody")
+                    testdrive_table.appendChild(testdrive_table_body)
+
+
+
+
+                    for (i in response.Data) {
+
+
+                        var testdrive_table_tr = document.createElement("tr")
+                        testdrive_table_body.appendChild(testdrive_table_tr)
+
+                        var testdrive_table_td = document.createElement("td")
+                        testdrive_table_td.textContent = i
+                        testdrive_table_tr.appendChild(testdrive_table_td)
+
+                        var testdrive_table_td = document.createElement("td")
+                        testdrive_table_td.textContent = response.Data[i].test_drive_date
+                        testdrive_table_tr.appendChild(testdrive_table_td)
+
+                        var testdrive_table_td = document.createElement("td")
+                        testdrive_table_td.textContent = response.Data[i].check_out_time
+                        testdrive_table_tr.appendChild(testdrive_table_td)
+
+                        var testdrive_table_td = document.createElement("td")
+                        testdrive_table_td.textContent = response.Data[i].return_time
+                        testdrive_table_tr.appendChild(testdrive_table_td)
+
+                        console.log(i)
+                        console.log(response.Data[i].test_drive_date)
+                        console.log(response.Data[i].check_out_time)
+                        console.log(response.Data[i].return_time)
+                    }
+
+                } else {
+                    testdrive_record.textContent = "There is no test drive record for this vehicle."
+                }
+
+
+
+            } else {
+                console.log("Error in network request: " + req.statusText);
+            }
+        });
+        req.send(JSON.stringify(testdrive_request));
+        event.preventDefault();
+
+    }
+
+    span.onclick = function () {
+        modal.style.display = "none";
+    }
+
+    window.onclick = function (event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+
+</script>
 
 
 

@@ -1,7 +1,9 @@
-from flask import Flask, redirect, url_for, render_template, request, session
+from flask import Flask, redirect, url_for, render_template, request, session, jsonify
 import MySQLdb as mariadb
 from db_credentials import host, user, passwd, db
 from flask_paginate import Pagination
+from json import dumps
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = "3546*&^*dsflk1234"
@@ -30,153 +32,218 @@ def home():
 
 @app.route("/vehinventory", methods = ["POST","GET"])
 def vehicle_inventory():
-    row_per_page = 15
-
-    if request.method  == "GET" and request.args.get('page') is None:
-        print("GET")
-        if "search" in session:
-            session.pop("search")
-        return render_template("vehicle_inventory.html")
-    
-    elif request.method  == "POST":
-
-        print("POST")
-        db = connect_to_database()
-        make = request.form["make"] 
-        model = request.form["model"]
-        year = request.form["year"]
-        color = request.form["color"]
-        trim = request.form["trim"]
+    row_per_page = 10
 
 
-        query = f"""
-                SELECT dw_vehicle_type_id
-                from Vehicle_Types 
-                where vehicle_make like "%%{make}%%"
-                and vehicle_model like "%%{model}%%"
-                and vehicle_year like "%%{year}%%"
-                and vehicle_color like "%%{color}%%"
-                and vehicle_trim like "%%{trim}%%";
-                """
-        results = execute_query(db, query)
-        vehicle_type_id_list = [r[0] for r in results.fetchall()]
+
+    if request.is_json:
+        if request.method  == "POST" and request.json["request_type"] == "testdrive_check":
+            db = connect_to_database()
+            vin = request.json["vin"] 
+            print(vin)
+
+            query = f"""
+                    SELECT 
+                    dw_test_drive_id
+                    ,test_drive_date
+                    ,check_out_time
+                    ,return_time
+                    from Test_Drives
+                    where vin = "{vin}";
+                    """
+            results = execute_query(db, query)
+            test_drive_result_list = [list(r) for r in results.fetchall()]
+
+            test_drive_result = {}
+
+            if len(test_drive_result_list) == 0:
+                test_drive_result["result"] = "N"
+            else:
+                test_drive_result["result"] = "Y"
+            
+            test_drive_result["Data"] = {}
+
+            for i in test_drive_result_list:
+                test_drive_id = str(i[0])
+                test_drive_result["Data"][test_drive_id] = {}
+                test_drive_result["Data"][test_drive_id]["test_drive_date"] = i[1].strftime("%Y-%m-%d")
+                test_drive_result["Data"][test_drive_id]["check_out_time"] = i[2].strftime("%H:%M:%S")
+                test_drive_result["Data"][test_drive_id]["return_time"] = i[3].strftime("%H:%M:%S")
+
+            print(test_drive_result)
+            return jsonify(test_drive_result)
+
+
+    else:
+        if request.method  == "GET":
+            print("GET")
+            if "search" in session:
+                session.pop("search")
+            return render_template("vehicle_inventory.html")
 
         
-        fstring_sub = ','.join(['%s'] * len(vehicle_type_id_list))
+        elif request.method  == "POST" and request.form["request_type"] == "new_search":
 
-        query = f"""
-                SELECT 
-                a.vin
-                ,b.vehicle_type
-                ,b.vehicle_make
-                ,b.vehicle_model
-                ,b.vehicle_year
-                ,b.vehicle_color
-                ,b.vehicle_trim
-                ,b.vehicle_price
-                ,Case when a.used_ind = '1' then 'Used' else 'New' end as used_ind
-                ,a.store_location
-                ,a.parking_location
-                 from Vehicle_Inventories as a
+            print("POST")
 
-                inner join Vehicle_Types as b
-                on a.dw_vehicle_type_id = b.dw_vehicle_type_id
+            if "search" in session:
+                session.pop("search")
+
+            db = connect_to_database()
+            make = request.form["make"] 
+            model = request.form["model"]
+            year = request.form["year"]
+            color = request.form["color"]
+            trim = request.form["trim"]
 
 
-                where b.dw_vehicle_type_id IN ({fstring_sub})
-                and a.sold_ind = '0'
-                order by 1
-                ;
-                """
-        results = execute_query(db, query, vehicle_type_id_list)
-        inventory_result = [ list(r) for r in results.fetchall()]
+            query = f"""
+                    SELECT dw_vehicle_type_id
+                    from Vehicle_Types 
+                    where vehicle_make like "%%{make}%%"
+                    and vehicle_model like "%%{model}%%"
+                    and vehicle_year like "%%{year}%%"
+                    and vehicle_color like "%%{color}%%"
+                    and vehicle_trim like "%%{trim}%%";
+                    """
+            results = execute_query(db, query)
+            vehicle_type_id_list = [r[0] for r in results.fetchall()]
 
-        session["search"] = {}
-        session["search"]["count"] = len(inventory_result)
-        session["search"]["key"] = {}
-        session["search"]["key"]["make"] = make
-        session["search"]["key"]["model"] = model
-        session["search"]["key"]["year"] = year
-        session["search"]["key"]["color"] = color
-        session["search"]["key"]["trim"] = trim
+            
+            fstring_sub = ','.join(['%s'] * len(vehicle_type_id_list))
 
-        if len(inventory_result) > row_per_page:
-            next_url = url_for('vehicle_inventory', page=2)
-        else:
-            next_url = url_for('vehicle_inventory', page=1)
-        prev_url = url_for('vehicle_inventory', page=1)
+            query = f"""
+                    SELECT 
+                    a.vin
+                    ,b.vehicle_type
+                    ,b.vehicle_make
+                    ,b.vehicle_model
+                    ,b.vehicle_year
+                    ,b.vehicle_color
+                    ,b.vehicle_trim
+                    ,b.vehicle_price
+                    ,Case when a.used_ind = '1' then 'Used' else 'New' end as used_ind
+                    ,a.store_location
+                    ,a.parking_location
+                    from Vehicle_Inventories as a
 
-
-        return render_template("vehicle_inventory.html", content = inventory_result[0:row_per_page], prev_url=prev_url, next_url=next_url ) 
-
-    elif "search" in session:
-
-        db = connect_to_database()
-        make = session["search"]["key"]["make"]
-        model = session["search"]["key"]["model"]
-        year = session["search"]["key"]["year"]
-        color = session["search"]["key"]["color"]
-        trim = session["search"]["key"]["trim"]
+                    inner join Vehicle_Types as b
+                    on a.dw_vehicle_type_id = b.dw_vehicle_type_id
 
 
-        query = f"""
-                SELECT dw_vehicle_type_id
-                from Vehicle_Types 
-                where vehicle_make like "%%{make}%%"
-                and vehicle_model like "%%{model}%%"
-                and vehicle_year like "%%{year}%%"
-                and vehicle_color like "%%{color}%%"
-                and vehicle_trim like "%%{trim}%%"
+                    where b.dw_vehicle_type_id IN ({fstring_sub})
+                    and a.sold_ind = '0'
+                    order by 1
+                    limit 15
+                    ;
+                    """
 
-                """
-        results = execute_query(db, query)
-        vehicle_type_id_list = [r[0] for r in results.fetchall()]       
-        fstring_sub = ','.join(['%s'] * len(vehicle_type_id_list))
+            results = execute_query(db, query, vehicle_type_id_list)
+            inventory_result = [ list(r) for r in results.fetchall()]
 
-        page = request.args.get('page', 1, type=int)
-        nth_record = (page-1) * row_per_page
+            query = f"""
+                    SELECT count(*) as vehicle_count
+                    from Vehicle_Inventories as a
+                    where a.sold_ind = '0'
+                
+                    ;
+                    """
+                    
+            results = execute_query(db, query)
+            inventory_count = [ r for r in results.fetchall()]
+  
+            session["search"] = {}
+            session["search"]["count"] = inventory_count[0][0]
+            session["search"]["key"] = {}
+            session["search"]["key"]["make"] = make
+            session["search"]["key"]["model"] = model
+            session["search"]["key"]["year"] = year
+            session["search"]["key"]["color"] = color
+            session["search"]["key"]["trim"] = trim
 
-        query = f"""
-                SELECT 
-                a.vin
-                ,b.vehicle_type
-                ,b.vehicle_make
-                ,b.vehicle_model
-                ,b.vehicle_year
-                ,b.vehicle_color
-                ,b.vehicle_trim
-                ,b.vehicle_price
-                ,Case when a.used_ind = '1' then 'Used' else 'New' end as used_ind
-                ,a.store_location
-                ,a.parking_location
-                 from Vehicle_Inventories as a
+            if inventory_count[0][0] > row_per_page:
+                #next_url = url_for('vehicle_inventory', page=2)
+                next_page = 2
+            else:
+                #next_url = url_for('vehicle_inventory', page=1)
+                next_page = 1 
 
-                inner join Vehicle_Types as b
-                on a.dw_vehicle_type_id = b.dw_vehicle_type_id
-
-
-                where b.dw_vehicle_type_id IN ({fstring_sub})
-                and a.sold_ind = '0'
-                order by 1
-                limit {nth_record},{row_per_page};
-                """
-        results = execute_query(db, query, vehicle_type_id_list)
-        inventory_result = [ list(r) for r in results.fetchall()]
+            print(next_page)
+            #prev_url = url_for('vehicle_inventory', page=1)
+            prev_page = 1
 
 
-        if session["search"]["count"]  > (nth_record + row_per_page):
-            next_url = url_for('vehicle_inventory', page= (page + 1))
-        else:
-            next_url = url_for('vehicle_inventory', page= page)
+            return render_template("vehicle_inventory.html", content = inventory_result[0:row_per_page], prev_page = prev_page, next_page = next_page) 
 
-        if (nth_record - row_per_page) > 0:
-            prev_url = url_for('vehicle_inventory', page=(page-1))
-        else:
-            prev_url = url_for('vehicle_inventory', page=1)
-        
+        elif request.method  == "POST"  and request.form["request_type"] == "continue_search":
+
+            db = connect_to_database()
+            make = session["search"]["key"]["make"]
+            model = session["search"]["key"]["model"]
+            year = session["search"]["key"]["year"]
+            color = session["search"]["key"]["color"]
+            trim = session["search"]["key"]["trim"]
 
 
-        return render_template("vehicle_inventory.html", content = inventory_result, prev_url=prev_url, next_url=next_url ) 
+
+            query = f"""
+                    SELECT dw_vehicle_type_id
+                    from Vehicle_Types 
+                    where vehicle_make like "%%{make}%%"
+                    and vehicle_model like "%%{model}%%"
+                    and vehicle_year like "%%{year}%%"
+                    and vehicle_color like "%%{color}%%"
+                    and vehicle_trim like "%%{trim}%%"
+
+                    """
+            results = execute_query(db, query)
+            vehicle_type_id_list = [r[0] for r in results.fetchall()]       
+            fstring_sub = ','.join(['%s'] * len(vehicle_type_id_list))
+
+
+            page = int(request.form["page_num"])
+            print(page)
+            nth_record = (page-1) * row_per_page
+
+            query = f"""
+                    SELECT 
+                    a.vin
+                    ,b.vehicle_type
+                    ,b.vehicle_make
+                    ,b.vehicle_model
+                    ,b.vehicle_year
+                    ,b.vehicle_color
+                    ,b.vehicle_trim
+                    ,b.vehicle_price
+                    ,Case when a.used_ind = '1' then 'Used' else 'New' end as used_ind
+                    ,a.store_location
+                    ,a.parking_location
+                    from Vehicle_Inventories as a
+
+                    inner join Vehicle_Types as b
+                    on a.dw_vehicle_type_id = b.dw_vehicle_type_id
+
+
+                    where b.dw_vehicle_type_id IN ({fstring_sub})
+                    and a.sold_ind = '0'
+                    order by 1
+                    limit {nth_record},{row_per_page};
+                    """
+            results = execute_query(db, query, vehicle_type_id_list)
+            inventory_result = [ list(r) for r in results.fetchall()]
+
+
+            if session["search"]["count"]  > (nth_record + row_per_page):
+                next_page = page + 1
+            else:
+                next_page = page
+
+            if (nth_record - row_per_page) > 0:
+                prev_page = page - 1
+            else:
+                prev_page = 1
+            
+            return render_template("vehicle_inventory.html", content = inventory_result, prev_page = prev_page, next_page = next_page ) 
 
 
 

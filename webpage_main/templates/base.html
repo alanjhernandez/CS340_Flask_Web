@@ -6,13 +6,16 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="{{url_for('static', filename = 'base.css')}}">
+    {% block style %}{% endblock %}
     <title>{% block title %} {% endblock %}</title>
+
 </head>
 
 <body>
 
     <div class="logo">
-        <img src="https://i.ibb.co/pZXyQLX/picturetopeople-org-05f120e90b334018ee8283fef5ce76c7270c8f7c9534d4d811.png" alt = "Title" style="width:50%" loading="lazy">
+        <img src="https://i.ibb.co/pZXyQLX/picturetopeople-org-05f120e90b334018ee8283fef5ce76c7270c8f7c9534d4d811.png"
+            alt="Title" style="width:50%" loading="lazy">
     </div>
     <div class="nav-bar">
         <div> <a href="/">HomePage</a> </div>
