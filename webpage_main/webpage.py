@@ -759,14 +759,14 @@ def execute_query(db_connection = None, query = None, query_params = ()):
 
 
 
-
+'''
 
 
 if __name__ == "__main__":
     app.run(debug = True)
 
 
-'''
+
 @app.route("/login", methods = ["POST","GET"])
 def login():
     if request.method == "POST":
