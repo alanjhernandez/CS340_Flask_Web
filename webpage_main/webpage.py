@@ -184,18 +184,97 @@ def vehicle_inventory():
 
 
 
-@app.route("/modsales")
+@app.route("/modsales", methods = ["POST","GET"])
 def modify_sales():
-    '''
-    if request.method == 'POST':
-        task_content = request.form[''] <-Add
-    '''
-    return render_template("modify_sales.html")
+    if request.method  == "GET" and request.args.get('page') is None:
+        print("GET")
+        if "search" in session:
+            session.pop("search")
+        return render_template("modify_sales.html")
 
-    #add update route for sales
-@app.route("/testdrive")
+    elif request.method  == "POST":
+
+        print("POST")
+        db = connect_to_database()
+
+
+        vehicleid = request.form["vehicleid"]
+        vin = request.form["vin"]
+        finoption = request.form["finoption"]
+
+
+        query = f"""
+                SELECT dw_invoice_id
+                from Sales_Records
+                where  dw_vehicle_type_id like "%%{vehicleid}%%"
+                and vin like "%%{vin}%%"
+                and dw_fincl_option_id like "%%{finoption}%%";
+                
+                """
+        results = execute_query(db, query)
+        invoice_id_list = [r[0] for r in results.fetchall()]
+        #fstring_sub = ','.join(['%s'] * len(invoice_id_list))
+
+        results = execute_query(db, query, invoice_id_list)
+        sales_result = [ list(r) for r in results.fetchall()]
+
+        session["search"] = {}
+        session["search"]["count"] = len(sales_result)
+        session["search"]["key"] = {}
+        session["search"]["key"]["vehicleid"] = vehicleid
+        session["search"]["key"]["vin"] = vin
+        session["search"]["key"]["finoption"] = finoption
+
+
+        print(sales_result)
+
+        return render_template("modify_sales.html", content = sales_result)
+
+    elif "search" in session:
+
+        db = connect_to_database()
+        vehicleid = session["search"]["key"]["vehicleid"]
+        vin = session["search"]["key"]["vin"]
+        finoption = session["search"]["key"]["finoption"]
+
+
+        query = f"""
+                SELECT dw_invoice_id
+                from Sales_Records
+                where  dw_vehicle_type_id like "%%{vehicleid}%%"
+                and vin like "%%{vin}%%"
+                and dw_fincl_option_id like "%%{finoption}%%";
+
+                """
+        results = execute_query(db, query)
+        sales_result = [r[0] for r in results.fetchall()]       
+        #fstring_sub = ','.join(['%s'] * len(vehicle_type_id_list))
+
+        print(sales_result)
+
+        return render_template("modify_sales.html", content = sales_result ) 
+
+
+@app.route("/testdrive", methods = ["POST","GET"])
 def test_drive():
-    return render_template("test_drive.html")
+    if request.method  == "GET" and request.args.get('page') is None:
+        print("GET")
+        if "search" in session:
+            session.pop("search")
+        return render_template("test_drive.html")
+
+    elif request.method  == "POST":
+
+        print("POST")
+        db = connect_to_database()
+        test_drive_id = request.form["tdriveid"] 
+        customer_id = request.form["cid"]
+        t_drive_date = request.form["tdate"]
+        check_out_time = request.form["cotime"]
+        return_time = request.form["rtime"]
+        vin = request.form["vin"]
+    
+    #return render_template("test_drive.html")
 
 @app.route("/cfproject")
 def cf_projection():

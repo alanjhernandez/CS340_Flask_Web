@@ -8,41 +8,81 @@ Add/Modify/Search Sales Record
 
 {% block content%}
 
-<div class = "sales">
-    <h1 style="text-align: center">Sales Records</h1>
+<h1>Sales Records</h1>
+
+<form action="#" method="post">
+    <h2>Add Sales Records</h2>
+    <p>Invoice ID:</p>
+    <p><input type="number" name="invoice"></p>
+    <p>Purchase Date:</p>
+    <p><input type="date" name="pdate"></p>
+    <p>Vehicle Type ID:</p>
+    <p><input type="text" name="vehicleid"></p>
+    <p>Vin:</p>
+    <p><input type="text" name="vin"></p>
+    <p>Vehicle Price:</p>
+    <p><input type="number" name="vprice"></p>
+    <p>Financial Option ID:</p>
+    <p><input type="number" name="finoption"></p>
+    <p>Monthy Payment Amount:</p>
+    <p><input type="number" name="mpayment"></p>
+    <p>Down Payment Amount:</p>
+    <p><input type="number" name="dpayment"></p>
+
+    <p><input type="submit" value="Add"></p>
+</form>
+
+
+<form action="#" method="post">
+    <h2>Search Sales Records</h2>
+    <p>Vehicle Type ID:</p>
+    <p><input type="text" name="vehicleid"></p>
+    <p>Vin:</p>
+    <p><input type="text" name="vin"></p>
+    <p>Financial Option ID:</p>
+    <p><input type="number" name="finoption"></p>
+
+    <p><input type="submit" value="Search"></p>
+
+</form>
+
+<div class="content-table">
     <table>
-        <tr>
-            <th>Invoice ID</th>
-            <th>Purchase Date</th>
-            <th>Vehicle Type ID</th>
-            <th>Vin</th>
-            <th>Vehicle Price</th>
-            <th>Financial Option ID</th>
-            <th>Monthy Payment Amount</th>
-            <th>Down Payment Amount</th>
-            <th>Actions</th>
-        </tr>
-        {% for sale in sales %}
+        <thead>
             <tr>
-                <td>{{ sale.content }}</td>
-                <td>
-                    <a href="/delete/{{sale.id}}">Delete</a>
-                    <br>
-                    <a href="/update/{{sale.id}}">Update</a>
-                </td>
-        {% endfor %}
+                <th>Invoice ID</th>
+                <th>Purchase Date</th>
+                <th>Vehicle Type ID</th>
+                <th>Vin</th>
+                <th>Vehicle Price</th>
+                <th>Financial Option ID</th>
+                <th>Monthy Payment Amount</th>
+                <th>Down Payment Amount</th>
+                <th>Delete</th>
+                <th>Update</th>
 
-        
-        <!--work in progress. add, modify, search records. create update page-->
-        <!--connect with webpage.py-->
+            </tr>
+        </thead>
+        {% if content is defined %}
+        <tbody id="content-table">
+            {% for i in content %}
+            <tr>
+                <td>{{i[0]}}</td>
+                <td>{{i[1]}}</td>
+                <td>{{i[2]}}</td>
+                <td>{{i[3]}}</td>
+                <td>{{i[4]}}</td>
+                <td>{{i[5]}}</td>
+                <td>{{i[6]}}</td>
+                <td>{{i[7]}}</td>
+                <td><button>Delete</button></td>
+                <td><button>Update</button></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        {% endif %}
     </table>
-    <div class="form">
-        <form action="/" method="POST">
-            <input type="text" name="content" id="content">
-            <input type="submit" value="Add Sales Record">
-        </form>
-    </div>
-
 </div>
+
 
 {% endblock %}
