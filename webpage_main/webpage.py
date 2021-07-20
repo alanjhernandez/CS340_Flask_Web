@@ -333,7 +333,7 @@ def vehicle_inventory():
 
             page = int(request.form["page_num"])
             print(page)
-            nth_record = (page-1) * row_per_page
+            nth_record = (page-1) * row_per_page + 1
 
             query = f"""
                     SELECT 
@@ -703,17 +703,230 @@ def vehicle_inventory():
 
 
 
-
-
-@app.route("/modsales")
+@app.route("/modsales", methods = ["POST","GET"])
 def modify_sales():
-    '''
-    if request.method == 'POST':
-        task_content = request.form[''] <-Add
-    '''
-    return render_template("modify_sales.html")
 
-    #add update route for sales
+    row_per_page = 15
+    if request.is_json:
+        return render_template("modify_sales.html")
+
+    else:
+
+        if request.method  == "GET" and request.args.get('page') is None:
+            return render_template("modify_sales.html")
+
+        elif request.method  == "POST"  and request.form["request_type"] == "sales_new_search":
+
+            print("POST")
+            db = connect_to_database()
+
+            make = request.form["make"] 
+            model = request.form["model"] 
+            year = request.form["year"] 
+            color = request.form["color"] 
+            trim = request.form["trim"] 
+            vin = request.form["vin"] 
+            clname = request.form["customer_lname"] 
+            cfname = request.form["customer_fname"] 
+            slname = request.form["sales_lname"] 
+            sfname = request.form["sales_fname"] 
+
+            print(request.form)
+ 
+            query = f"""
+                    select 
+                    a.dw_invoice_id
+                    ,a.vin
+                    ,b.customer_first_name
+                    ,b.customer_last_name
+                    ,b.sales_first_name
+                    ,b.sales_last_name
+                    ,c.vehicle_type
+                    ,c.vehicle_make
+                    ,c.vehicle_model
+                    ,c.vehicle_year
+                    ,c.vehicle_color
+                    ,c.vehicle_trim
+                    ,c.vehicle_price
+                    ,down_payment_amount
+                    ,Monthly_Payment_amount
+                    ,dw_fincl_option_id
+
+                    from Sales_Records as a
+
+
+                    inner join (
+                    SELECT 
+                    a.dw_invoice_id
+                    ,a.dw_customer_id
+                    ,a.dw_sales_rep_id
+                    ,b.first_name as Customer_First_Name
+                    ,b.last_name as Customer_Last_Name
+                    ,c.first_name as Sales_First_Name
+                    ,c.last_name as Sales_Last_Name
+
+
+                    FROM Customers_Salesreps as a
+
+                    inner join Customers_Info as b
+                    on a.dw_customer_id = b.dw_customer_id
+
+                    inner join Sales_Reps as c
+                    on a.dw_sales_rep_id = c.dw_sales_rep_id
+
+                    where c.first_name like "%%{sfname}%%"
+                    and c.last_name like "%%{slname}%%"
+                    and b.first_name like "%%{cfname}%%"
+                    and b.last_name like "%%{clname}%%"
+    
+
+                    ) as b
+                    on a.dw_invoice_id = b.dw_invoice_id
+
+
+                    inner join (
+                    SELECT 
+                    dw_vehicle_type_id
+                    ,vehicle_type
+                    ,vehicle_make
+                    ,vehicle_model
+                    ,vehicle_year
+                    ,vehicle_color
+                    ,vehicle_trim
+                    ,vehicle_price
+                    from Vehicle_Types 
+                    where vehicle_make like "%%{make}%%"
+                    and vehicle_model like "%%{model}%%"
+                    and vehicle_year like "%%{year}%%"
+                    and vehicle_color like "%%{color}%%"
+                    and vehicle_trim like "%%{trim}%%"
+
+                    ) as c
+                    on a.dw_vehicle_type_id = c.dw_vehicle_type_id
+
+                    where a.vin like "%%{vin}%%"
+
+
+                    order by vin
+                    limit 15
+                    """
+
+            results = execute_query(db, query)
+            sales_list = [list(r) for r in results.fetchall()]
+            print(sales_list)
+
+
+
+
+            query = f"""
+                    select 
+                    count(distinct vin) as sales_count
+                    from Sales_Records as a
+
+
+                    inner join (
+                    SELECT 
+                    a.dw_invoice_id
+                    ,a.dw_customer_id
+                    ,a.dw_sales_rep_id
+                    ,b.first_name as Customer_First_Name
+                    ,b.last_name as Customer_Last_Name
+                    ,c.first_name as Sales_First_Name
+                    ,c.last_name as Sales_Last_Name
+
+
+                    FROM Customers_Salesreps as a
+
+                    inner join Customers_Info as b
+                    on a.dw_customer_id = b.dw_customer_id
+
+                    inner join Sales_Reps as c
+                    on a.dw_sales_rep_id = c.dw_sales_rep_id
+
+                    where c.first_name like "%%{sfname}%%"
+                    and c.last_name like "%%{slname}%%"
+                    and b.first_name like "%%{cfname}%%"
+                    and b.last_name like "%%{clname}%%"
+    
+
+                    ) as b
+                    on a.dw_invoice_id = b.dw_invoice_id
+
+
+                    inner join (
+                    SELECT 
+                    dw_vehicle_type_id
+                    ,vehicle_type
+                    ,vehicle_make
+                    ,vehicle_model
+                    ,vehicle_year
+                    ,vehicle_color
+                    ,vehicle_trim
+                    ,vehicle_price
+                    from Vehicle_Types 
+                    where vehicle_make like "%%{make}%%"
+                    and vehicle_model like "%%{model}%%"
+                    and vehicle_year like "%%{year}%%"
+                    and vehicle_color like "%%{color}%%"
+                    and vehicle_trim like "%%{trim}%%"
+
+                    ) as c
+                    on a.dw_vehicle_type_id = c.dw_vehicle_type_id
+
+                    where a.vin like "%%{vin}%%"    
+                    order by vin
+                    limit 15
+                    """
+
+            results = execute_query(db, query)
+            sales_count = [list(r) for r in results.fetchall()]
+            print(sales_count)
+
+            session["sales_search"] = {}
+            session["sales_search"]["count"] = sales_count[0][0]
+            session["sales_search"]["key"] = {}
+            session["sales_search"]["key"]["make"] = make
+            session["sales_search"]["key"]["model"] = model
+            session["sales_search"]["key"]["year"] = year
+            session["sales_search"]["key"]["color"] = color
+            session["sales_search"]["key"]["trim"] = trim
+            session["sales_search"]["key"]["vin"] = vin
+            session["sales_search"]["key"]["customer_lname"] = clname
+            session["sales_search"]["key"]["customer_fname"] = cfname
+            session["sales_search"]["key"]["sales_lname"] = slname
+            session["sales_search"]["key"]["sales_fname"] = sfname
+
+
+ 
+
+            if sales_count[0][0] > row_per_page:
+                #next_url = url_for('vehicle_inventory', page=2)
+                next_page = 2
+            else:
+                #next_url = url_for('vehicle_inventory', page=1)
+                next_page = 1 
+
+            print(next_page)
+            #prev_url = url_for('vehicle_inventory', page=1)
+            prev_page = 1
+
+
+            return render_template("modify_sales.html", content = sales_list, prev_page = prev_page, current_page = 1, next_page = next_page)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @app.route("/testdrive")
 def test_drive():
     return render_template("test_drive.html")
@@ -759,14 +972,14 @@ def execute_query(db_connection = None, query = None, query_params = ()):
 
 
 
-'''
+
 
 
 if __name__ == "__main__":
     app.run(debug = True)
 
 
-
+'''
 @app.route("/login", methods = ["POST","GET"])
 def login():
     if request.method == "POST":

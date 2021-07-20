@@ -7,42 +7,153 @@ Add/Modify/Search Sales Record
 
 
 {% block content%}
+<form action="#" method="post">
+    <fieldset>
+        <legend>Sales Record Search</legend>
 
-<div class = "sales">
-    <h1 style="text-align: center">Sales Records</h1>
-    <table>
-        <tr>
-            <th>Invoice ID</th>
-            <th>Purchase Date</th>
-            <th>Vehicle Type ID</th>
-            <th>Vin</th>
-            <th>Vehicle Price</th>
-            <th>Financial Option ID</th>
-            <th>Monthy Payment Amount</th>
-            <th>Down Payment Amount</th>
-            <th>Actions</th>
-        </tr>
-        {% for sale in sales %}
+        <table>
             <tr>
-                <td>{{ sale.content }}</td>
-                <td>
-                    <a href="/delete/{{sale.id}}">Delete</a>
-                    <br>
-                    <a href="/update/{{sale.id}}">Update</a>
-                </td>
+                <td><label for="make">Vehicle Make</label></td>
+                <td><input type="radio" name="make" value="Honda" checked>Honda</input></td>
+                <td><input type="radio" name="make" value="Toyota">Toyota</input></td>
+            </tr>
+
+            <tr>
+                <td><label for="model">Vehicle Model</label></td>
+                <td colspan="3"><input type="text" name="model"></td>
+            </tr>
+
+
+            <tr>
+                <td><label for="year">Vehicle Year</label></td>
+                <td><input type="radio" name="year" value="2016">2016</input></td>
+                <td><input type="radio" name="year" value="2017">2017</input></td>
+                <td><input type="radio" name="year" value="2018">2018</input></td>
+                <td><input type="radio" name="year" value="2019">2019</input></td>
+                <td><input type="radio" name="year" value="2020">2020</input></td>
+                <input type="hidden" name="year" value=""></input>
+            </tr>
+
+            <tr>
+                <td><label for="color">Vehicle Colour</label></td>
+                <td><input type="radio" name="color" value="Black">Black</input></td>
+                <td><input type="radio" name="color" value="Blue">Blue</input></td>
+                <td><input type="radio" name="color" value="Silver">Silver</input></td>
+                <input type="hidden" name="color" value=""></input>
+            </tr>
+
+            <tr>
+                <td><label for="trim">Vehicle Trim</label></td>
+                <td colspan="3"><input type="text" name="trim"></td>
+            </tr>
+
+            <tr>
+                <td><label for="customer_fname">Customer First Name</label></td>
+                <td colspan="3"><input type="text" name="customer_fname"></td>
+            </tr>
+            <tr>
+                <td><label for="customer_lname">Customer Last Name</label></td>
+                <td colspan="3"><input type="text" name="customer_lname"></td>
+            </tr>
+
+            <tr>
+                <td><label for="vin">VIN</label></td>
+                <td colspan="3"><input type="text" name="vin"></td>
+            </tr>
+
+            <tr>
+                <td><label for="sales_fname">Sales First Name</label></td>
+                <td colspan="3"><input type="text" name="sales_fname"></td>
+            </tr>
+
+            <tr>
+                <td><label for="sales_lname">Sales Last Name</label></td>
+                <td colspan="3"><input type="text" name="sales_lname"></td>
+            </tr>
+
+
+        </table>
+        <input type="hidden" name="request_type" value="sales_new_search">
+        <input type="submit" value="Submit">
+
+
+    </fieldset>
+</form>
+
+
+{% if prev_page is defined %}
+<table>
+    <thead>
+        <tr>
+            <th>Invoice</th>
+            <th>vin</th>
+            <th>Customer First Name</th>
+            <th>Customer Last Name</th>
+            <th>Sales First Name</th>
+            <th>Sales Last Name</th>
+            <th>Type</th>
+            <th>Make</th>
+            <th>Model</th>
+            <th>Year</th>
+            <th>Color</th>
+            <th>Trim</th>
+            <th>Price</th>
+            <th>Down Payment</th>
+            <th>Monthly Payment</th>
+            <th>Financial Option</th>
+            <th>Delete</th>
+            <th>Update</th>
+
+
+        </tr>
+    </thead>
+    {% if content is defined %}
+    <tbody id="content-table">
+        {% for i in content %}
+        <tr>
+            <td>{{i[0]}}</td>
+            <td>{{i[1]}}</td>
+            <td>{{i[2]}}</td>
+            <td>{{i[3]}}</td>
+            <td>{{i[4]}}</td>
+            <td>{{i[5]}}</td>
+            <td>{{i[6]}}</td>
+            <td>{{i[7]}}</td>
+            <td>{{i[8]}}</td>
+            <td>{{i[9]}}</td>
+            <td>{{i[10]}}</td>
+            <td>{{i[11]}}</td>
+            <td>{{i[12]}}</td>
+            <td>{{i[13]}}</td>
+            <td>{{i[14]}}</td>
+            <td>{{i[15]}}</td>
+            <td><button>Delete</button></td>
+            <td><button>Edit</button></td>
+
+        </tr>
         {% endfor %}
+    </tbody>
+    {% endif %}
+</table>
 
-        
-        <!--work in progress. add, modify, search records. create update page-->
-        <!--connect with webpage.py-->
-    </table>
-    <div class="form">
-        <form action="/" method="POST">
-            <input type="text" name="content" id="content">
-            <input type="submit" value="Add Sales Record">
-        </form>
-    </div>
 
+<div class="page_button" style="margin: 0 auto; display:inline;">
+    <form action="#" method="POST" style="margin: 0 auto;display: inline;">
+        <input type="hidden" name="page" value={{prev_page}}>
+        <input type="hidden" name="request_type" value="sales_continue_search">
+        <input type="submit" value="Prev">
+    </form>
+
+    Page {{current_page}}
+
+    <form action="#" method="POST" style="margin: 0 auto;display: inline;">
+        <input type="hidden" name="page" value={{next_page}}>
+        <input type="hidden" name="request_type" value="sales_continue_search">
+        <input type="submit" value="Next">
+    </form>
 </div>
+<br>
+
+{% endif %}
 
 {% endblock %}
