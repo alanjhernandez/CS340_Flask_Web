@@ -233,7 +233,7 @@ Vehicle Inventory
 
     <div class="page_button" style="margin: 0 auto; display:inline;">
         <form action="#" method="POST" style="margin: 0 auto;display: inline;">
-            <input type="hidden" name="page_num" value={{prev_page}}>
+            <input type="hidden" name="page" value={{prev_page}}>
             <input type="hidden" name="request_type" value="continue_search">
             <input type="submit" value="Prev">
         </form>
@@ -241,7 +241,7 @@ Vehicle Inventory
         Page {{current_page}}
 
         <form action="#" method="POST" style="margin: 0 auto;display: inline;">
-            <input type="hidden" name="page_num" value={{next_page}}>
+            <input type="hidden" name="page" value={{next_page}}>
             <input type="hidden" name="request_type" value="continue_search">
             <input type="submit" value="Next">
         </form>

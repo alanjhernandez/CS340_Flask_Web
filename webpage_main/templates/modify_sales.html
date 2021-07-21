@@ -4,6 +4,9 @@
 Add/Modify/Search Sales Record
 {% endblock %}
 
+{% block style%}
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename = 'sales.css')}}">
+{% endblock %}
 
 
 {% block content%}
@@ -87,10 +90,8 @@ Add/Modify/Search Sales Record
         <tr>
             <th>Invoice</th>
             <th>vin</th>
-            <th>Customer First Name</th>
-            <th>Customer Last Name</th>
-            <th>Sales First Name</th>
-            <th>Sales Last Name</th>
+            <th>Customer Name</th>
+            <th>Sales Name</th>
             <th>Type</th>
             <th>Make</th>
             <th>Model</th>
@@ -103,6 +104,7 @@ Add/Modify/Search Sales Record
             <th>Financial Option</th>
             <th>Delete</th>
             <th>Update</th>
+            <th>Payment Schedule</th>
 
 
         </tr>
@@ -113,10 +115,8 @@ Add/Modify/Search Sales Record
         <tr>
             <td>{{i[0]}}</td>
             <td>{{i[1]}}</td>
-            <td>{{i[2]}}</td>
-            <td>{{i[3]}}</td>
-            <td>{{i[4]}}</td>
-            <td>{{i[5]}}</td>
+            <td> <button class="person_btn" onclick="check_customer('{{i[16]}}');">{{i[3] + ", " + i[2]}}</button></td>
+            <td> <button class="person_btn" onclick="check_sales('{{i[17]}}');">{{i[5] + ", " + i[4]}}</button></td>
             <td>{{i[6]}}</td>
             <td>{{i[7]}}</td>
             <td>{{i[8]}}</td>
@@ -129,6 +129,7 @@ Add/Modify/Search Sales Record
             <td>{{i[15]}}</td>
             <td><button>Delete</button></td>
             <td><button>Edit</button></td>
+            <td><button onclick="payment_schedule('{{i[0]}}');">Payments</button></td>
 
         </tr>
         {% endfor %}
@@ -155,5 +156,360 @@ Add/Modify/Search Sales Record
 <br>
 
 {% endif %}
+
+
+<div id="customer_modal" class="customer_modal">
+
+    <!-- Modal content -->
+    <div class="modal-content">
+        <span class="close">&times;</span>
+
+        <h1>Customer Information</h1>
+
+        <table>
+
+            <tr>
+                <td>Customer ID: </td>
+                <td id="customer-id"></td>
+            </tr>
+
+            <tr>
+                <td>First Name:</td>
+                <td id="customer-first-name"></td>
+            </tr>
+
+            <tr>
+                <td>Last Name:</td>
+                <td id="customer-last-name"></td>
+            </tr>
+
+
+            <tr>
+                <td>Date of Birth:</td>
+                <td id="customer-dob"></td>
+            </tr>
+
+            <tr>
+                <td>Address:</td>
+                <td id="customer-address"></td>
+            </tr>
+
+            <tr>
+                <td>Phone:</td>
+                <td id="customer-phone"></td>
+            </tr>
+
+
+            <tr>
+                <td>SSN:</td>
+                <td id="customer-ssn"></td>
+            </tr>
+
+
+        </table>
+
+
+    </div>
+
+</div>
+
+
+<div id="sales_modal" class="sales_modal">
+
+    <!-- Modal content -->
+    <div class="modal-content">
+        <span class="close">&times;</span>
+
+        <h1>Sales Information</h1>
+
+        <table>
+
+            <tr>
+                <td>Sales ID: </td>
+                <td id="sales-id"></td>
+            </tr>
+
+            <tr>
+                <td>First Name:</td>
+                <td id="sales-first-name"></td>
+            </tr>
+
+            <tr>
+                <td>Last Name:</td>
+                <td id="sales-last-name"></td>
+            </tr>
+
+
+            <tr>
+                <td>Primary Location:</td>
+                <td id="sales-location"></td>
+            </tr>
+
+
+        </table>
+
+
+    </div>
+
+</div>
+
+
+<div id="payment_modal" class="payment_modal">
+
+    <!-- Modal content -->
+    <div class="modal-content">
+        <span class="close">&times;</span>
+
+        <h1>Payment Schedule</h1>
+        <div id="payment_status"></div>
+        <div id="payment_record"></div>
+
+    </div>
+
+</div>
+
+
+
+
+<script>
+    var customer_modal = document.getElementById("customer_modal");
+    var customer_span = document.getElementsByClassName("close")[0];
+    var sales_modal = document.getElementById("sales_modal");
+    var sales_span = document.getElementsByClassName("close")[1];
+    var payment_modal = document.getElementById("payment_modal");
+    var payment_span = document.getElementsByClassName("close")[2];
+
+
+
+    customer_span.onclick = function () {
+        customer_modal.style.display = "none";
+    }
+
+    sales_span.onclick = function () {
+        sales_modal.style.display = "none";
+    }
+
+    payment_span.onclick = function () {
+        payment_modal.style.display = "none";
+    }
+
+
+
+    window.onclick = function (event) {
+
+        if (event.target == customer_modal) {
+            customer_modal.style.display = "none";
+        }
+
+        if (event.target == sales_modal) {
+            sales_modal.style.display = "none";
+        }
+
+        if (event.target == payment_modal) {
+            payment_modal.style.display = "none";
+        }
+
+
+    }
+
+
+
+
+
+    function check_customer(customerid) {
+        console.log(customerid)
+        customer_modal.style.display = "block";
+
+
+
+        var req = new XMLHttpRequest();
+        var customer_request = {}
+        customer_request.request_type = "customer_check"
+        customer_request.dw_customer_id = customerid
+        console.log(customer_request)
+
+        req.open('POST', '/modsales', true);
+        req.setRequestHeader('Content-Type', 'application/json');
+        req.addEventListener('load', function () {
+            if (req.status >= 200 && req.status < 400) {
+                var response = JSON.parse(req.responseText);
+                console.log(response)
+                console.log("Customer Info Request Success!")
+                document.getElementById("customer-id").textContent = response[0]
+                document.getElementById("customer-first-name").textContent = response[1]
+                document.getElementById("customer-last-name").textContent = response[2]
+                document.getElementById("customer-dob").textContent = response[3]
+                document.getElementById("customer-address").textContent = response[4] + " , " + response[5] + " , " + response[8] + " , " + response[7] + " , " + response[6]
+                document.getElementById("customer-phone").textContent = response[9]
+                document.getElementById("customer-ssn").textContent = response[10]
+
+
+
+            } else {
+                console.log("Error in network request: " + req.statusText);
+            }
+        });
+        req.send(JSON.stringify(customer_request));
+        event.preventDefault();
+
+
+    }
+
+
+
+    function check_sales(salesid) {
+        console.log(salesid)
+        sales_modal.style.display = "block";
+
+        var req = new XMLHttpRequest();
+        var sales_request = {}
+        sales_request.request_type = "sales_check"
+        sales_request.dw_sales_rep_id = salesid
+        console.log(sales_request)
+
+        req.open('POST', '/modsales', true);
+        req.setRequestHeader('Content-Type', 'application/json');
+        req.addEventListener('load', function () {
+            if (req.status >= 200 && req.status < 400) {
+                var response = JSON.parse(req.responseText);
+                console.log(response)
+                console.log("Sales Info Request Success!")
+
+                document.getElementById("sales-id").textContent = response[0]
+                document.getElementById("sales-first-name").textContent = response[1]
+                document.getElementById("sales-last-name").textContent = response[2]
+                document.getElementById("sales-location").textContent = response[3]
+
+
+            } else {
+                console.log("Error in network request: " + req.statusText);
+            }
+        });
+        req.send(JSON.stringify(sales_request));
+        event.preventDefault();
+
+
+    }
+
+
+    function payment_schedule(invoiceid) {
+        console.log(invoiceid)
+        payment_modal.style.display = "block";
+
+        var req = new XMLHttpRequest();
+        var payment_request = {}
+        payment_request.request_type = "payment_check"
+        payment_request.dw_invoice_id = invoiceid
+        console.log(payment_request)
+
+        req.open('POST', '/modsales', true);
+        req.setRequestHeader('Content-Type', 'application/json');
+        req.addEventListener('load', function () {
+            if (req.status >= 200 && req.status < 400) {
+                var response = JSON.parse(req.responseText);
+                console.log(response)
+                console.log("Payment Info Request Success!")
+
+                var payment_status = document.getElementById("payment_status")
+                if (response["Full"] == "Y") {
+                    payment_status.textContent = "The vehicle is paid full."
+                } else {
+                    payment_status.textContent = "The vehicle is not paid full."
+                }
+
+
+                var payment_record = document.getElementById("payment_record")
+                payment_record.innerHTML = ""
+
+                var payment_table = document.createElement("table")
+                payment_record.appendChild(payment_table)
+
+                var payment_thead = document.createElement("thead")
+                payment_table.appendChild(payment_thead)
+
+                var payment_header = document.createElement("tr")
+                payment_thead.appendChild(payment_header)
+
+                var payment_td = document.createElement("td")
+                payment_td.textContent = "Payment ID"
+                payment_header.appendChild(payment_td)
+
+                var payment_td = document.createElement("td")
+                payment_td.textContent = "Invoice ID"
+                payment_header.appendChild(payment_td)
+
+                var payment_td = document.createElement("td")
+                payment_td.textContent = "Payment Date"
+                payment_header.appendChild(payment_td)
+
+                var payment_td = document.createElement("td")
+                payment_td.textContent = "nth Payment"
+                payment_header.appendChild(payment_td)
+
+                var payment_td = document.createElement("td")
+                payment_td.textContent = "Payment Amount"
+                payment_header.appendChild(payment_td)
+
+
+                var payment_td = document.createElement("td")
+                payment_td.textContent = "Balance"
+                payment_header.appendChild(payment_td)
+
+                var payment_tbody = document.createElement("tbody")
+                payment_table.appendChild(payment_tbody)
+
+                for (i in response.Data) {
+
+                    console.log(response.Data[i])
+
+                    var payment_schedule = document.createElement("tr")
+                    payment_tbody.appendChild(payment_schedule)
+
+                    var payment_td = document.createElement("td")
+                    payment_td.textContent = response.Data[i][0]
+                    payment_schedule.appendChild(payment_td)
+
+                    var payment_td = document.createElement("td")
+                    payment_td.textContent = response.Data[i][1]
+                    payment_schedule.appendChild(payment_td)
+
+                    var payment_td = document.createElement("td")
+                    payment_td.textContent = response.Data[i][2]
+                    payment_schedule.appendChild(payment_td)
+
+                    var payment_td = document.createElement("td")
+                    payment_td.textContent = response.Data[i][3]
+                    payment_schedule.appendChild(payment_td)
+
+                    var payment_td = document.createElement("td")
+                    payment_td.textContent = response.Data[i][4]
+                    payment_schedule.appendChild(payment_td)
+
+                    var payment_td = document.createElement("td")
+                    payment_td.textContent = response.Data[i][5]
+                    payment_schedule.appendChild(payment_td)
+
+
+
+                }
+
+
+            } else {
+                console.log("Error in network request: " + req.statusText);
+            }
+        });
+        req.send(JSON.stringify(payment_request));
+        event.preventDefault();
+
+    }
+
+
+</script>
+
+
+
+
+
+
 
 {% endblock %}
