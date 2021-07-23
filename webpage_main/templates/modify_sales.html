@@ -84,6 +84,8 @@ Add/Modify/Search Sales Record
 </form>
 
 
+<p><button onclick="add_new_sales();">New Record</button></p>
+
 {% if prev_page is defined %}
 <table>
     <thead>
@@ -127,7 +129,7 @@ Add/Modify/Search Sales Record
             <td>{{i[13]}}</td>
             <td>{{i[14]}}</td>
             <td>{{i[15]}}</td>
-            <td><button>Delete</button></td>
+            <td><button onclick="delete_sales('{{i[0]}}');">Delete</button></td>
             <td><button>Edit</button></td>
             <td><button onclick="payment_schedule('{{i[0]}}');">Payments</button></td>
 
@@ -269,6 +271,96 @@ Add/Modify/Search Sales Record
 </div>
 
 
+<div id="add_modal" class="add_modal">
+
+    <!-- Modal content -->
+    <div class="modal-content">
+        <span class="close">&times;</span>
+
+        <form action="#" method="POST">
+            <fieldset>
+
+                <legend>Sales Information</legend>
+
+                <table>
+                    <tr>
+                        <td>Customer ID </td>
+                        <td colspan="2"><input type="number" id="add-sales-customerid" onfocusout="check_customer_id()"
+                                name="customerid" required></input></td>
+                        <td colspan="3" id="add-sales-customer-name"></td>
+                    </tr>
+
+                    <tr>
+                        <td>Sales ID </td>
+                        <td colspan="2"><input type="number" id="add-sales-salesid" onfocusout="check_sales_id()"
+                                name="salesid" required></input>
+                        </td>
+                        <td colspan="3" id="add-sales-sales-name"></td>
+                    </tr>
+
+                    <tr>
+                        <td>VIN</td>
+                        <td colspan="2"><input type="text" id="add-sales-vin" onfocusout="check_vin()" name="vin"
+                                required></input>
+                        </td>
+                        <td colspan="3" id="add-sales-veh-description"></td>
+                    </tr>
+
+                    <tr>
+                        <td>Price</td>
+                        <td colspan="2"> <input type="number" id='add-sales-price' name="price" readonly></td>
+
+                    </tr>
+
+                    <tr>
+                        <td>Financial Option</td>
+                        <td colspan="2"><input list="financial-arrangement" id="add-sales-financial"
+                                name="financial_option" onfocusout="check_financial()" required></input>
+                            <datalist id="financial-arrangement">
+
+                            </datalist>
+                        </td>
+
+                    <tr>
+                        <td>Down Payment</td>
+                        <td colspan="2"><input type="number" id="add-sales-dp" min=0 onfocusout="check_dp()"
+                                name="down_payment" required></input>
+                        </td>
+                    </tr>
+
+
+                    <tr>
+                        <td>Monthly Payment</td>
+                        <td colspan="2"> <input type="number" id='add-sales-monthly-payment' name="monthly_payment"
+                                readonly></td>
+
+                    </tr>
+
+                    <tr>
+                        <td>Purchase Date</td>
+                        <td colspan="2"> <input type="date" name="date"></td>
+
+                    </tr>
+
+
+                </table>
+
+                <input type="hidden" name="page" value="{{ current_page }}">
+                <input type="hidden" name="type" id='add-sales-types'>
+                <input type="hidden" name="request_type" value="sales_add">
+                <input type="submit">
+
+
+            </fieldset>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+
 
 
 <script>
@@ -278,6 +370,14 @@ Add/Modify/Search Sales Record
     var sales_span = document.getElementsByClassName("close")[1];
     var payment_modal = document.getElementById("payment_modal");
     var payment_span = document.getElementsByClassName("close")[2];
+    var add_modal = document.getElementById("add_modal");
+    var add_span = document.getElementsByClassName("close")[3];
+
+    var vin_exist_bool = false
+    var customer_exist_bool = false
+    var sales_exist_bool = false
+    var financial_exist_bool = false
+    var dp_exist_bool = false
 
 
 
@@ -290,6 +390,10 @@ Add/Modify/Search Sales Record
     }
 
     payment_span.onclick = function () {
+        payment_modal.style.display = "none";
+    }
+
+    add_span.onclick = function () {
         payment_modal.style.display = "none";
     }
 
@@ -308,13 +412,275 @@ Add/Modify/Search Sales Record
         if (event.target == payment_modal) {
             payment_modal.style.display = "none";
         }
+        if (event.target == add_modal) {
+            add_modal.style.display = "none";
+        }
 
+    }
+
+
+    window.addEventListener('load', (event) => {
+        pull_financial()
+
+
+    });
+
+
+
+    function refresh_monthly_payment() {
+        var vehicle_price = document.getElementById("add-sales-price").value
+        var down_payment = document.getElementById("add-sales-dp").value
+        var dw_fincl_option_id = document.getElementById("add-sales-financial").value
+
+
+
+        var req = new XMLHttpRequest();
+        var financial_request = {}
+        financial_request.request_type = "financial_check"
+        financial_request.dw_fincl_option_id = dw_fincl_option_id
+        console.log(financial_request)
+
+        req.open('POST', '/modsales', true);
+        req.setRequestHeader('Content-Type', 'application/json');
+        req.addEventListener('load', function () {
+            if (req.status >= 200 && req.status < 400) {
+                var response = JSON.parse(req.responseText);
+                console.log(response)
+                console.log("Financial Info Request Success!")
+
+                var x = Math.pow(1 + response[1], response[2]);
+                var monthly_payment = ((vehicle_price - down_payment) * x * response[1]) / (x - 1);
+
+                document.getElementById("add-sales-monthly-payment").value = monthly_payment
+
+            } else {
+                console.log("Error in network request: " + req.statusText);
+            }
+        });
+        req.send(JSON.stringify(financial_request));
+        event.preventDefault();
 
     }
 
 
 
+    function pull_financial() {
+        var financial_option_list = document.getElementById("financial-arrangement");
 
+
+        var req = new XMLHttpRequest();
+        var financial_request = {}
+        financial_request.request_type = "financial_pull"
+        console.log(financial_request)
+
+        req.open('POST', '/modsales', true);
+        req.setRequestHeader('Content-Type', 'application/json');
+        req.addEventListener('load', function () {
+            if (req.status >= 200 && req.status < 400) {
+                var response = JSON.parse(req.responseText);
+                console.log(response)
+                console.log("Financial Info Request Success!")
+                financial_option_list.innerHTML = ''
+
+                for (i = 0; i < response.length; i++) {
+                    console.log(i)
+                    var option_tag = document.createElement("option")
+                    option_tag.innerHTML = response[i][1] + "/" + response[i][2]
+                    option_tag.value = response[i][0]
+                    financial_option_list.appendChild(option_tag)
+                }
+
+            } else {
+                console.log("Error in network request: " + req.statusText);
+            }
+        });
+        req.send(JSON.stringify(financial_request));
+        event.preventDefault();
+
+
+    }
+
+
+    function check_financial() {
+        var financial_option = document.getElementById("add-sales-financial").value
+
+        if (financial_option != "") {
+            financial_exist_bool = true
+        } else {
+            financial_exist_bool = false
+        }
+
+        if (sales_exist_bool == true & customer_exist_bool == true & vin_exist_bool == true & financial_exist_bool == true & dp_exist_bool == true) {
+            refresh_monthly_payment()
+        }
+    }
+
+
+    function check_dp() {
+        var dp = document.getElementById("add-sales-dp").value
+
+        if (dp != "") {
+            dp_exist_bool = true
+        } else {
+            dp_exist_bool = false
+        }
+
+        if (sales_exist_bool == true & customer_exist_bool == true & vin_exist_bool == true & financial_exist_bool == true & dp_exist_bool == true) {
+            refresh_monthly_payment()
+        }
+    }
+
+    function check_vin() {
+        var vin = document.getElementById("add-sales-vin").value;
+        var vin_description = document.getElementById("add-sales-veh-description");
+        var vin_price = document.getElementById("add-sales-price");
+        var vin_type = document.getElementById("add-sales-types");
+
+        if (vin != "") {
+            console.log(vin)
+
+
+            var req = new XMLHttpRequest();
+            var sales_request = {}
+            sales_request.request_type = "vehicle_check"
+            sales_request.vin = vin
+            console.log(sales_request)
+
+            req.open('POST', '/modsales', true);
+            req.setRequestHeader('Content-Type', 'application/json');
+            req.addEventListener('load', function () {
+                if (req.status >= 200 && req.status < 400) {
+                    var response = JSON.parse(req.responseText);
+                    console.log(response)
+                    console.log("Vehicle Info Request Success!")
+                    if (response == "-1") {
+                        vin_description.textContent = "No vehicle information"
+                        vin_exist_bool = false
+                    } else {
+                        vin_description.textContent = response[1] + "-" + response[2] + "-" + response[3] + "-" + response[4] + "-" + response[5] + "-" + response[6]
+                        vin_price.value = response[7]
+                        vin_type.value = response[0]
+                        vin_exist_bool = true
+                    }
+
+                    if (sales_exist_bool == true & customer_exist_bool == true & vin_exist_bool == true & financial_exist_bool == true & dp_exist_bool == true) {
+                        refresh_monthly_payment()
+                    }
+
+                } else {
+                    console.log("Error in network request: " + req.statusText);
+                }
+            });
+            req.send(JSON.stringify(sales_request));
+            event.preventDefault();
+
+
+
+        }
+
+    }
+
+
+    function check_customer_id() {
+        var customerid = document.getElementById("add-sales-customerid").value;
+        var customer_name = document.getElementById("add-sales-customer-name");
+
+        if (customerid != "") {
+            console.log(customerid)
+
+
+            var req = new XMLHttpRequest();
+            var customer_request = {}
+            customer_request.request_type = "customer_check"
+            customer_request.dw_customer_id = customerid
+            console.log(customer_request)
+
+            req.open('POST', '/modsales', true);
+            req.setRequestHeader('Content-Type', 'application/json');
+            req.addEventListener('load', function () {
+                if (req.status >= 200 && req.status < 400) {
+                    var response = JSON.parse(req.responseText);
+                    console.log(response)
+                    console.log("Customer Info Request Success!")
+
+                    if (response == "-1") {
+                        customer_name.textContent = "No customer Information."
+                        customer_exist_bool = false
+                    } else {
+                        customer_name.textContent = "Customer ID exists - Customer Name:" + response[2] + ", " + response[1] + "(SSN: " + response[10] + ")"
+                        customer_exist_bool = true
+                    }
+
+
+                    if (sales_exist_bool == true & customer_exist_bool == true & vin_exist_bool == true & financial_exist_bool == true & dp_exist_bool == true) {
+                        refresh_monthly_payment()
+                    }
+
+
+                } else {
+                    console.log("Error in network request: " + req.statusText);
+                }
+            });
+            req.send(JSON.stringify(customer_request));
+            event.preventDefault();
+
+
+
+        }
+
+    }
+
+
+    function check_sales_id() {
+        var salesid = document.getElementById("add-sales-salesid").value;
+        var sales_name = document.getElementById("add-sales-sales-name");
+
+        if (salesid != "") {
+            console.log(salesid)
+
+
+            var req = new XMLHttpRequest();
+            var sales_request = {}
+            sales_request.request_type = "sales_check"
+            sales_request.dw_sales_rep_id = salesid
+            console.log(sales_request)
+
+            req.open('POST', '/modsales', true);
+            req.setRequestHeader('Content-Type', 'application/json');
+            req.addEventListener('load', function () {
+                if (req.status >= 200 && req.status < 400) {
+                    var response = JSON.parse(req.responseText);
+                    console.log(response)
+                    console.log("Sales Info Request Success!")
+                    if (response == "-1") {
+                        sales_name.textContent = "No sales representatives information"
+                        sales_exist_bool = false
+                    } else {
+                        sales_name.textContent = "Sales ID exists - Sales Name:" + response[2] + ", " + response[1]
+                        sales_exist_bool = true
+                    }
+
+                    if (sales_exist_bool == true & customer_exist_bool == true & vin_exist_bool == true & financial_exist_bool == true & dp_exist_bool == true) {
+                        refresh_monthly_payment()
+                    }
+
+                } else {
+                    console.log("Error in network request: " + req.statusText);
+                }
+            });
+            req.send(JSON.stringify(sales_request));
+            event.preventDefault();
+
+
+
+        }
+
+    }
+
+
+    function add_new_sales() {
+        add_modal.style.display = "block";
+    }
 
     function check_customer(customerid) {
         console.log(customerid)
@@ -355,8 +721,6 @@ Add/Modify/Search Sales Record
 
     }
 
-
-
     function check_sales(salesid) {
         console.log(salesid)
         sales_modal.style.display = "block";
@@ -390,7 +754,6 @@ Add/Modify/Search Sales Record
 
 
     }
-
 
     function payment_schedule(invoiceid) {
         console.log(invoiceid)
@@ -502,6 +865,36 @@ Add/Modify/Search Sales Record
         event.preventDefault();
 
     }
+
+    function delete_sales(invoice) {
+
+        console.log("{{ current_page }}")
+        var req = new XMLHttpRequest();
+        var sales_request = {}
+        sales_request.request_type = "sales_delete"
+        sales_request.dw_invoice_id = invoice
+        sales_request.page = "{{ current_page }}"
+        console.log(sales_request)
+
+        req.open('POST', '/modsales', true);
+        req.setRequestHeader('Content-Type', 'application/json');
+        req.addEventListener('load', function () {
+            if (req.status >= 200 && req.status < 400) {
+                console.log("Delete Request Success!")
+
+                location.reload();
+
+
+            } else {
+                console.log("Error in network request: " + req.statusText);
+            }
+        });
+        req.send(JSON.stringify(sales_request));
+        event.preventDefault();
+
+
+    }
+
 
 
 </script>

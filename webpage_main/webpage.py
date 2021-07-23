@@ -4,6 +4,7 @@ from db_credentials import host, user, passwd, db
 from flask_paginate import Pagination
 from json import dumps
 from datetime import datetime
+import numpy as np
 
 app = Flask(__name__)
 app.secret_key = "3546*&^*dsflk1234"
@@ -154,8 +155,6 @@ def vehicle_inventory():
             status_msg = "Record Deleted."
             
             return render_template("vehicle_inventory.html", content = inventory_result, prev_page = prev_page, current_page = page, next_page = next_page ) 
-
-
 
         elif request.method  == "POST" and request.json["request_type"] == "update_read":
             db = connect_to_database()
@@ -733,10 +732,14 @@ def modify_sales():
             results = execute_query(db, query)
             customer_info_list = [list(r) for r in results.fetchall()]
 
-            customer_info_list[0][3] = customer_info_list[0][3].strftime("%Y-%m-%d")
+            if len(customer_info_list) > 0:
+                customer_info_list[0][3] = customer_info_list[0][3].strftime("%Y-%m-%d")
 
             print(customer_info_list)
-            return jsonify(customer_info_list[0])
+            if len(customer_info_list) > 0:
+                return jsonify(customer_info_list[0])
+            else:
+                return jsonify("-1")
 
         elif request.method  == "POST" and request.json["request_type"] == "sales_check":
             
@@ -757,7 +760,79 @@ def modify_sales():
 
 
             print(sales_info_list)
-            return jsonify(sales_info_list[0])
+            if len(sales_info_list) > 0:
+                return jsonify(sales_info_list[0])
+            else:
+                return jsonify("-1")
+
+        elif request.method  == "POST" and request.json["request_type"] == "vehicle_check":
+            
+            db = connect_to_database()
+            vin = request.json["vin"] 
+            
+            query = f"""
+                    select 
+                    dw_vehicle_type_id
+                    ,vehicle_type
+                    ,vehicle_make
+                    ,vehicle_model
+                    ,vehicle_year
+                    ,vehicle_color
+                    ,vehicle_trim
+                    ,vehicle_price
+                    from Vehicle_Types 
+                    where dw_vehicle_type_id in(SELECT dw_vehicle_type_id FROM Vehicle_Inventories where vin = '{vin}' and sold_ind = '0')
+                    
+                    """
+            results = execute_query(db, query)
+            vin_list = [list(r) for r in results.fetchall()]
+
+
+            print(vin_list)
+            if len(vin_list) > 0:
+                return jsonify(vin_list[0])
+            else:
+                return jsonify("-1")
+
+        elif request.method  == "POST" and request.json["request_type"] == "financial_pull":
+            
+            db = connect_to_database()
+            
+            query = f"""
+                    select 
+                    dw_fincl_option_id
+                    ,int_rate
+                    ,num_of_payment
+                    from Financial_Options
+                    """
+            results = execute_query(db, query)
+            financial_list = [list(r) for r in results.fetchall()]
+
+
+            print(financial_list)
+            return jsonify(financial_list)
+
+        elif request.method  == "POST" and request.json["request_type"] == "financial_check":
+            
+            db = connect_to_database()
+            dw_fincl_option_id = request.json["dw_fincl_option_id"] 
+            
+            query = f"""
+                    select 
+                    dw_fincl_option_id
+                    ,int_rate
+                    ,num_of_payment
+                    from Financial_Options
+                    where dw_fincl_option_id = '{dw_fincl_option_id}';
+                    """
+            results = execute_query(db, query)
+            financial_list = [list(r) for r in results.fetchall()]
+
+
+            print(financial_list[0])
+            return jsonify(financial_list[0])
+
+
 
         elif request.method  == "POST" and request.json["request_type"] == "payment_check":
             
@@ -790,6 +865,136 @@ def modify_sales():
             payment_json["Data"] = payment_data
 
             return jsonify(payment_json)
+
+        elif request.method  == "POST" and request.json["request_type"] == "sales_delete":
+            db = connect_to_database()
+            dw_invoice_id = request.json["dw_invoice_id"] 
+            page = int(request.json["page"])
+
+            query = f"""
+                    delete from Sales_Records
+                    where dw_invoice_id = '{dw_invoice_id}'
+                    """
+            results = execute_query(db, query)
+            
+
+
+            make = session["sales_search"]["key"]["make"] 
+            model = session["sales_search"]["key"]["model"]
+            year = session["sales_search"]["key"]["year"]
+            color = session["sales_search"]["key"]["color"] 
+            trim = session["sales_search"]["key"]["trim"]
+            vin = session["sales_search"]["key"]["vin"]
+            clname = session["sales_search"]["key"]["customer_lname"] 
+            cfname = session["sales_search"]["key"]["customer_fname"] 
+            slname = session["sales_search"]["key"]["sales_lname"] 
+            sfname = session["sales_search"]["key"]["sales_fname"] 
+
+            page = int(request.json["page"])
+            print(page)
+            nth_record = (page-1) * row_per_page + 1
+
+            query = f"""
+                    select 
+                    a.dw_invoice_id
+                    ,a.vin
+                    ,b.customer_first_name
+                    ,b.customer_last_name
+                    ,b.sales_first_name
+                    ,b.sales_last_name
+                    ,c.vehicle_type
+                    ,c.vehicle_make
+                    ,c.vehicle_model
+                    ,c.vehicle_year
+                    ,c.vehicle_color
+                    ,c.vehicle_trim
+                    ,c.vehicle_price
+                    ,down_payment_amount
+                    ,Monthly_Payment_amount
+                    ,concat(int_rate, '/', num_of_payment) as payment_arrangement
+                    ,dw_customer_id
+                    ,dw_sales_rep_id
+                    from Sales_Records as a
+
+
+                    inner join (
+                    SELECT 
+                    a.dw_invoice_id
+                    ,a.dw_customer_id
+                    ,a.dw_sales_rep_id
+                    ,b.first_name as Customer_First_Name
+                    ,b.last_name as Customer_Last_Name
+                    ,c.first_name as Sales_First_Name
+                    ,c.last_name as Sales_Last_Name
+
+
+                    FROM Customers_Salesreps as a
+
+                    inner join Customers_Info as b
+                    on a.dw_customer_id = b.dw_customer_id
+
+                    inner join Sales_Reps as c
+                    on a.dw_sales_rep_id = c.dw_sales_rep_id
+
+
+                    where c.first_name like "%%{sfname}%%"
+                    and c.last_name like "%%{slname}%%"
+                    and b.first_name like "%%{cfname}%%"
+                    and b.last_name like "%%{clname}%%"
+    
+
+                    ) as b
+                    on a.dw_invoice_id = b.dw_invoice_id
+
+
+                    inner join (
+                    SELECT 
+                    dw_vehicle_type_id
+                    ,vehicle_type
+                    ,vehicle_make
+                    ,vehicle_model
+                    ,vehicle_year
+                    ,vehicle_color
+                    ,vehicle_trim
+                    ,vehicle_price
+                    from Vehicle_Types 
+                    where vehicle_make like "%%{make}%%"
+                    and vehicle_model like "%%{model}%%"
+                    and vehicle_year like "%%{year}%%"
+                    and vehicle_color like "%%{color}%%"
+                    and vehicle_trim like "%%{trim}%%"
+
+                    ) as c
+                    on a.dw_vehicle_type_id = c.dw_vehicle_type_id
+
+                    left join Financial_Options as d
+                    on a.dw_fincl_option_id = d.dw_fincl_option_id
+
+                    where a.vin like "%%{vin}%%"
+
+
+                    order by dw_invoice_id
+                    limit {nth_record}, {row_per_page}
+                    """
+
+            results = execute_query(db, query)
+            sales_list = [list(r) for r in results.fetchall()]
+            print(sales_list)
+
+
+            if session["sales_search"]["count"] > (nth_record + row_per_page):
+                next_page = page + 1
+            else:
+                next_page = page
+
+            if (nth_record - row_per_page) > 0:
+                prev_page = page - 1
+            else:
+                prev_page = 1
+            
+            return render_template("modify_sales.html", content = sales_list, prev_page = prev_page, current_page = page, next_page = next_page) 
+
+
 
     else:
 
@@ -831,7 +1036,7 @@ def modify_sales():
                     ,c.vehicle_price
                     ,down_payment_amount
                     ,Monthly_Payment_amount
-                    ,dw_fincl_option_id
+                    ,concat(int_rate, '/', num_of_payment) as payment_arrangement
                     ,dw_customer_id
                     ,dw_sales_rep_id
                     from Sales_Records as a
@@ -885,6 +1090,10 @@ def modify_sales():
 
                     ) as c
                     on a.dw_vehicle_type_id = c.dw_vehicle_type_id
+
+
+                    left join Financial_Options as d
+                    on a.dw_fincl_option_id = d.dw_fincl_option_id
 
                     where a.vin like "%%{vin}%%"
 
@@ -1032,7 +1241,7 @@ def modify_sales():
                     ,c.vehicle_price
                     ,down_payment_amount
                     ,Monthly_Payment_amount
-                    ,dw_fincl_option_id
+                    ,concat(int_rate, '/', num_of_payment) as payment_arrangement
                     ,dw_customer_id
                     ,dw_sales_rep_id
                     from Sales_Records as a
@@ -1056,6 +1265,7 @@ def modify_sales():
 
                     inner join Sales_Reps as c
                     on a.dw_sales_rep_id = c.dw_sales_rep_id
+
 
                     where c.first_name like "%%{sfname}%%"
                     and c.last_name like "%%{slname}%%"
@@ -1087,6 +1297,9 @@ def modify_sales():
                     ) as c
                     on a.dw_vehicle_type_id = c.dw_vehicle_type_id
 
+                    left join Financial_Options as d
+                    on a.dw_fincl_option_id = d.dw_fincl_option_id
+
                     where a.vin like "%%{vin}%%"
 
 
@@ -1111,15 +1324,163 @@ def modify_sales():
             
             return render_template("modify_sales.html", content = sales_list, prev_page = prev_page, current_page = page, next_page = next_page, status_msg = "" ) 
 
+        elif request.method == "POST" and request.form["request_type"] == "sales_add":
+            db = connect_to_database()
 
 
+            dw_customer_id = request.form["customerid"] 
+            dw_sales_rep_id = request.form["salesid"] 
+            vin = request.form["vin"]
+            price = request.form["price"] 
+            dw_fincl_option_id = request.form["financial_option"] 
+            down_payment = request.form["down_payment"] 
+            monthly_payment = request.form["monthly_payment"] 
+            dw_vehicle_type_id = request.form["type"] 
+            purchase_date = request.form["date"] 
 
 
+            query = f"""
+                    INSERT INTO Sales_Records (purchase_date, dw_vehicle_type_id, vin, vehicle_price, dw_fincl_option_id, monthly_payment_amount, down_payment_amount) VALUES ("{purchase_date}","{dw_vehicle_type_id}","{vin}","{price}","{dw_fincl_option_id}","{monthly_payment}","{down_payment}");
+                    """
+            print(query)
+
+            results = execute_query(db, query)    
 
 
+            query = f"""
+                    UPDATE Vehicle_Inventories 
+                    SET sold_ind = '1'
+                    where vin = '{vin}'
+                    """
+            print(query)
+
+            results = execute_query(db, query)     
+
+            query = f"""
+                    INSERT INTO Customers_Salesreps (dw_customer_id, dw_invoice_id, dw_sales_rep_id) VALUES ("{dw_customer_id}",(select dw_invoice_id from Sales_Records where vin = '{vin}'),"{dw_sales_rep_id}");
+                    """
+            print(query)
+
+            results = execute_query(db, query)     
 
 
+            if "sales_search" in session:
+                make = session["sales_search"]["key"]["make"] 
+                model = session["sales_search"]["key"]["model"]
+                year = session["sales_search"]["key"]["year"]
+                color = session["sales_search"]["key"]["color"] 
+                trim = session["sales_search"]["key"]["trim"]
+                vin = session["sales_search"]["key"]["vin"]
+                clname = session["sales_search"]["key"]["customer_lname"] 
+                cfname = session["sales_search"]["key"]["customer_fname"] 
+                slname = session["sales_search"]["key"]["sales_lname"] 
+                sfname = session["sales_search"]["key"]["sales_fname"] 
 
+                page = int(request.form["page"])
+                print(page)
+                nth_record = (page-1) * row_per_page + 1
+
+                query = f"""
+                        select 
+                        a.dw_invoice_id
+                        ,a.vin
+                        ,b.customer_first_name
+                        ,b.customer_last_name
+                        ,b.sales_first_name
+                        ,b.sales_last_name
+                        ,c.vehicle_type
+                        ,c.vehicle_make
+                        ,c.vehicle_model
+                        ,c.vehicle_year
+                        ,c.vehicle_color
+                        ,c.vehicle_trim
+                        ,c.vehicle_price
+                        ,down_payment_amount
+                        ,Monthly_Payment_amount
+                        ,concat(int_rate, '/', num_of_payment) as payment_arrangement
+                        ,dw_customer_id
+                        ,dw_sales_rep_id
+                        from Sales_Records as a
+
+
+                        inner join (
+                        SELECT 
+                        a.dw_invoice_id
+                        ,a.dw_customer_id
+                        ,a.dw_sales_rep_id
+                        ,b.first_name as Customer_First_Name
+                        ,b.last_name as Customer_Last_Name
+                        ,c.first_name as Sales_First_Name
+                        ,c.last_name as Sales_Last_Name
+
+
+                        FROM Customers_Salesreps as a
+
+                        inner join Customers_Info as b
+                        on a.dw_customer_id = b.dw_customer_id
+
+                        inner join Sales_Reps as c
+                        on a.dw_sales_rep_id = c.dw_sales_rep_id
+
+
+                        where c.first_name like "%%{sfname}%%"
+                        and c.last_name like "%%{slname}%%"
+                        and b.first_name like "%%{cfname}%%"
+                        and b.last_name like "%%{clname}%%"
+        
+
+                        ) as b
+                        on a.dw_invoice_id = b.dw_invoice_id
+
+
+                        inner join (
+                        SELECT 
+                        dw_vehicle_type_id
+                        ,vehicle_type
+                        ,vehicle_make
+                        ,vehicle_model
+                        ,vehicle_year
+                        ,vehicle_color
+                        ,vehicle_trim
+                        ,vehicle_price
+                        from Vehicle_Types 
+                        where vehicle_make like "%%{make}%%"
+                        and vehicle_model like "%%{model}%%"
+                        and vehicle_year like "%%{year}%%"
+                        and vehicle_color like "%%{color}%%"
+                        and vehicle_trim like "%%{trim}%%"
+
+                        ) as c
+                        on a.dw_vehicle_type_id = c.dw_vehicle_type_id
+
+                        left join Financial_Options as d
+                        on a.dw_fincl_option_id = d.dw_fincl_option_id
+
+                        where a.vin like "%%{vin}%%"
+
+
+                        order by dw_invoice_id
+                        limit {nth_record}, {row_per_page}
+                        """
+
+                results = execute_query(db, query)
+                sales_list = [list(r) for r in results.fetchall()]
+                print(sales_list)
+
+
+                if session["sales_search"]["count"] > (nth_record + row_per_page):
+                    next_page = page + 1
+                else:
+                    next_page = page
+
+                if (nth_record - row_per_page) > 0:
+                    prev_page = page - 1
+                else:
+                    prev_page = 1
+                
+                return render_template("modify_sales.html", content = sales_list, prev_page = prev_page, current_page = page, next_page = next_page, status_msg = "" ) 
+            else:
+                return render_template("modify_sales.html") 
 
 
 @app.route("/testdrive")
