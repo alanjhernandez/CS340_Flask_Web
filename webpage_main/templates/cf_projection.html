@@ -5,9 +5,184 @@ Cashflow Projection
 {% endblock %}
 
 
+{% block style%}
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename = 'report.css')}}">
+{% endblock %}
+
+
 
 {% block content%}
 
-This is cash flow projection
+
+<form action="#" method="POST">
+    <fieldset>
+        <legend>Store location and Date</legend>
+
+
+        <table>
+
+            <tr>
+                <td>
+                    Store Location
+                </td>
+                <td>
+                    <input list="store-list" id="store_location" name="store_location" required></input>
+                    <datalist id="store-list">
+                    </datalist>
+                </td>
+
+            </tr>
+
+            <tr>
+                <td>
+                    Report Start Date
+                </td>
+                <td>
+                    <input type="date" name="report_start_date" id="report-start-date" required>
+                </td>
+
+            </tr>
+            <tr>
+                <td>
+                    Report End Date
+                </td>
+                <td>
+                    <input type="date" name="report_end_date" id="report-start-date" required>
+                </td>
+
+            </tr>
+        </table>
+        <input type="submit">
+        <input type="hidden" name="request_type" value="report_pull">
+    </fieldset>
+
+
+    {% if report is defined%}
+
+
+
+    <div class="row">
+        <div class="column">
+            <div id="cf_report">
+                <table>
+                    <thead>
+                        <tr>
+                            <td>Store</td>
+                            <td>Month</td>
+                            <td>Revenue</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        {% for i in report %}
+                        <tr id="cf_report">
+                            <td>{{i[0]}}</td>
+                            <td>{{i[1]}}</td>
+                            <td> {{i[2]}}</td>
+                        </tr>
+                        {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="column">
+            <div id="cf_report">
+                <table>
+                    <thead>
+                        <tr>
+                            <td>Store</td>
+                            <td>Make</td>
+                            <td>Model</td>
+                            <td>Inventory Count</td>
+                            <td>Inventory Value</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        {% for j in inventory %}
+                        <tr id="cf_report">
+                            <td>{{j[0]}}</td>
+                            <td>{{j[1]}}</td>
+                            <td> {{j[2]}}</td>
+                            <td> {{j[3]}}</td>
+                            <td> {{j[4]}}</td>
+                        </tr>
+                        {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    {% endif %}
+
+
+</form>
+
+
+
+
+
+
+
+<script>
+
+    window.addEventListener('load', (event) => {
+        pull_store()
+
+    });
+
+
+
+    function pull_store() {
+        var store_list = document.getElementById("store-list");
+
+
+        var req = new XMLHttpRequest();
+        var store_request = {}
+        store_request.request_type = "store_pull"
+        console.log(store_request)
+
+        req.open('POST', '/cfproject', true);
+        req.setRequestHeader('Content-Type', 'application/json');
+        req.addEventListener('load', function () {
+            if (req.status >= 200 && req.status < 400) {
+                var response = JSON.parse(req.responseText);
+                console.log(response)
+                console.log("Store Request Success!")
+                store_list.innerHTML = ''
+
+
+                for (i = 0; i < response.length; i++) {
+                    console.log(i)
+                    var option_tag = document.createElement("option")
+                    option_tag.innerHTML = response[i]
+                    option_tag.value = response[i]
+                    store_list.appendChild(option_tag)
+                }
+
+
+
+            } else {
+                console.log("Error in network request: " + req.statusText);
+            }
+        });
+        req.send(JSON.stringify(store_request));
+        event.preventDefault();
+
+
+    }
+
+</script>
+
+
+
+
+
+
+
+
 
 {% endblock %}

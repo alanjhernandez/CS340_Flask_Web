@@ -1648,9 +1648,104 @@ def modify_sales():
 def test_drive():
     return render_template("test_drive.html")
 
-@app.route("/cfproject")
+@app.route("/cfproject", methods = ["POST","GET"])
 def cf_projection():
-    return render_template("cf_projection.html")
+
+
+    if request.is_json:
+        if request.method  == "POST" and request.json["request_type"] == "store_pull":
+            
+            db = connect_to_database()
+            
+            query = f"""
+                    SELECT 
+                    store_location
+                    from Vehicle_Inventories
+                    group by 1
+                    """
+            results = execute_query(db, query)
+            store_list = [r[0] for r in results.fetchall()]
+
+            print(store_list)
+
+            return jsonify(store_list)
+
+    else:
+        if request.method == "GET":
+            return render_template("cf_projection.html")
+        elif request.method == "POST" and request.form["request_type"] == "report_pull":
+             
+            db = connect_to_database()
+
+            report_start_date = request.form["report_start_date"] 
+            report_end_date = request.form["report_end_date"] 
+            store_location = request.form["store_location"] 
+
+
+            query = f"""
+                    select 
+                    store_location
+                    ,eom_dt
+                    ,cast(sum(monthly_payment_amount) as decimal(15,2)) as monthly_revenue
+
+                    from (
+                    SELECT 
+                    a.vin
+                    ,store_location
+                    ,num_of_payment
+                    ,date_add(a.purchase_date , interval 1 month) as first_payment_month
+                    ,date_add(a.purchase_date, interval (b.num_of_payment + 1) month) as final_payment_month
+                    ,a.monthly_payment_amount
+                    FROM Sales_Records as a
+
+                    left join Financial_Options as b
+                    on a.dw_fincl_option_id = b.dw_fincl_option_id
+                        
+                    inner join Vehicle_Inventories as c 
+                    on a.vin = c.vin
+                    and c.store_location = '{store_location}'
+
+                    ) as a
+
+
+                    inner join eom_dt as b 
+                    on b.eom_dt between a.first_payment_month and a.final_payment_month
+                    and b.eom_dt between '{report_start_date}' and '{report_end_date}'
+
+                    group by 1,2
+                        
+                    """
+
+            results = execute_query(db, query)
+            report = [list(r) for r in results.fetchall()]
+            print(report)   
+
+            query = f"""
+                    select 
+                    store_location
+                    ,vehicle_make
+                    ,vehicle_model
+                    , count(distinct vin) as num_of_vehicle
+                    , sum(vehicle_price) as inventory_cost
+                    from Vehicle_Inventories as a 
+
+                    inner join Vehicle_Types as b 
+                    on a.dw_vehicle_type_id = b.dw_vehicle_type_id
+
+
+                    where a.store_location = '{store_location}'
+                    and a.sold_ind = '0'
+
+                    group by 1,2,3
+                        
+                    """
+
+            results = execute_query(db, query)
+            inventory = [list(r) for r in results.fetchall()]
+            print(inventory)      
+
+            return render_template("cf_projection.html", report = report, inventory = inventory)
+
 
 
 def execute_query(db_connection = None, query = None, query_params = ()):

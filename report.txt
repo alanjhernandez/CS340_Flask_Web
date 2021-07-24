@@ -1,0 +1,27 @@
+select 
+store_location
+,vin
+,eom_dt
+,monthly_payment_amount
+
+from (
+SELECT 
+a.vin
+,store_location
+,num_of_payment
+,date_add(a.purchase_date , interval 1 month) as first_payment_month
+,date_add(a.purchase_date, interval (b.num_of_payment + 1) month) as final_payment_month
+,a.monthly_payment_amount
+FROM Sales_Records as a
+
+left join Financial_Options as b
+on a.dw_fincl_option_id = b.dw_fincl_option_id
+    
+left join Vehicle_Inventories as c 
+on a.vin = c.vin
+
+) as a
+
+
+left join eom_dt as b 
+on b.eom_dt between a.first_payment_month and a.final_payment_month
