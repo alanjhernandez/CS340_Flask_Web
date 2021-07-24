@@ -4,30 +4,188 @@
 Vehicle Inventory
 {% endblock %}
 
+{% block style%}
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename = 'inventory.css')}}">
+{% endblock %}
+
 
 
 {% block content%}
 
 <form action="#" method="post">
+    <fieldset>
+        <legend>Vehicle Information</legend>
 
-    <p>Make:</p>
-    <p><input type="text" name="make"></p>
-    <p>Model:</p>
-    <p><input type="text" name="model"></p>
-    <p>year:</p>
-    <p><input type="text" name="year"></p>
-    <p>color:</p>
-    <p><input type="text" name="color"></p>
-    <p>trim:</p>
-    <p><input type="text" name="trim"></p>
+        <table>
+            <tr>
+                <td><label for="make">Vehicle Make</label></td>
+                <td><input type="radio" name="make" value="Honda" checked>Honda</input></td>
+                <td><input type="radio" name="make" value="Toyota">Toyota</input></td>
+            </tr>
 
-    <p><input type="submit" value="Submit"></p>
+            <tr>
+                <td><label for="model">Vehicle Model</label></td>
+                <td colspan="3"><input type="text" name="model"></td>
+            </tr>
 
+            <tr>
+                <td><label for="year">Vehicle Year</label></td>
+                <td><input type="radio" name="year" value="2016">2016</input></td>
+                <td><input type="radio" name="year" value="2017">2017</input></td>
+                <td><input type="radio" name="year" value="2018">2018</input></td>
+                <td><input type="radio" name="year" value="2019">2019</input></td>
+                <td><input type="radio" name="year" value="2020">2020</input></td>
+                <input type="hidden" name="year" value=""></input>
+            </tr>
+
+            <tr>
+                <td><label for="color">Vehicle Colour</label></td>
+                <td><input type="radio" name="color" value="Black">Black</input></td>
+                <td><input type="radio" name="color" value="Blue">Blue</input></td>
+                <td><input type="radio" name="color" value="Silver">Silver</input></td>
+                <input type="hidden" name="color" value=""></input>
+            </tr>
+
+            <tr>
+                <td><label for="trim">Vehicle Trim</label></td>
+                <td colspan="3"><input type="text" name="trim"></td>
+            </tr>
+
+
+
+
+        </table>
+        <input type="hidden" name="request_type" value="new_search">
+        <input type="submit" value="Submit">
+
+
+    </fieldset>
 </form>
 
+<p><button onclick="add_new_vehicle();">New Record</button></p>
 
 
-{% if prev_url is defined %}
+
+<div id="add_modal" class="add_modal">
+
+    <!-- Modal content -->
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <form action="#" method="post">
+            <fieldset>
+                <legend>New Vehicle Information</legend>
+
+                <table>
+                    <tr>
+                        <td><label for="vin">VIN</label></td>
+                        <td colspan="5"><input type="text" name="vin" id="add-vin" required minlength=17
+                                maxlength=17></input></td>
+                    </tr>
+
+                    <tr>
+                        <td><label for="type">Vehicle Type</label></td>
+                        <td><input type="radio" name="type" value="SUV" id="add-type-suv" checked>SUV</input></td>
+                        <td><input type="radio" name="type" value="SEDAN" id="add-type-sedan">Sedan</input></td>
+                        <td><input type="radio" name="type" value="Truck" id="add-type-truck">Truck</input></td>
+                    </tr>
+
+                    <tr>
+                        <td><label for="make">Vehicle Make</label></td>
+                        <td><input type="radio" name="make" value="Honda" id="add-make-honda" checked>Honda</input></td>
+                        <td><input type="radio" name="make" value="Toyota" id="add-make-toyota">Toyota</input>
+                        </td>
+                    </tr>
+
+
+                    <tr>
+                        <td><label for="model">Vehicle Model</label></td>
+                        <td colspan="5"><input type="text" name="model" id="add-model" required></td>
+                    </tr>
+
+                    <tr>
+                        <td><label for="year">Vehicle Year</label></td>
+                        <td><input type="radio" name="year" value="2016" id="add-year-2016" checked>2016</input></td>
+                        <td><input type="radio" name="year" value="2017" id="add-year-2017">2017</input></td>
+                        <td><input type="radio" name="year" value="2018" id="add-year-2018">2018</input></td>
+                        <td><input type="radio" name="year" value="2019" id="add-year-2019">2019</input></td>
+                        <td><input type="radio" name="year" value="2020" id="add-year-2020">2020</input></td>
+                    </tr>
+
+                    <tr>
+                        <td><label for="color">Vehicle Colour</label></td>
+                        <td><input type="radio" name="color" value="Black" id="add-color-black" checked>Black</input>
+                        </td>
+                        <td><input type="radio" name="color" value="Blue" id="add-color-blue">Blue</input></td>
+                        <td><input type="radio" name="color" value="Silver" id="add-color-silver">Silver</input>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td><label for="trim">Vehicle Trim</label></td>
+                        <td colspan="5"><input type="text" name="trim" id="add-trim" required></td>
+                    </tr>
+
+                    <tr>
+                        <td><label for="used">Used</label></td>
+                        <td><input type="radio" name="used" value="1" id="add-used-1">Used</input></td>
+                        <td><input type="radio" name="used" value="0" id="add-used-0" checked> New</input></td>
+                    </tr>
+
+                    <tr>
+                        <td><label for="store">Store Location</label></td>
+                        <td colspan="5"><input list="add_store_location" name="store" id="add-store" required>
+                            <datalist id="add_store_location">
+                                <option value="Portland">
+                                <option value="Salem">
+                                <option value="Eugene">
+                                <option value="Gresham">
+                                <option value="Hillsboro">
+                                <option value="Beaverton">
+                                <option value="Bend">
+                                <option value="Medford">
+                                <option value="Springfield">
+                                <option value="Corvallis">
+                                <option value="Aloha">
+                                <option value="Albany">
+                                <option value="Tigard">
+                                <option value="Lake Oswego">
+                                <option value="Keizer">
+                            </datalist>
+
+
+                        </td>
+                    </tr>
+
+
+
+                </table>
+
+                <input type="hidden" name="request_type" value="add-submit">
+                <input type="hidden" name="page" value="{{ current_page }}">
+                <input type="submit" value="Submit">
+            </fieldset>
+        </form>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<br>
+{% if prev_page is defined %}
 <div class="content-table">
     <table>
         <thead>
@@ -64,23 +222,447 @@ Vehicle Inventory
                 <td>{{i[8]}}</td>
                 <td>{{i[9]}}</td>
                 <td>{{i[10]}}</td>
-                <td><button>Delete</button></td>
-                <td><button>Edit</button></td>
-                <td><button>Record</button></td>
+                <td><button onclick="delete_inventory('{{i[0]}}');">Delete</button></td>
+                <td><button onclick="update_inventory('{{i[0]}}');">Edit</button></td>
+                <td><button onclick="test_drive_review('{{i[0]}}');">Record</button></td>
             </tr>
             {% endfor %}
         </tbody>
         {% endif %}
     </table>
 
+    <div class="page_button" style="margin: 0 auto; display:inline;">
+        <form action="#" method="POST" style="margin: 0 auto;display: inline;">
+            <input type="hidden" name="page" value={{prev_page}}>
+            <input type="hidden" name="request_type" value="continue_search">
+            <input type="submit" value="Prev">
+        </form>
 
-    <a href="{{ prev_url }}">Prev</a> <a href="{{ next_url }}">Next</a>
+        Page {{current_page}}
+
+        <form action="#" method="POST" style="margin: 0 auto;display: inline;">
+            <input type="hidden" name="page" value={{next_page}}>
+            <input type="hidden" name="request_type" value="continue_search">
+            <input type="submit" value="Next">
+        </form>
+    </div>
+    <br>
+
+
+
+
+
+
+
+    <!-- TestDrive Modal -->
+    <div id="testdrive_modal" class="testdrive_modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="testdrive_title"></h2>
+            <div id="testdrive_record"></div>
+        </div>
+
+    </div>
+
+    <!-- Update Modal -->
+    <div id="update_modal" class="update_modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <form action="#" method="post">
+                <fieldset>
+                    <legend>Vehicle Information Update</legend>
+
+                    <table>
+                        <tr>
+                            <td><label for="vin">VIN</label></td>
+                            <td colspan="5"><input type="text" name="vin" id="update-vin"></input></td>
+                        </tr>
+
+                        <tr>
+                            <td><label for="type">Vehicle Type</label></td>
+                            <td><input type="radio" name="type" value="SUV" id="update-type-suv">SUV</input></td>
+                            <td><input type="radio" name="type" value="SEDAN" id="update-type-sedan">Sedan</input></td>
+                            <td><input type="radio" name="type" value="Truck" id="update-type-truck">Truck</input></td>
+                        </tr>
+
+
+                        <tr>
+                            <td><label for="make">Vehicle Make</label></td>
+                            <td><input type="radio" name="make" value="Honda" id="update-make-honda">Honda</input></td>
+                            <td><input type="radio" name="make" value="Toyota" id="update-make-toyota">Toyota</input>
+                            </td>
+                        </tr>
+
+
+
+                        <tr>
+                            <td><label for="model">Vehicle Model</label></td>
+                            <td colspan="5"><input type="text" name="model" id="update-model"></td>
+                        </tr>
+
+                        <tr>
+                            <td><label for="year">Vehicle Year</label></td>
+                            <td><input type="radio" name="year" value="2016" id="update-year-2016">2016</input></td>
+                            <td><input type="radio" name="year" value="2017" id="update-year-2017">2017</input></td>
+                            <td><input type="radio" name="year" value="2018" id="update-year-2018">2018</input></td>
+                            <td><input type="radio" name="year" value="2019" id="update-year-2019">2019</input></td>
+                            <td><input type="radio" name="year" value="2020" id="update-year-2020">2020</input></td>
+                        </tr>
+
+                        <tr>
+                            <td><label for="color">Vehicle Colour</label></td>
+                            <td><input type="radio" name="color" value="Black" id="update-color-black">Black</input>
+                            </td>
+                            <td><input type="radio" name="color" value="Blue" id="update-color-blue">Blue</input></td>
+                            <td><input type="radio" name="color" value="Silver" id="update-color-silver">Silver</input>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td><label for="trim">Vehicle Trim</label></td>
+                            <td colspan="5"><input type="text" name="trim" id="update-trim"></td>
+                        </tr>
+
+                        <tr>
+                            <td><label for="used">Used</label></td>
+                            <td><input type="radio" name="used" value="1" id="update-used-1">Used</input></td>
+                            <td><input type="radio" name="used" value="0" id="update-used-0">New</input></td>
+                        </tr>
+
+                        <tr>
+                            <td><label for="store">Store Location</label></td>
+                            <td colspan="5"><input list="update_store_location" name="store" id="update-store"></td>
+                            <datalist id="update_store_location">
+                                <option value="Portland">
+                                <option value="Salem">
+                                <option value="Eugene">
+                                <option value="Gresham">
+                                <option value="Hillsboro">
+                                <option value="Beaverton">
+                                <option value="Bend">
+                                <option value="Medford">
+                                <option value="Springfield">
+                                <option value="Corvallis">
+                                <option value="Aloha">
+                                <option value="Albany">
+                                <option value="Tigard">
+                                <option value="Lake Oswego">
+                                <option value="Keizer">
+                            </datalist>
+                        </tr>
+
+                        <tr>
+                            <td><label for="parking">Parking Location</label></td>
+                            <td colspan="5"><input type="text" name="parking" id="update-parking"></td>
+                        </tr>
+
+
+
+
+                    </table>
+
+                    <input type="hidden" name="orig_vin" id="update-orig-vin">
+                    <input type="hidden" name="request_type" value="update-submit">
+                    <input type="hidden" name="page" value="{{ current_page }}">
+                    <input type="submit" value="Submit">
+                </fieldset>
+            </form>
+        </div>
+
+    </div>
+
 
 </div>
+
+{% endif %}
+{% if status_msg is defined %}
+<p id="status-msg">{{status_msg}}</p>
 {% endif %}
 
 
+<script>
 
+    var status_msg = document.getElementById("status-msg");
+
+
+
+    function delete_inventory(vin) {
+
+        console.log("{{ current_page }}")
+        var req = new XMLHttpRequest();
+        var testdrive_request = {}
+        testdrive_request.request_type = "delete"
+        testdrive_request.vin = vin
+        testdrive_request.page = "{{ current_page }}"
+        console.log(testdrive_request)
+
+        req.open('POST', '/vehinventory', true);
+        req.setRequestHeader('Content-Type', 'application/json');
+        req.addEventListener('load', function () {
+            if (req.status >= 200 && req.status < 400) {
+                console.log("Delete Request Success!")
+
+                location.reload();
+
+
+            } else {
+                console.log("Error in network request: " + req.statusText);
+            }
+        });
+        req.send(JSON.stringify(testdrive_request));
+        event.preventDefault();
+
+
+    }
+
+    var add_modal = document.getElementById("add_modal");
+    var add_span = document.getElementsByClassName("close")[0];
+    var testdrive_modal = document.getElementById("testdrive_modal");
+    var testdrive_span = document.getElementsByClassName("close")[1];
+    var update_modal = document.getElementById("update_modal");
+    var update_span = document.getElementsByClassName("close")[2];
+
+    console.log(add_span)
+
+    function add_new_vehicle() {
+        add_modal.style.display = "block";
+
+    }
+
+    add_span.onclick = function () {
+        add_modal.style.display = "none";
+    }
+
+
+    window.onclick = function (event) {
+
+        if (event.target == add_modal) {
+            add_modal.style.display = "none";
+        }
+
+    }
+
+
+
+
+
+
+
+    function update_inventory(vin) {
+
+        update_modal.style.display = "block";
+        console.log(vin);
+
+        var req = new XMLHttpRequest();
+        var update_request = {}
+        update_request.request_type = "update_read"
+        update_request.vin = vin
+        update_request.page = "{{ current_page }}"
+        console.log(update_request)
+
+        req.open('POST', '/vehinventory', true);
+        req.setRequestHeader('Content-Type', 'application/json');
+        req.addEventListener('load', function () {
+            if (req.status >= 200 && req.status < 400) {
+                var response = JSON.parse(req.responseText);
+                console.log("Update Read Request Success!")
+
+                document.getElementById("update-vin").value = response.vin
+                document.getElementById("update-orig-vin").value = response.vin
+
+                if (response.type == "SEDAN") {
+                    document.getElementById("update-type-sedan").checked = true
+                } else if (response.type == "Truck") {
+                    document.getElementById("update-type-truck").checked = true
+                } else if (response.type == "SUV") {
+                    document.getElementById("update-type-suv").checked = true
+                }
+
+                if (response.make == "HONDA") {
+                    document.getElementById("update-make-honda").checked = true
+                } else if (response.make == "Toyota") {
+                    document.getElementById("update-make-toyota").checked = true
+                }
+
+                document.getElementById("update-model").value = response.model
+
+                if (response.year == "2016") {
+                    document.getElementById("update-year-2016").checked = true
+                } else if (response.year == "2017") {
+                    document.getElementById("update-year-2017").checked = true
+                } else if (response.year == "2018") {
+                    document.getElementById("update-year-2018").checked = true
+                } else if (response.year == "2019") {
+                    document.getElementById("update-year-2019").checked = true
+                } else if (response.year == "2020") {
+                    document.getElementById("update-year-2020").checked = true
+                }
+
+                if (response.color == "Black") {
+                    document.getElementById("update-color-black").checked = true
+                } else if (response.color == "Blue") {
+                    document.getElementById("update-color-blue").checked = true
+                } else if (response.color == "Silver") {
+                    document.getElementById("update-color-silver").checked = true
+                }
+
+                document.getElementById("update-trim").value = response.trim
+
+
+                if (response.used == "New") {
+                    document.getElementById("update-used-0").checked = true
+                } else if (response.used == "Used") {
+                    document.getElementById("update-used-1").checked = true
+                }
+
+                document.getElementById("update-store").value = response.store_location
+                document.getElementById("update-parking").value = response.parking_location
+
+                console.log(response.type)
+                console.log(response.make)
+
+            } else {
+                console.log("Error in network request: " + req.statusText);
+            }
+        });
+        req.send(JSON.stringify(update_request));
+        event.preventDefault();
+
+    }
+
+
+    function test_drive_review(vin) {
+        testdrive_modal.style.display = "block";
+        console.log(vin);
+        var testdrive_title = document.getElementById("testdrive_title");
+        testdrive_title.textContent = "Test Drive Record for Vehicle " + vin;
+        testdrive_title.style = "text-align: center;"
+
+
+        var req = new XMLHttpRequest();
+        var testdrive_request = {}
+        testdrive_request.request_type = "testdrive_check"
+        testdrive_request.vin = vin
+        console.log(testdrive_request)
+
+        req.open('POST', '/vehinventory', true);
+        req.setRequestHeader('Content-Type', 'application/json');
+        req.addEventListener('load', function () {
+            if (req.status >= 200 && req.status < 400) {
+                var response = JSON.parse(req.responseText);
+                console.log("Test Drive Request Success!")
+
+                var testdrive_record = document.getElementById("testdrive_record");
+
+                if (response.result == 'Y') {
+                    testdrive_record.innerHTML = ""
+                    var testdrive_table = document.createElement("table")
+                    testdrive_record.appendChild(testdrive_table)
+
+                    var testdrive_table_header = document.createElement("thead")
+                    testdrive_table.appendChild(testdrive_table_header)
+
+                    var testdrive_table_tr = document.createElement("tr")
+                    testdrive_table_header.appendChild(testdrive_table_tr)
+
+                    var testdrive_table_td = document.createElement("td")
+                    testdrive_table_td.textContent = "ID"
+                    testdrive_table_tr.appendChild(testdrive_table_td)
+
+                    var testdrive_table_td = document.createElement("td")
+                    testdrive_table_td.textContent = "Date"
+                    testdrive_table_tr.appendChild(testdrive_table_td)
+
+                    var testdrive_table_td = document.createElement("td")
+                    testdrive_table_td.textContent = "Checkout Time"
+                    testdrive_table_tr.appendChild(testdrive_table_td)
+
+                    var testdrive_table_td = document.createElement("td")
+                    testdrive_table_td.textContent = "Return Time"
+                    testdrive_table_tr.appendChild(testdrive_table_td)
+
+
+
+                    var testdrive_table_body = document.createElement("tbody")
+                    testdrive_table.appendChild(testdrive_table_body)
+
+
+
+
+                    for (i in response.Data) {
+
+
+                        var testdrive_table_tr = document.createElement("tr")
+                        testdrive_table_body.appendChild(testdrive_table_tr)
+
+                        var testdrive_table_td = document.createElement("td")
+                        testdrive_table_td.textContent = i
+                        testdrive_table_tr.appendChild(testdrive_table_td)
+
+                        var testdrive_table_td = document.createElement("td")
+                        testdrive_table_td.textContent = response.Data[i].test_drive_date
+                        testdrive_table_tr.appendChild(testdrive_table_td)
+
+                        var testdrive_table_td = document.createElement("td")
+                        testdrive_table_td.textContent = response.Data[i].check_out_time
+                        testdrive_table_tr.appendChild(testdrive_table_td)
+
+                        var testdrive_table_td = document.createElement("td")
+                        testdrive_table_td.textContent = response.Data[i].return_time
+                        testdrive_table_tr.appendChild(testdrive_table_td)
+
+                        console.log(i)
+                        console.log(response.Data[i].test_drive_date)
+                        console.log(response.Data[i].check_out_time)
+                        console.log(response.Data[i].return_time)
+                    }
+
+                } else {
+                    testdrive_record.textContent = "There is no test drive record for this vehicle."
+                }
+
+
+
+            } else {
+                console.log("Error in network request: " + req.statusText);
+            }
+        });
+        req.send(JSON.stringify(testdrive_request));
+        event.preventDefault();
+
+    }
+
+    testdrive_span.onclick = function () {
+        testdrive_modal.style.display = "none";
+    }
+
+    update_span.onclick = function () {
+        update_modal.style.display = "none";
+    }
+
+
+
+
+    window.onclick = function (event) {
+        if (event.target == testdrive_modal) {
+            testdrive_modal.style.display = "none";
+        }
+
+        if (event.target == update_modal) {
+            update_modal.style.display = "none";
+        }
+
+
+
+    }
+
+
+
+</script>
 
 
 

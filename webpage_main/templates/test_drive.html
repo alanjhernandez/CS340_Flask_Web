@@ -7,102 +7,142 @@ Test Drive Record
 
 
 {% block content%}
+<form action="#" method="POST">
+    <fieldset>
+        <legend>Test Drive Record Search</legend>
 
-<h1>Test Drive Record</h1>
+        <table>
+            <tr>
+                <td><label for="make">Vehicle Make</label></td>
+                <td><input type="radio" name="make" value="Honda" checked>Honda</input></td>
+                <td><input type="radio" name="make" value="Toyota">Toyota</input></td>
+            </tr>
 
-<form action="#" method="post">
-    <h2>Add Drive Record</h2>
-    <p>Test Drive ID:</p>
-    <p><input type="number" name="tdriveid"></p>
-    <p>Customer ID:</p>
-    <p><input type="text" name="cid"></p>
-    <p>Test Drive Date:</p>
-    <p><input type="date" name="tdate"></p>
-    <p>Check Out Time:</p>
-    <p><input type="text" name="cotime"></p>
-    <p>Return Time:</p>
-    <p><input type="text" name="rtime"></p>
-    <p>Vin:</p>
-    <p><input type="text" name="vin"></p>
+            <tr>
+                <td><label for="model">Vehicle Model</label></td>
+                <td colspan="3"><input type="text" name="model"></td>
+            </tr>
 
-    <p><input type="submit" value="Add"></p>
+
+            <tr>
+                <td><label for="year">Vehicle Year</label></td>
+                <td><input type="radio" name="year" value="2016">2016</input></td>
+                <td><input type="radio" name="year" value="2017">2017</input></td>
+                <td><input type="radio" name="year" value="2018">2018</input></td>
+                <td><input type="radio" name="year" value="2019">2019</input></td>
+                <td><input type="radio" name="year" value="2020">2020</input></td>
+                <input type="hidden" name="year" value=""></input>
+            </tr>
+
+            <tr>
+                <td><label for="color">Vehicle Colour</label></td>
+                <td><input type="radio" name="color" value="Black">Black</input></td>
+                <td><input type="radio" name="color" value="Blue">Blue</input></td>
+                <td><input type="radio" name="color" value="Silver">Silver</input></td>
+                <input type="hidden" name="color" value=""></input>
+            </tr>
+
+            <tr>
+                <td><label for="trim">Vehicle Trim</label></td>
+                <td colspan="3"><input type="text" name="trim"></td>
+            </tr>
+
+            <tr>
+                <td><label for="customer_fname">Customer First Name</label></td>
+                <td colspan="3"><input type="text" name="customer_fname"></td>
+            </tr>
+            <tr>
+                <td><label for="customer_lname">Customer Last Name</label></td>
+                <td colspan="3"><input type="text" name="customer_lname"></td>
+            </tr>
+
+            <tr>
+                <td><label for="vin">VIN</label></td>
+                <td colspan="3"><input type="text" name="vin"></td>
+            </tr>
+
+
+        </table>
+        <input type="hidden" name="request_type" value="test_drive_new_search">
+        <input type="submit" value="Submit">
+
+
+    </fieldset>
 </form>
 
-<form action="#" method="get">
-    <h2>Search Drive Record</h2>
-    <p>Test Drive ID:</p>
-    <p><input type="number" name="tdriveid"></p>
-    <p>Customer ID:</p>
-    <p><input type="text" name="cid"></p>
-    <p>Vin:</p>
-    <p><input type="text" name="vin"></p>
 
-    <p><input type="submit" value="Search"></p>
+{% if prev_page is defined %}
+<table>
+    <thead>
+        <tr>
+            <th>Test Drive ID</th>
+            <th>vin</th>
+            <th>Test Drive Date</th>
+            <th>Check out Time</th>
+            <th>Return Time</th>
+            <th>Customer ID</th>
+            <th>Customer First Name</th>
+            <th>Customer Last Name</th>
+            <th>Type</th>
+            <th>Make</th>
+            <th>Model</th>
+            <th>Year</th>
+            <th>Color</th>
+            <th>Trim</th>
+            <th>Price</th>
+            <th>Delete</th>
+            <th>Update</th>
 
-</form>
 
-<div class="content-table">
-    <table>
-        <thead>
-            <tr>
-                <th>Test Drive ID</th>
-                <th>Customer ID</th>
-                <th>Test Drive Date</th>
-                <th>Check Out Time</th>
-                <th>Return Time</th>
-                <th>Vin</th>
-                <th>Delete</th>
-                <th>Update</th>
+        </tr>
+    </thead>
+    {% if content is defined %}
+    <tbody id="content-table">
+        {% for i in content %}
+        <tr>
+            <td>{{i[0]}}</td>
+            <td>{{i[1]}}</td>
+            <td>{{i[2]}}</td>
+            <td>{{i[3]}}</td>
+            <td>{{i[4]}}</td>
+            <td>{{i[5]}}</td>
+            <td>{{i[6]}}</td>
+            <td>{{i[7]}}</td>
+            <td>{{i[8]}}</td>
+            <td>{{i[9]}}</td>
+            <td>{{i[10]}}</td>
+            <td>{{i[11]}}</td>
+            <td>{{i[12]}}</td>
+            <td>{{i[13]}}</td>
+            <td>{{i[14]}}</td>
+            <td><button>Delete</button></td>
+            <td><button>Edit</button></td>
 
-            </tr>
-        </thead>
-        {% if content is defined %}
-        <tbody id="content-table">
-            {% for i in content %}
-            <tr>
-                <td>{{i[0]}}</td>
-                <td>{{i[1]}}</td>
-                <td>{{i[2]}}</td>
-                <td>{{i[3]}}</td>
-                <td>{{i[4]}}</td>
-                <td>{{i[5]}}</td>
-                <td><button>Delete</button></td>
-                <td><button>Update</button></td>
-            </tr>
-            {% endfor %}
-        </tbody>
-        {% endif %}
-    </table>
+        </tr>
+        {% endfor %}
+    </tbody>
+    {% endif %}
+</table>
+
+
+<div class="page_button" style="margin: 0 auto; display:inline;">
+    <form action="#" method="POST" style="margin: 0 auto;display: inline;">
+        <input type="hidden" name="page" value={{prev_page}}>
+        <input type="hidden" name="request_type" value="test_drive_continue_search">
+        <input type="submit" value="Prev">
+    </form>
+
+    Page {{current_page}}
+
+    <form action="#" method="POST" style="margin: 0 auto;display: inline;">
+        <input type="hidden" name="page" value={{next_page}}>
+        <input type="hidden" name="request_type" value="test_drive_continue_search">
+        <input type="submit" value="Next">
+    </form>
 </div>
-<!-- 
-<div class = "test_drive">
-    <h2>Add Drive Record</h2>
-    <table >
-        <thead>
-            <tr>
-                <th>Vehicle</th>
-    
-            </tr>
-            {% for cars in testdrive %}
-                <tr>
-                    <td>{{ cars.content }}</td>
-                </tr>
-    
-    
-            {% endfor %}
-        </thead>
-        
-    </table>
-    <div class="form">
-        <form action="/" method="POST">
-            <input type="text" name="content" id="content">
-            <input type="submit" value="Add">
-        </form>
-    </div>
-    
-        work in progress. connect with webpage.py. process data in a loop
+<br>
 
-</div>
--->
+{% endif %}
+
 
 {% endblock %}

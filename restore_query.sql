@@ -27,6 +27,9 @@ create table cs340_cheungke.Customers_Info(
    PRIMARY KEY ( dw_customer_id )
 );
 
+insert into Customers_Info
+select * from Customers_Info_Backup;
+
 
 
 create table cs340_cheungke.Financial_Options(
@@ -36,6 +39,8 @@ create table cs340_cheungke.Financial_Options(
    PRIMARY KEY ( dw_fincl_option_id )
 );
 
+insert into Financial_Options
+select * from Financial_Options_Backup;
 
 
 
@@ -47,6 +52,9 @@ create table cs340_cheungke.Sales_Reps(
    primary_location VARCHAR(50) NOT NULL,
    PRIMARY KEY ( dw_sales_rep_id )
 );
+
+insert into Sales_Reps
+select * from Sales_Reps_Backup;
 
 
 
@@ -62,6 +70,10 @@ create table cs340_cheungke.Vehicle_Types(
    PRIMARY KEY ( dw_vehicle_type_id )
 );
 
+insert into Vehicle_Types
+select * from Vehicle_Types_Backup;
+
+
 
 create table cs340_cheungke.Vehicle_Inventories(
    dw_vehicle_type_id VARCHAR(15) NOT NULL,
@@ -69,17 +81,18 @@ create table cs340_cheungke.Vehicle_Inventories(
    store_location VARCHAR(50) NOT NULL,
    parking_location VARCHAR(5) NOT NULL,
    used_ind boolean NOT NULL,
+   sold_ind boolean NOT NULL,
    PRIMARY KEY ( vin ),
    FOREIGN KEY (dw_vehicle_type_id)
         REFERENCES Vehicle_Types(dw_vehicle_type_id)
-        ON DELETE CASCADE
+        ON DELETE CASCADE ON UPDATE CASCADE 
 );
 
+insert into Vehicle_Inventories
+select * from Vehicle_Inventories_Backup;
 
-ALTER TABLE Vehicle_Inventories
-    ADD FOREIGN KEY(dw_vehicle_type_id)
-    REFERENCES Vehicle_Types(dw_vehicle_type_id)
-    ON UPDATE CASCADE ON DELETE CASCADE;
+
+
 
 
 
@@ -95,32 +108,18 @@ create table cs340_cheungke.Sales_Records(
    PRIMARY KEY ( dw_invoice_id ),
     FOREIGN KEY (dw_vehicle_type_id)
         REFERENCES Vehicle_Types(dw_vehicle_type_id)
-        ON DELETE CASCADE,
+        ON DELETE CASCADE ON UPDATE CASCADE ,
     FOREIGN KEY (vin)
         REFERENCES Vehicle_Inventories(vin)
-        ON DELETE CASCADE,
+        ON DELETE CASCADE ON UPDATE CASCADE ,
     FOREIGN KEY (dw_fincl_option_id)
         REFERENCES Financial_Options(dw_fincl_option_id)
-        ON DELETE CASCADE
+        ON DELETE CASCADE ON UPDATE CASCADE 
 );
 
+insert into Sales_Records
+select * from Sales_Records_Backup;
 
-
-ALTER TABLE Sales_Records
-    ADD FOREIGN KEY(dw_vehicle_type_id)
-    REFERENCES Vehicle_Types(dw_vehicle_type_id)
-    ON UPDATE CASCADE ON DELETE CASCADE;
-
-
-ALTER TABLE Sales_Records
-    ADD FOREIGN KEY(vin)
-    REFERENCES Vehicle_Inventories(vin)
-    ON UPDATE CASCADE ON DELETE CASCADE;
-
-ALTER TABLE Sales_Records
-    ADD FOREIGN KEY(dw_fincl_option_id)
-    REFERENCES Financial_Options(dw_fincl_option_id)
-    ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 
@@ -131,34 +130,18 @@ create table cs340_cheungke.Customers_Salesreps(
    PRIMARY KEY ( dw_invoice_id ),
     FOREIGN KEY (dw_customer_id)
         REFERENCES Customers_Info(dw_customer_id)
-        ON DELETE CASCADE,
+        ON DELETE CASCADE ON UPDATE CASCADE ,
     FOREIGN KEY (dw_invoice_id)
         REFERENCES Sales_Records(dw_invoice_id)
-        ON DELETE CASCADE,
+        ON DELETE CASCADE ON UPDATE CASCADE ,
     FOREIGN KEY (dw_sales_rep_id)
         REFERENCES Sales_Reps(dw_sales_rep_id)
-        ON DELETE CASCADE
+        ON DELETE CASCADE ON UPDATE CASCADE 
 );
 
 
-ALTER TABLE Customers_Salesreps
-    ADD FOREIGN KEY(dw_customer_id)
-    REFERENCES Customers_Info(dw_customer_id)
-    ON UPDATE CASCADE ON DELETE CASCADE;
-
-ALTER TABLE Customers_Salesreps
-    ADD FOREIGN KEY(dw_invoice_id)
-    REFERENCES Sales_Records(dw_invoice_id)
-    ON UPDATE CASCADE ON DELETE CASCADE;
-
-
-ALTER TABLE Customers_Salesreps
-    ADD FOREIGN KEY(dw_sales_rep_id)
-    REFERENCES Sales_Reps(dw_sales_rep_id)
-    ON UPDATE CASCADE ON DELETE CASCADE;
-
-
-
+insert into Customers_Salesreps
+select * from Customers_Salesreps_Backup;
 
 
 
@@ -174,25 +157,15 @@ create table cs340_cheungke.Monthly_Payments(
    PRIMARY KEY ( dw_payment_id ),
     FOREIGN KEY (dw_customer_id)
         REFERENCES Customers_Info(dw_customer_id)
-        ON DELETE CASCADE,
+        ON DELETE CASCADE ON UPDATE CASCADE ,
     FOREIGN KEY (dw_invoice_id)
         REFERENCES Sales_Records(dw_invoice_id)
-        ON DELETE CASCADE
+        ON DELETE CASCADE ON UPDATE CASCADE 
 );
 
+insert into Monthly_Payments
+select * from Monthly_Payments_Backup;
 
-
-ALTER TABLE Monthly_Payments
-    ADD FOREIGN KEY(dw_customer_id)
-    REFERENCES Customers_Info(dw_customer_id)
-    ON UPDATE CASCADE ON DELETE CASCADE;
-
-
-
-ALTER TABLE Monthly_Payments
-    ADD FOREIGN KEY(dw_invoice_id)
-    REFERENCES Sales_Records(dw_invoice_id)
-    ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 
@@ -206,25 +179,15 @@ create table cs340_cheungke.Test_Drives(
    PRIMARY KEY ( dw_test_drive_id ),
     FOREIGN KEY (dw_customer_id)
         REFERENCES Customers_Info(dw_customer_id)
-        ON DELETE CASCADE,
+        ON DELETE CASCADE ON UPDATE CASCADE ,
     FOREIGN KEY (vin)
         REFERENCES Vehicle_Inventories(vin)
-        ON DELETE CASCADE
+        ON DELETE CASCADE ON UPDATE CASCADE 
 );
 
+insert into Test_Drives
+select * from Test_Drives_Backup;
 
-
-
-ALTER TABLE Test_Drives
-    ADD FOREIGN KEY(dw_customer_id)
-    REFERENCES Customers_Info(dw_customer_id)
-    ON UPDATE CASCADE ON DELETE CASCADE;
-
-
-ALTER TABLE Test_Drives
-    ADD FOREIGN KEY(vin)
-    REFERENCES Vehicle_Inventories(vin)
-    ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 

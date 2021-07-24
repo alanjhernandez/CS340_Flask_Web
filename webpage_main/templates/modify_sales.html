@@ -4,62 +4,366 @@
 Add/Modify/Search Sales Record
 {% endblock %}
 
+{% block style%}
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename = 'sales.css')}}">
+{% endblock %}
 
 
 {% block content%}
-
-<h1>Sales Records</h1>
-
 <form action="#" method="post">
-    <h2>Add Sales Records</h2>
-    <p>Invoice ID:</p>
-    <p><input type="number" name="invoice"></p>
-    <p>Purchase Date:</p>
-    <p><input type="date" name="pdate"></p>
-    <p>Vehicle Type ID:</p>
-    <p><input type="text" name="vehicleid"></p>
-    <p>Vin:</p>
-    <p><input type="text" name="vin"></p>
-    <p>Vehicle Price:</p>
-    <p><input type="number" name="vprice"></p>
-    <p>Financial Option ID:</p>
-    <p><input type="number" name="finoption"></p>
-    <p>Monthy Payment Amount:</p>
-    <p><input type="number" name="mpayment"></p>
-    <p>Down Payment Amount:</p>
-    <p><input type="number" name="dpayment"></p>
+    <fieldset>
+        <legend>Sales Record Search</legend>
 
-    <p><input type="submit" value="Add"></p>
-</form>
-
-
-<form action="#" method="post">
-    <h2>Search Sales Records</h2>
-    <p>Vehicle Type ID:</p>
-    <p><input type="text" name="vehicleid"></p>
-    <p>Vin:</p>
-    <p><input type="text" name="vin"></p>
-    <p>Financial Option ID:</p>
-    <p><input type="number" name="finoption"></p>
-
-    <p><input type="submit" value="Search"></p>
-
-</form>
-
-<div class="content-table">
-    <table>
-        <thead>
+        <table>
             <tr>
-                <th>Invoice ID</th>
-                <th>Purchase Date</th>
-                <th>Vehicle Type ID</th>
-                <th>Vin</th>
-                <th>Vehicle Price</th>
-                <th>Financial Option ID</th>
-                <th>Monthy Payment Amount</th>
-                <th>Down Payment Amount</th>
-                <th>Delete</th>
-                <th>Update</th>
+                <td><label for="make">Vehicle Make</label></td>
+                <td><input type="radio" name="make" value="Honda" checked>Honda</input></td>
+                <td><input type="radio" name="make" value="Toyota">Toyota</input></td>
+            </tr>
+
+            <tr>
+                <td><label for="model">Vehicle Model</label></td>
+                <td colspan="3"><input type="text" name="model"></td>
+            </tr>
+
+
+            <tr>
+                <td><label for="year">Vehicle Year</label></td>
+                <td><input type="radio" name="year" value="2016">2016</input></td>
+                <td><input type="radio" name="year" value="2017">2017</input></td>
+                <td><input type="radio" name="year" value="2018">2018</input></td>
+                <td><input type="radio" name="year" value="2019">2019</input></td>
+                <td><input type="radio" name="year" value="2020">2020</input></td>
+                <input type="hidden" name="year" value=""></input>
+            </tr>
+
+            <tr>
+                <td><label for="color">Vehicle Colour</label></td>
+                <td><input type="radio" name="color" value="Black">Black</input></td>
+                <td><input type="radio" name="color" value="Blue">Blue</input></td>
+                <td><input type="radio" name="color" value="Silver">Silver</input></td>
+                <input type="hidden" name="color" value=""></input>
+            </tr>
+
+            <tr>
+                <td><label for="trim">Vehicle Trim</label></td>
+                <td colspan="3"><input type="text" name="trim"></td>
+            </tr>
+
+            <tr>
+                <td><label for="customer_fname">Customer First Name</label></td>
+                <td colspan="3"><input type="text" name="customer_fname"></td>
+            </tr>
+            <tr>
+                <td><label for="customer_lname">Customer Last Name</label></td>
+                <td colspan="3"><input type="text" name="customer_lname"></td>
+            </tr>
+
+            <tr>
+                <td><label for="vin">VIN</label></td>
+                <td colspan="3"><input type="text" name="vin"></td>
+            </tr>
+
+            <tr>
+                <td><label for="sales_fname">Sales First Name</label></td>
+                <td colspan="3"><input type="text" name="sales_fname"></td>
+            </tr>
+
+            <tr>
+                <td><label for="sales_lname">Sales Last Name</label></td>
+                <td colspan="3"><input type="text" name="sales_lname"></td>
+            </tr>
+
+
+        </table>
+        <input type="hidden" name="request_type" value="sales_new_search">
+        <input type="submit" value="Submit">
+
+
+    </fieldset>
+</form>
+
+
+<p><button onclick="add_new_sales();">New Record</button></p>
+
+{% if prev_page is defined %}
+<table>
+    <thead>
+        <tr>
+            <th>Invoice</th>
+            <th>vin</th>
+            <th>Customer Name</th>
+            <th>Sales Name</th>
+            <th>Type</th>
+            <th>Make</th>
+            <th>Model</th>
+            <th>Year</th>
+            <th>Color</th>
+            <th>Trim</th>
+            <th>Price</th>
+            <th>Down Payment</th>
+            <th>Monthly Payment</th>
+            <th>Financial Option</th>
+            <th>Delete</th>
+            <th>Update</th>
+            <th>Payment Schedule</th>
+
+
+        </tr>
+    </thead>
+    {% if content is defined %}
+    <tbody id="content-table">
+        {% for i in content %}
+        <tr>
+            <td>{{i[0]}}</td>
+            <td>{{i[1]}}</td>
+            <td> <button class="person_btn" onclick="check_customer('{{i[16]}}');">{{i[3] + ", " + i[2]}}</button></td>
+            <td> <button class="person_btn" onclick="check_sales('{{i[17]}}');">{{i[5] + ", " + i[4]}}</button></td>
+            <td>{{i[6]}}</td>
+            <td>{{i[7]}}</td>
+            <td>{{i[8]}}</td>
+            <td>{{i[9]}}</td>
+            <td>{{i[10]}}</td>
+            <td>{{i[11]}}</td>
+            <td>{{i[12]}}</td>
+            <td>{{i[13]}}</td>
+            <td>{{i[14]}}</td>
+            <td>{{i[15]}}</td>
+            <td><button onclick="delete_sales('{{i[0]}}');">Delete</button></td>
+            <td><button
+                    onclick="edit_sales('{{i[0]}}','{{i[1]}}','{{i[2]}}','{{i[3]}}','{{i[4]}}','{{i[5]}}','{{i[6]}}','{{i[7]}}','{{i[8]}}','{{i[9]}}','{{i[10]}}','{{i[11]}}','{{i[12]}}','{{i[13]}}','{{i[14]}}','{{i[15]}}','{{i[16]}}','{{i[17]}}');">Edit</button>
+            </td>
+            <td><button onclick="payment_schedule('{{i[0]}}');">Payments</button></td>
+
+        </tr>
+        {% endfor %}
+    </tbody>
+    {% endif %}
+</table>
+
+
+<div class="page_button" style="margin: 0 auto; display:inline;">
+    <form action="#" method="POST" style="margin: 0 auto;display: inline;">
+        <input type="hidden" name="page" value={{prev_page}}>
+        <input type="hidden" name="request_type" value="sales_continue_search">
+        <input type="submit" value="Prev">
+    </form>
+
+    Page {{current_page}}
+
+    <form action="#" method="POST" style="margin: 0 auto;display: inline;">
+        <input type="hidden" name="page" value={{next_page}}>
+        <input type="hidden" name="request_type" value="sales_continue_search">
+        <input type="submit" value="Next">
+    </form>
+</div>
+<br>
+
+{% endif %}
+
+{% if status_msg is defined %}
+
+Status: {{status_msg}}
+
+{% endif %}
+
+
+<div id="customer_modal" class="customer_modal">
+
+    <!-- Modal content -->
+    <div class="modal-content">
+        <span class="close">&times;</span>
+
+        <h1>Customer Information</h1>
+
+        <table>
+
+            <tr>
+                <td>Customer ID: </td>
+                <td id="customer-id"></td>
+            </tr>
+
+            <tr>
+                <td>First Name:</td>
+                <td id="customer-first-name"></td>
+            </tr>
+
+            <tr>
+                <td>Last Name:</td>
+                <td id="customer-last-name"></td>
+            </tr>
+
+
+            <tr>
+                <td>Date of Birth:</td>
+                <td id="customer-dob"></td>
+            </tr>
+
+            <tr>
+                <td>Address:</td>
+                <td id="customer-address"></td>
+            </tr>
+
+            <tr>
+                <td>Phone:</td>
+                <td id="customer-phone"></td>
+            </tr>
+
+
+            <tr>
+                <td>SSN:</td>
+                <td id="customer-ssn"></td>
+            </tr>
+
+
+        </table>
+
+
+    </div>
+
+</div>
+
+
+<div id="sales_modal" class="sales_modal">
+
+    <!-- Modal content -->
+    <div class="modal-content">
+        <span class="close">&times;</span>
+
+        <h1>Sales Information</h1>
+
+        <table>
+
+            <tr>
+                <td>Sales ID: </td>
+                <td id="sales-id"></td>
+            </tr>
+
+            <tr>
+                <td>First Name:</td>
+                <td id="sales-first-name"></td>
+            </tr>
+
+            <tr>
+                <td>Last Name:</td>
+                <td id="sales-last-name"></td>
+            </tr>
+
+
+            <tr>
+                <td>Primary Location:</td>
+                <td id="sales-location"></td>
+            </tr>
+
+
+        </table>
+
+
+    </div>
+
+</div>
+
+
+<div id="payment_modal" class="payment_modal">
+
+    <!-- Modal content -->
+    <div class="modal-content">
+        <span class="close">&times;</span>
+
+        <h1>Payment Schedule</h1>
+        <div id="payment_status"></div>
+        <div id="payment_record"></div>
+
+    </div>
+
+</div>
+
+
+<div id="add_modal" class="add_modal">
+
+    <!-- Modal content -->
+    <div class="modal-content">
+        <span class="close">&times;</span>
+
+        <form action="#" method="POST">
+            <fieldset>
+
+                <legend>Sales Information</legend>
+
+                <table>
+                    <tr>
+                        <td>Customer ID </td>
+                        <td colspan="2"><input type="number" id="add-sales-customerid" onfocusout="check_customer_id()"
+                                name="customerid" required></input></td>
+                        <td colspan="3" id="add-sales-customer-name"></td>
+                    </tr>
+
+                    <tr>
+                        <td>Sales ID </td>
+                        <td colspan="2"><input type="number" id="add-sales-salesid" onfocusout="check_sales_id()"
+                                name="salesid" required></input>
+                        </td>
+                        <td colspan="3" id="add-sales-sales-name"></td>
+                    </tr>
+
+                    <tr>
+                        <td>VIN</td>
+                        <td colspan="2"><input type="text" id="add-sales-vin" onfocusout="check_vin()" name="vin"
+                                required></input>
+                        </td>
+                        <td colspan="3" id="add-sales-veh-description"></td>
+                    </tr>
+
+                    <tr>
+                        <td>Price</td>
+                        <td colspan="2"> <input type="number" id='add-sales-price' name="price" readonly></td>
+
+                    </tr>
+
+                    <tr>
+                        <td>Financial Option</td>
+                        <td colspan="2"><input list="financial-arrangement" id="add-sales-financial"
+                                name="financial_option" onfocusout="check_financial()" required></input>
+                            <datalist id="financial-arrangement">
+
+                            </datalist>
+                        </td>
+
+                    <tr>
+                        <td>Down Payment</td>
+                        <td colspan="2"><input type="number" id="add-sales-dp" min=0 onfocusout="check_dp()"
+                                name="down_payment" required></input>
+                        </td>
+                    </tr>
+
+
+                    <tr>
+                        <td>Monthly Payment</td>
+                        <td colspan="2"> <input type="number" id='add-sales-monthly-payment' name="monthly_payment"
+                                readonly></td>
+
+                    </tr>
+
+                    <tr>
+                        <td>Purchase Date</td>
+                        <td colspan="2"> <input type="date" name="date"></td>
+
+                    </tr>
+
+
+                </table>
+
+                <input type="hidden" name="page" value="{{ current_page }}">
+                <input type="hidden" name="type" id='add-sales-types'>
+                <input type="hidden" name="request_type" value="sales_add">
+                <input type="submit">
+
+
+            </fieldset>
+
+        </form>
+
+    </div>
 
             </tr>
         </thead>
@@ -83,6 +387,752 @@ Add/Modify/Search Sales Record
         {% endif %}
     </table>
 </div>
+
+
+<div id="edit_modal" class="edit_modal">
+
+    <!-- Modal content -->
+    <div class="modal-content">
+        <span class="close">&times;</span>
+
+        <form action="#" method="POST">
+            <fieldset>
+
+                <legend>Sales Information - Please delete the sale record if the vehicle or financial payment is not
+                    correct.</legend>
+
+                <table>
+
+                    <tr>
+                        <td>Invoice ID </td>
+                        <td colspan="2"><input type="number" id="edit-sales-invoice" name="dw_invoice_id" required
+                                readonly></input></td>
+
+                    </tr>
+                    <tr>
+                        <td>Customer ID </td>
+                        <td colspan="2"><input type="number" id="edit-sales-customerid"
+                                onfocusout="edit_check_customer_id()" name="dw_customer_id" required></input></td>
+                        <td colspan="3" id="edit-sales-customer-name"></td>
+                    </tr>
+
+                    <tr>
+                        <td>Sales ID </td>
+                        <td colspan="2"><input type="number" id="edit-sales-salesid" onfocusout="edit_check_sales_id()"
+                                name="dw_sales_rep_id" required></input>
+                        </td>
+                        <td colspan="3" id="edit-sales-sales-name"></td>
+                    </tr>
+
+                    <tr>
+                        <td>VIN</td>
+                        <td colspan="2"><input type="text" id="edit-sales-vin" name="vin" required readonly></input>
+                        </td>
+                        <td colspan="3" id="edit-sales-veh-description"></td>
+                    </tr>
+
+                    <tr>
+                        <td>Price</td>
+                        <td colspan="2"> <input type="number" id='edit-sales-price' name="price" readonly></td>
+
+                    </tr>
+
+                    <tr>
+                        <td>Financial Option</td>
+                        <td colspan="2"><input list="financial-arrangement" id="edit-sales-financial"
+                                name="financial_option" required readonly></input>
+                            <datalist id="financial-arrangement">
+
+                            </datalist>
+                        </td>
+
+                    <tr>
+                        <td>Down Payment</td>
+                        <td colspan="2"><input type="number" id="edit-sales-dp" min=0 name="down_payment" required
+                                readonly></input>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>Monthly Payment</td>
+                        <td colspan="2"> <input type="number" id='edit-sales-monthly-payment' name="monthly_payment"
+                                readonly></td>
+
+                    </tr>
+
+
+
+                </table>
+
+                <input type="hidden" name="page" value="{{ current_page }}">
+                <input type="hidden" name="request_type" value="sales_edit">
+                <input type="submit">
+
+            </fieldset>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+
+
+<script>
+    var customer_modal = document.getElementById("customer_modal");
+    var customer_span = document.getElementsByClassName("close")[0];
+    var sales_modal = document.getElementById("sales_modal");
+    var sales_span = document.getElementsByClassName("close")[1];
+    var payment_modal = document.getElementById("payment_modal");
+    var payment_span = document.getElementsByClassName("close")[2];
+    var add_modal = document.getElementById("add_modal");
+    var add_span = document.getElementsByClassName("close")[3];
+    var edit_modal = document.getElementById("edit_modal");
+    var edit_span = document.getElementsByClassName("close")[4];
+
+    var vin_exist_bool = false
+    var customer_exist_bool = false
+    var sales_exist_bool = false
+    var financial_exist_bool = false
+    var dp_exist_bool = false
+
+
+
+    customer_span.onclick = function () {
+        customer_modal.style.display = "none";
+    }
+
+    sales_span.onclick = function () {
+        sales_modal.style.display = "none";
+    }
+
+    payment_span.onclick = function () {
+        payment_modal.style.display = "none";
+    }
+
+    add_span.onclick = function () {
+        payment_modal.style.display = "none";
+    }
+
+    edit_span.onclick = function () {
+        payment_modal.style.display = "none";
+    }
+
+
+
+    window.onclick = function (event) {
+
+        if (event.target == customer_modal) {
+            customer_modal.style.display = "none";
+        }
+
+        if (event.target == sales_modal) {
+            sales_modal.style.display = "none";
+        }
+
+        if (event.target == payment_modal) {
+            payment_modal.style.display = "none";
+        }
+        if (event.target == add_modal) {
+            add_modal.style.display = "none";
+        }
+        if (event.target == edit_modal) {
+            edit_modal.style.display = "none";
+        }
+
+    }
+
+
+    window.addEventListener('load', (event) => {
+        pull_financial()
+
+    });
+
+
+
+    function edit_sales(dw_invoice_id, vin, customer_first_name, customer_last_name, sales_first_name, sales_last_name, vehicle_type, vehicle_make, vehicle_model, vehicle_year, vehicle_color, vehicle_trim, vehicle_price, down_payment_amount, Monthly_Payment_amount, payment_arrangement, dw_customer_id, dw_sales_rep_id) {
+        edit_modal.style.display = "block";
+        document.getElementById("edit-sales-invoice").value = dw_invoice_id
+        document.getElementById("edit-sales-customerid").value = dw_customer_id
+        document.getElementById("edit-sales-salesid").value = dw_sales_rep_id
+        document.getElementById("edit-sales-vin").value = vin
+        document.getElementById("edit-sales-price").value = vehicle_price
+        document.getElementById("edit-sales-financial").value = payment_arrangement
+        document.getElementById("edit-sales-dp").value = down_payment_amount
+        document.getElementById("edit-sales-monthly-payment").value = Monthly_Payment_amount
+        document.getElementById("edit-sales-customer-name").textContent = "Customer Name:" + customer_last_name + ", " + customer_first_name
+        document.getElementById("edit-sales-sales-name").textContent = "Sales Name:" + sales_last_name + ", " + sales_first_name
+
+
+    }
+
+
+    function edit_check_customer_id() {
+        var customerid = document.getElementById("edit-sales-customerid").value;
+        var customer_name = document.getElementById("edit-sales-customer-name");
+
+        if (customerid != "") {
+            console.log(customerid)
+
+
+            var req = new XMLHttpRequest();
+            var customer_request = {}
+            customer_request.request_type = "customer_check"
+            customer_request.dw_customer_id = customerid
+            console.log(customer_request)
+
+            req.open('POST', '/modsales', true);
+            req.setRequestHeader('Content-Type', 'application/json');
+            req.addEventListener('load', function () {
+                if (req.status >= 200 && req.status < 400) {
+                    var response = JSON.parse(req.responseText);
+                    console.log(response)
+                    console.log("Customer Info Request Success!")
+
+                    if (response == "-1") {
+                        customer_name.textContent = "No customer Information."
+                    } else {
+                        customer_name.textContent = "Customer Name:" + response[2] + ", " + response[1]
+                    }
+
+
+                } else {
+                    console.log("Error in network request: " + req.statusText);
+                }
+            });
+            req.send(JSON.stringify(customer_request));
+            event.preventDefault();
+
+
+
+        }
+
+    }
+
+
+    function edit_check_sales_id() {
+        var salesid = document.getElementById("edit-sales-salesid").value;
+        var sales_name = document.getElementById("edit-sales-sales-name");
+
+        if (salesid != "") {
+            console.log(salesid)
+
+
+            var req = new XMLHttpRequest();
+            var sales_request = {}
+            sales_request.request_type = "sales_check"
+            sales_request.dw_sales_rep_id = salesid
+            console.log(sales_request)
+
+            req.open('POST', '/modsales', true);
+            req.setRequestHeader('Content-Type', 'application/json');
+            req.addEventListener('load', function () {
+                if (req.status >= 200 && req.status < 400) {
+                    var response = JSON.parse(req.responseText);
+                    console.log(response)
+                    console.log("Sales Info Request Success!")
+                    if (response == "-1") {
+                        sales_name.textContent = "No sales representatives information"
+                    } else {
+                        sales_name.textContent = "Sales Name:" + response[2] + ", " + response[1]
+                    }
+
+                } else {
+                    console.log("Error in network request: " + req.statusText);
+                }
+            });
+            req.send(JSON.stringify(sales_request));
+            event.preventDefault();
+
+
+
+        }
+
+    }
+
+
+
+    function refresh_monthly_payment() {
+        var vehicle_price = document.getElementById("add-sales-price").value
+        var down_payment = document.getElementById("add-sales-dp").value
+        var dw_fincl_option_id = document.getElementById("add-sales-financial").value
+
+
+
+        var req = new XMLHttpRequest();
+        var financial_request = {}
+        financial_request.request_type = "financial_check"
+        financial_request.dw_fincl_option_id = dw_fincl_option_id
+        console.log(financial_request)
+
+        req.open('POST', '/modsales', true);
+        req.setRequestHeader('Content-Type', 'application/json');
+        req.addEventListener('load', function () {
+            if (req.status >= 200 && req.status < 400) {
+                var response = JSON.parse(req.responseText);
+                console.log(response)
+                console.log("Financial Info Request Success!")
+
+                var x = Math.pow(1 + response[1], response[2]);
+                var monthly_payment = ((vehicle_price - down_payment) * x * response[1]) / (x - 1);
+
+                document.getElementById("add-sales-monthly-payment").value = monthly_payment
+
+            } else {
+                console.log("Error in network request: " + req.statusText);
+            }
+        });
+        req.send(JSON.stringify(financial_request));
+        event.preventDefault();
+
+    }
+
+
+
+    function pull_financial() {
+        var financial_option_list = document.getElementById("financial-arrangement");
+
+
+        var req = new XMLHttpRequest();
+        var financial_request = {}
+        financial_request.request_type = "financial_pull"
+        console.log(financial_request)
+
+        req.open('POST', '/modsales', true);
+        req.setRequestHeader('Content-Type', 'application/json');
+        req.addEventListener('load', function () {
+            if (req.status >= 200 && req.status < 400) {
+                var response = JSON.parse(req.responseText);
+                console.log(response)
+                console.log("Financial Info Request Success!")
+                financial_option_list.innerHTML = ''
+
+                for (i = 0; i < response.length; i++) {
+                    console.log(i)
+                    var option_tag = document.createElement("option")
+                    option_tag.innerHTML = response[i][1] + "/" + response[i][2]
+                    option_tag.value = response[i][0]
+                    financial_option_list.appendChild(option_tag)
+                }
+
+            } else {
+                console.log("Error in network request: " + req.statusText);
+            }
+        });
+        req.send(JSON.stringify(financial_request));
+        event.preventDefault();
+
+
+    }
+
+
+    function check_financial() {
+        var financial_option = document.getElementById("add-sales-financial").value
+
+        if (financial_option != "") {
+            financial_exist_bool = true
+        } else {
+            financial_exist_bool = false
+        }
+
+        if (sales_exist_bool == true & customer_exist_bool == true & vin_exist_bool == true & financial_exist_bool == true & dp_exist_bool == true) {
+            refresh_monthly_payment()
+        }
+    }
+
+
+    function check_dp() {
+        var dp = document.getElementById("add-sales-dp").value
+
+        if (dp != "") {
+            dp_exist_bool = true
+        } else {
+            dp_exist_bool = false
+        }
+
+        if (sales_exist_bool == true & customer_exist_bool == true & vin_exist_bool == true & financial_exist_bool == true & dp_exist_bool == true) {
+            refresh_monthly_payment()
+        }
+    }
+
+    function check_vin() {
+        var vin = document.getElementById("add-sales-vin").value;
+        var vin_description = document.getElementById("add-sales-veh-description");
+        var vin_price = document.getElementById("add-sales-price");
+        var vin_type = document.getElementById("add-sales-types");
+
+        if (vin != "") {
+            console.log(vin)
+
+
+            var req = new XMLHttpRequest();
+            var sales_request = {}
+            sales_request.request_type = "vehicle_check"
+            sales_request.vin = vin
+            console.log(sales_request)
+
+            req.open('POST', '/modsales', true);
+            req.setRequestHeader('Content-Type', 'application/json');
+            req.addEventListener('load', function () {
+                if (req.status >= 200 && req.status < 400) {
+                    var response = JSON.parse(req.responseText);
+                    console.log(response)
+                    console.log("Vehicle Info Request Success!")
+                    if (response == "-1") {
+                        vin_description.textContent = "No vehicle information"
+                        vin_exist_bool = false
+                    } else {
+                        vin_description.textContent = response[1] + "-" + response[2] + "-" + response[3] + "-" + response[4] + "-" + response[5] + "-" + response[6]
+                        vin_price.value = response[7]
+                        vin_type.value = response[0]
+                        vin_exist_bool = true
+                    }
+
+                    if (sales_exist_bool == true & customer_exist_bool == true & vin_exist_bool == true & financial_exist_bool == true & dp_exist_bool == true) {
+                        refresh_monthly_payment()
+                    }
+
+                } else {
+                    console.log("Error in network request: " + req.statusText);
+                }
+            });
+            req.send(JSON.stringify(sales_request));
+            event.preventDefault();
+
+
+
+        }
+
+    }
+
+
+    function check_customer_id() {
+        var customerid = document.getElementById("add-sales-customerid").value;
+        var customer_name = document.getElementById("add-sales-customer-name");
+
+        if (customerid != "") {
+            console.log(customerid)
+
+
+            var req = new XMLHttpRequest();
+            var customer_request = {}
+            customer_request.request_type = "customer_check"
+            customer_request.dw_customer_id = customerid
+            console.log(customer_request)
+
+            req.open('POST', '/modsales', true);
+            req.setRequestHeader('Content-Type', 'application/json');
+            req.addEventListener('load', function () {
+                if (req.status >= 200 && req.status < 400) {
+                    var response = JSON.parse(req.responseText);
+                    console.log(response)
+                    console.log("Customer Info Request Success!")
+
+                    if (response == "-1") {
+                        customer_name.textContent = "No customer Information."
+                        customer_exist_bool = false
+                    } else {
+                        customer_name.textContent = "Customer ID exists - Customer Name:" + response[2] + ", " + response[1] + "(SSN: " + response[10] + ")"
+                        customer_exist_bool = true
+                    }
+
+
+                    if (sales_exist_bool == true & customer_exist_bool == true & vin_exist_bool == true & financial_exist_bool == true & dp_exist_bool == true) {
+                        refresh_monthly_payment()
+                    }
+
+
+                } else {
+                    console.log("Error in network request: " + req.statusText);
+                }
+            });
+            req.send(JSON.stringify(customer_request));
+            event.preventDefault();
+
+
+
+        }
+
+    }
+
+
+    function check_sales_id() {
+        var salesid = document.getElementById("add-sales-salesid").value;
+        var sales_name = document.getElementById("add-sales-sales-name");
+
+        if (salesid != "") {
+            console.log(salesid)
+
+
+            var req = new XMLHttpRequest();
+            var sales_request = {}
+            sales_request.request_type = "sales_check"
+            sales_request.dw_sales_rep_id = salesid
+            console.log(sales_request)
+
+            req.open('POST', '/modsales', true);
+            req.setRequestHeader('Content-Type', 'application/json');
+            req.addEventListener('load', function () {
+                if (req.status >= 200 && req.status < 400) {
+                    var response = JSON.parse(req.responseText);
+                    console.log(response)
+                    console.log("Sales Info Request Success!")
+                    if (response == "-1") {
+                        sales_name.textContent = "No sales representatives information"
+                        sales_exist_bool = false
+                    } else {
+                        sales_name.textContent = "Sales ID exists - Sales Name:" + response[2] + ", " + response[1]
+                        sales_exist_bool = true
+                    }
+
+                    if (sales_exist_bool == true & customer_exist_bool == true & vin_exist_bool == true & financial_exist_bool == true & dp_exist_bool == true) {
+                        refresh_monthly_payment()
+                    }
+
+                } else {
+                    console.log("Error in network request: " + req.statusText);
+                }
+            });
+            req.send(JSON.stringify(sales_request));
+            event.preventDefault();
+
+
+
+        }
+
+    }
+
+
+
+
+    function add_new_sales() {
+        add_modal.style.display = "block";
+    }
+
+    function check_customer(customerid) {
+        console.log(customerid)
+        customer_modal.style.display = "block";
+
+
+
+        var req = new XMLHttpRequest();
+        var customer_request = {}
+        customer_request.request_type = "customer_check"
+        customer_request.dw_customer_id = customerid
+        console.log(customer_request)
+
+        req.open('POST', '/modsales', true);
+        req.setRequestHeader('Content-Type', 'application/json');
+        req.addEventListener('load', function () {
+            if (req.status >= 200 && req.status < 400) {
+                var response = JSON.parse(req.responseText);
+                console.log(response)
+                console.log("Customer Info Request Success!")
+                document.getElementById("customer-id").textContent = response[0]
+                document.getElementById("customer-first-name").textContent = response[1]
+                document.getElementById("customer-last-name").textContent = response[2]
+                document.getElementById("customer-dob").textContent = response[3]
+                document.getElementById("customer-address").textContent = response[4] + " , " + response[5] + " , " + response[8] + " , " + response[7] + " , " + response[6]
+                document.getElementById("customer-phone").textContent = response[9]
+                document.getElementById("customer-ssn").textContent = response[10]
+
+
+
+            } else {
+                console.log("Error in network request: " + req.statusText);
+            }
+        });
+        req.send(JSON.stringify(customer_request));
+        event.preventDefault();
+
+
+    }
+
+    function check_sales(salesid) {
+        console.log(salesid)
+        sales_modal.style.display = "block";
+
+        var req = new XMLHttpRequest();
+        var sales_request = {}
+        sales_request.request_type = "sales_check"
+        sales_request.dw_sales_rep_id = salesid
+        console.log(sales_request)
+
+        req.open('POST', '/modsales', true);
+        req.setRequestHeader('Content-Type', 'application/json');
+        req.addEventListener('load', function () {
+            if (req.status >= 200 && req.status < 400) {
+                var response = JSON.parse(req.responseText);
+                console.log(response)
+                console.log("Sales Info Request Success!")
+
+                document.getElementById("sales-id").textContent = response[0]
+                document.getElementById("sales-first-name").textContent = response[1]
+                document.getElementById("sales-last-name").textContent = response[2]
+                document.getElementById("sales-location").textContent = response[3]
+
+
+            } else {
+                console.log("Error in network request: " + req.statusText);
+            }
+        });
+        req.send(JSON.stringify(sales_request));
+        event.preventDefault();
+
+
+    }
+
+    function payment_schedule(invoiceid) {
+        console.log(invoiceid)
+        payment_modal.style.display = "block";
+
+        var req = new XMLHttpRequest();
+        var payment_request = {}
+        payment_request.request_type = "payment_check"
+        payment_request.dw_invoice_id = invoiceid
+        console.log(payment_request)
+
+        req.open('POST', '/modsales', true);
+        req.setRequestHeader('Content-Type', 'application/json');
+        req.addEventListener('load', function () {
+            if (req.status >= 200 && req.status < 400) {
+                var response = JSON.parse(req.responseText);
+                console.log(response)
+                console.log("Payment Info Request Success!")
+
+                var payment_status = document.getElementById("payment_status")
+                if (response["Full"] == "Y") {
+                    payment_status.textContent = "The vehicle is paid full."
+                } else {
+                    payment_status.textContent = "The vehicle is not paid full."
+                }
+
+
+                var payment_record = document.getElementById("payment_record")
+                payment_record.innerHTML = ""
+
+                var payment_table = document.createElement("table")
+                payment_record.appendChild(payment_table)
+
+                var payment_thead = document.createElement("thead")
+                payment_table.appendChild(payment_thead)
+
+                var payment_header = document.createElement("tr")
+                payment_thead.appendChild(payment_header)
+
+                var payment_td = document.createElement("td")
+                payment_td.textContent = "Payment ID"
+                payment_header.appendChild(payment_td)
+
+                var payment_td = document.createElement("td")
+                payment_td.textContent = "Invoice ID"
+                payment_header.appendChild(payment_td)
+
+                var payment_td = document.createElement("td")
+                payment_td.textContent = "Payment Date"
+                payment_header.appendChild(payment_td)
+
+                var payment_td = document.createElement("td")
+                payment_td.textContent = "nth Payment"
+                payment_header.appendChild(payment_td)
+
+                var payment_td = document.createElement("td")
+                payment_td.textContent = "Payment Amount"
+                payment_header.appendChild(payment_td)
+
+
+                var payment_td = document.createElement("td")
+                payment_td.textContent = "Balance"
+                payment_header.appendChild(payment_td)
+
+                var payment_tbody = document.createElement("tbody")
+                payment_table.appendChild(payment_tbody)
+
+                for (i in response.Data) {
+
+                    console.log(response.Data[i])
+
+                    var payment_schedule = document.createElement("tr")
+                    payment_tbody.appendChild(payment_schedule)
+
+                    var payment_td = document.createElement("td")
+                    payment_td.textContent = response.Data[i][0]
+                    payment_schedule.appendChild(payment_td)
+
+                    var payment_td = document.createElement("td")
+                    payment_td.textContent = response.Data[i][1]
+                    payment_schedule.appendChild(payment_td)
+
+                    var payment_td = document.createElement("td")
+                    payment_td.textContent = response.Data[i][2]
+                    payment_schedule.appendChild(payment_td)
+
+                    var payment_td = document.createElement("td")
+                    payment_td.textContent = response.Data[i][3]
+                    payment_schedule.appendChild(payment_td)
+
+                    var payment_td = document.createElement("td")
+                    payment_td.textContent = response.Data[i][4]
+                    payment_schedule.appendChild(payment_td)
+
+                    var payment_td = document.createElement("td")
+                    payment_td.textContent = response.Data[i][5]
+                    payment_schedule.appendChild(payment_td)
+
+
+
+                }
+
+
+            } else {
+                console.log("Error in network request: " + req.statusText);
+            }
+        });
+        req.send(JSON.stringify(payment_request));
+        event.preventDefault();
+
+    }
+
+    function delete_sales(invoice) {
+
+        console.log("{{ current_page }}")
+        var req = new XMLHttpRequest();
+        var sales_request = {}
+        sales_request.request_type = "sales_delete"
+        sales_request.dw_invoice_id = invoice
+        sales_request.page = "{{ current_page }}"
+        console.log(sales_request)
+
+        req.open('POST', '/modsales', true);
+        req.setRequestHeader('Content-Type', 'application/json');
+        req.addEventListener('load', function () {
+            if (req.status >= 200 && req.status < 400) {
+                console.log("Delete Request Success!")
+
+                location.reload();
+
+
+            } else {
+                console.log("Error in network request: " + req.statusText);
+            }
+        });
+        req.send(JSON.stringify(sales_request));
+        event.preventDefault();
+
+
+    }
+
+
+
+
+
+</script>
+
+
+
+
+
 
 
 {% endblock %}
