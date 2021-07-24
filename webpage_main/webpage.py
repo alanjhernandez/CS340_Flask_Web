@@ -871,12 +871,19 @@ def modify_sales():
             dw_invoice_id = request.json["dw_invoice_id"] 
             page = int(request.json["page"])
 
+
+            query = f"""
+            UPDATE  Vehicle_Inventories
+            SET sold_ind = '0'
+            where vin in (select vin from Sales_Record where vin = '{vin}')
+            """
+            results = execute_query(db, query)
+            
             query = f"""
                     delete from Sales_Records
                     where dw_invoice_id = '{dw_invoice_id}'
                     """
             results = execute_query(db, query)
-            
 
 
             make = session["sales_search"]["key"]["make"] 
@@ -993,7 +1000,6 @@ def modify_sales():
                 prev_page = 1
             
             return render_template("modify_sales.html", content = sales_list, prev_page = prev_page, current_page = page, next_page = next_page) 
-
 
 
     else:
@@ -1482,6 +1488,161 @@ def modify_sales():
             else:
                 return render_template("modify_sales.html") 
 
+        elif request.method  == "POST" and request.form["request_type"] == "sales_edit":
+            db = connect_to_database()
+            dw_invoice_id = request.form["dw_invoice_id"] 
+            dw_customer_id = request.form["dw_customer_id"] 
+            dw_sales_rep_id = request.form["dw_sales_rep_id"] 
+            page = int(request.form["page"])
+
+            print(dw_invoice_id, dw_customer_id, dw_sales_rep_id)
+
+
+            query = f"""
+            select dw_customer_id
+            from Customers_Info
+            where dw_customer_id = '{dw_customer_id}'
+            """
+            results = execute_query(db, query)
+
+            customer_list = [list(r) for r in results.fetchall()]
+
+
+            query = f"""
+            select dw_sales_rep_id
+            from Sales_Reps
+            where dw_sales_rep_id = '{dw_sales_rep_id}'
+            """
+            results = execute_query(db, query)
+
+            sales_list = [list(r) for r in results.fetchall()]
+
+            if len(customer_list) > 0 and len(sales_list) > 0:
+                query = f"""
+                UPDATE  Customers_Salesreps
+                SET dw_customer_id = '{dw_customer_id}', dw_sales_rep_id = '{dw_sales_rep_id}'
+                where dw_invoice_id = '{dw_invoice_id}'
+                """
+                results = execute_query(db, query)
+                status_msg = 'Update Successful'
+            else:
+                status_msg = 'Invalid Information'
+
+            
+
+
+            make = session["sales_search"]["key"]["make"] 
+            model = session["sales_search"]["key"]["model"]
+            year = session["sales_search"]["key"]["year"]
+            color = session["sales_search"]["key"]["color"] 
+            trim = session["sales_search"]["key"]["trim"]
+            vin = session["sales_search"]["key"]["vin"]
+            clname = session["sales_search"]["key"]["customer_lname"] 
+            cfname = session["sales_search"]["key"]["customer_fname"] 
+            slname = session["sales_search"]["key"]["sales_lname"] 
+            sfname = session["sales_search"]["key"]["sales_fname"] 
+
+            nth_record = (page-1) * row_per_page + 1
+
+            query = f"""
+                    select 
+                    a.dw_invoice_id
+                    ,a.vin
+                    ,b.customer_first_name
+                    ,b.customer_last_name
+                    ,b.sales_first_name
+                    ,b.sales_last_name
+                    ,c.vehicle_type
+                    ,c.vehicle_make
+                    ,c.vehicle_model
+                    ,c.vehicle_year
+                    ,c.vehicle_color
+                    ,c.vehicle_trim
+                    ,c.vehicle_price
+                    ,down_payment_amount
+                    ,Monthly_Payment_amount
+                    ,concat(int_rate, '/', num_of_payment) as payment_arrangement
+                    ,dw_customer_id
+                    ,dw_sales_rep_id
+                    from Sales_Records as a
+
+
+                    inner join (
+                    SELECT 
+                    a.dw_invoice_id
+                    ,a.dw_customer_id
+                    ,a.dw_sales_rep_id
+                    ,b.first_name as Customer_First_Name
+                    ,b.last_name as Customer_Last_Name
+                    ,c.first_name as Sales_First_Name
+                    ,c.last_name as Sales_Last_Name
+
+
+                    FROM Customers_Salesreps as a
+
+                    inner join Customers_Info as b
+                    on a.dw_customer_id = b.dw_customer_id
+
+                    inner join Sales_Reps as c
+                    on a.dw_sales_rep_id = c.dw_sales_rep_id
+
+
+                    where c.first_name like "%%{sfname}%%"
+                    and c.last_name like "%%{slname}%%"
+                    and b.first_name like "%%{cfname}%%"
+                    and b.last_name like "%%{clname}%%"
+    
+
+                    ) as b
+                    on a.dw_invoice_id = b.dw_invoice_id
+
+
+                    inner join (
+                    SELECT 
+                    dw_vehicle_type_id
+                    ,vehicle_type
+                    ,vehicle_make
+                    ,vehicle_model
+                    ,vehicle_year
+                    ,vehicle_color
+                    ,vehicle_trim
+                    ,vehicle_price
+                    from Vehicle_Types 
+                    where vehicle_make like "%%{make}%%"
+                    and vehicle_model like "%%{model}%%"
+                    and vehicle_year like "%%{year}%%"
+                    and vehicle_color like "%%{color}%%"
+                    and vehicle_trim like "%%{trim}%%"
+
+                    ) as c
+                    on a.dw_vehicle_type_id = c.dw_vehicle_type_id
+
+                    left join Financial_Options as d
+                    on a.dw_fincl_option_id = d.dw_fincl_option_id
+
+                    where a.vin like "%%{vin}%%"
+
+
+                    order by dw_invoice_id
+                    limit {nth_record}, {row_per_page}
+                    """
+
+            results = execute_query(db, query)
+            sales_list = [list(r) for r in results.fetchall()]
+            print(sales_list)
+
+
+            if session["sales_search"]["count"] > (nth_record + row_per_page):
+                next_page = page + 1
+            else:
+                next_page = page
+
+            if (nth_record - row_per_page) > 0:
+                prev_page = page - 1
+            else:
+                prev_page = 1
+            
+            return render_template("modify_sales.html", content = sales_list, prev_page = prev_page, current_page = page, next_page = next_page, status_msg = status_msg) 
 
 @app.route("/testdrive")
 def test_drive():

@@ -13,7 +13,7 @@
 
     
 /* The Modal (background) */
-.customer_modal, .sales_modal, .payment_modal, .add_modal{
+.customer_modal, .sales_modal, .payment_modal, .add_modal, .edit_modal{
   display: none; /* Hidden by default */
   position: fixed; /* Stay in place */
   z-index: 1; /* Sit on top */

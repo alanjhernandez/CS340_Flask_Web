@@ -130,7 +130,9 @@ Add/Modify/Search Sales Record
             <td>{{i[14]}}</td>
             <td>{{i[15]}}</td>
             <td><button onclick="delete_sales('{{i[0]}}');">Delete</button></td>
-            <td><button>Edit</button></td>
+            <td><button
+                    onclick="edit_sales('{{i[0]}}','{{i[1]}}','{{i[2]}}','{{i[3]}}','{{i[4]}}','{{i[5]}}','{{i[6]}}','{{i[7]}}','{{i[8]}}','{{i[9]}}','{{i[10]}}','{{i[11]}}','{{i[12]}}','{{i[13]}}','{{i[14]}}','{{i[15]}}','{{i[16]}}','{{i[17]}}');">Edit</button>
+            </td>
             <td><button onclick="payment_schedule('{{i[0]}}');">Payments</button></td>
 
         </tr>
@@ -156,6 +158,12 @@ Add/Modify/Search Sales Record
     </form>
 </div>
 <br>
+
+{% endif %}
+
+{% if status_msg is defined %}
+
+Status: {{status_msg}}
 
 {% endif %}
 
@@ -360,6 +368,93 @@ Add/Modify/Search Sales Record
 </div>
 
 
+<div id="edit_modal" class="edit_modal">
+
+    <!-- Modal content -->
+    <div class="modal-content">
+        <span class="close">&times;</span>
+
+        <form action="#" method="POST">
+            <fieldset>
+
+                <legend>Sales Information - Please delete the sale record if the vehicle or financial payment is not
+                    correct.</legend>
+
+                <table>
+
+                    <tr>
+                        <td>Invoice ID </td>
+                        <td colspan="2"><input type="number" id="edit-sales-invoice" name="dw_invoice_id" required
+                                readonly></input></td>
+
+                    </tr>
+                    <tr>
+                        <td>Customer ID </td>
+                        <td colspan="2"><input type="number" id="edit-sales-customerid"
+                                onfocusout="edit_check_customer_id()" name="dw_customer_id" required></input></td>
+                        <td colspan="3" id="edit-sales-customer-name"></td>
+                    </tr>
+
+                    <tr>
+                        <td>Sales ID </td>
+                        <td colspan="2"><input type="number" id="edit-sales-salesid" onfocusout="edit_check_sales_id()"
+                                name="dw_sales_rep_id" required></input>
+                        </td>
+                        <td colspan="3" id="edit-sales-sales-name"></td>
+                    </tr>
+
+                    <tr>
+                        <td>VIN</td>
+                        <td colspan="2"><input type="text" id="edit-sales-vin" name="vin" required readonly></input>
+                        </td>
+                        <td colspan="3" id="edit-sales-veh-description"></td>
+                    </tr>
+
+                    <tr>
+                        <td>Price</td>
+                        <td colspan="2"> <input type="number" id='edit-sales-price' name="price" readonly></td>
+
+                    </tr>
+
+                    <tr>
+                        <td>Financial Option</td>
+                        <td colspan="2"><input list="financial-arrangement" id="edit-sales-financial"
+                                name="financial_option" required readonly></input>
+                            <datalist id="financial-arrangement">
+
+                            </datalist>
+                        </td>
+
+                    <tr>
+                        <td>Down Payment</td>
+                        <td colspan="2"><input type="number" id="edit-sales-dp" min=0 name="down_payment" required
+                                readonly></input>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>Monthly Payment</td>
+                        <td colspan="2"> <input type="number" id='edit-sales-monthly-payment' name="monthly_payment"
+                                readonly></td>
+
+                    </tr>
+
+
+
+                </table>
+
+                <input type="hidden" name="page" value="{{ current_page }}">
+                <input type="hidden" name="request_type" value="sales_edit">
+                <input type="submit">
+
+            </fieldset>
+
+        </form>
+
+    </div>
+
+</div>
+
 
 
 
@@ -372,6 +467,8 @@ Add/Modify/Search Sales Record
     var payment_span = document.getElementsByClassName("close")[2];
     var add_modal = document.getElementById("add_modal");
     var add_span = document.getElementsByClassName("close")[3];
+    var edit_modal = document.getElementById("edit_modal");
+    var edit_span = document.getElementsByClassName("close")[4];
 
     var vin_exist_bool = false
     var customer_exist_bool = false
@@ -397,6 +494,10 @@ Add/Modify/Search Sales Record
         payment_modal.style.display = "none";
     }
 
+    edit_span.onclick = function () {
+        payment_modal.style.display = "none";
+    }
+
 
 
     window.onclick = function (event) {
@@ -415,6 +516,9 @@ Add/Modify/Search Sales Record
         if (event.target == add_modal) {
             add_modal.style.display = "none";
         }
+        if (event.target == edit_modal) {
+            edit_modal.style.display = "none";
+        }
 
     }
 
@@ -422,8 +526,109 @@ Add/Modify/Search Sales Record
     window.addEventListener('load', (event) => {
         pull_financial()
 
-
     });
+
+
+
+    function edit_sales(dw_invoice_id, vin, customer_first_name, customer_last_name, sales_first_name, sales_last_name, vehicle_type, vehicle_make, vehicle_model, vehicle_year, vehicle_color, vehicle_trim, vehicle_price, down_payment_amount, Monthly_Payment_amount, payment_arrangement, dw_customer_id, dw_sales_rep_id) {
+        edit_modal.style.display = "block";
+        document.getElementById("edit-sales-invoice").value = dw_invoice_id
+        document.getElementById("edit-sales-customerid").value = dw_customer_id
+        document.getElementById("edit-sales-salesid").value = dw_sales_rep_id
+        document.getElementById("edit-sales-vin").value = vin
+        document.getElementById("edit-sales-price").value = vehicle_price
+        document.getElementById("edit-sales-financial").value = payment_arrangement
+        document.getElementById("edit-sales-dp").value = down_payment_amount
+        document.getElementById("edit-sales-monthly-payment").value = Monthly_Payment_amount
+        document.getElementById("edit-sales-customer-name").textContent = "Customer Name:" + customer_last_name + ", " + customer_first_name
+        document.getElementById("edit-sales-sales-name").textContent = "Sales Name:" + sales_last_name + ", " + sales_first_name
+
+
+    }
+
+
+    function edit_check_customer_id() {
+        var customerid = document.getElementById("edit-sales-customerid").value;
+        var customer_name = document.getElementById("edit-sales-customer-name");
+
+        if (customerid != "") {
+            console.log(customerid)
+
+
+            var req = new XMLHttpRequest();
+            var customer_request = {}
+            customer_request.request_type = "customer_check"
+            customer_request.dw_customer_id = customerid
+            console.log(customer_request)
+
+            req.open('POST', '/modsales', true);
+            req.setRequestHeader('Content-Type', 'application/json');
+            req.addEventListener('load', function () {
+                if (req.status >= 200 && req.status < 400) {
+                    var response = JSON.parse(req.responseText);
+                    console.log(response)
+                    console.log("Customer Info Request Success!")
+
+                    if (response == "-1") {
+                        customer_name.textContent = "No customer Information."
+                    } else {
+                        customer_name.textContent = "Customer Name:" + response[2] + ", " + response[1]
+                    }
+
+
+                } else {
+                    console.log("Error in network request: " + req.statusText);
+                }
+            });
+            req.send(JSON.stringify(customer_request));
+            event.preventDefault();
+
+
+
+        }
+
+    }
+
+
+    function edit_check_sales_id() {
+        var salesid = document.getElementById("edit-sales-salesid").value;
+        var sales_name = document.getElementById("edit-sales-sales-name");
+
+        if (salesid != "") {
+            console.log(salesid)
+
+
+            var req = new XMLHttpRequest();
+            var sales_request = {}
+            sales_request.request_type = "sales_check"
+            sales_request.dw_sales_rep_id = salesid
+            console.log(sales_request)
+
+            req.open('POST', '/modsales', true);
+            req.setRequestHeader('Content-Type', 'application/json');
+            req.addEventListener('load', function () {
+                if (req.status >= 200 && req.status < 400) {
+                    var response = JSON.parse(req.responseText);
+                    console.log(response)
+                    console.log("Sales Info Request Success!")
+                    if (response == "-1") {
+                        sales_name.textContent = "No sales representatives information"
+                    } else {
+                        sales_name.textContent = "Sales Name:" + response[2] + ", " + response[1]
+                    }
+
+                } else {
+                    console.log("Error in network request: " + req.statusText);
+                }
+            });
+            req.send(JSON.stringify(sales_request));
+            event.preventDefault();
+
+
+
+        }
+
+    }
 
 
 
@@ -678,6 +883,8 @@ Add/Modify/Search Sales Record
     }
 
 
+
+
     function add_new_sales() {
         add_modal.style.display = "block";
     }
@@ -894,6 +1101,8 @@ Add/Modify/Search Sales Record
 
 
     }
+
+
 
 
 
