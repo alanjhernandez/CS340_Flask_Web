@@ -250,135 +250,135 @@ Vehicle Inventory
 
 
 
-
-
-
-
-    <!-- TestDrive Modal -->
-    <div id="testdrive_modal" class="testdrive_modal">
-
-        <!-- Modal content -->
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2 id="testdrive_title"></h2>
-            <div id="testdrive_record"></div>
-        </div>
-
-    </div>
-
-    <!-- Update Modal -->
-    <div id="update_modal" class="update_modal">
-
-        <!-- Modal content -->
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <form action="#" method="post">
-                <fieldset>
-                    <legend>Vehicle Information Update</legend>
-
-                    <table>
-                        <tr>
-                            <td><label for="vin">VIN</label></td>
-                            <td colspan="5"><input type="text" name="vin" id="update-vin"></input></td>
-                        </tr>
-
-                        <tr>
-                            <td><label for="type">Vehicle Type</label></td>
-                            <td><input type="radio" name="type" value="SUV" id="update-type-suv">SUV</input></td>
-                            <td><input type="radio" name="type" value="SEDAN" id="update-type-sedan">Sedan</input></td>
-                            <td><input type="radio" name="type" value="Truck" id="update-type-truck">Truck</input></td>
-                        </tr>
-
-
-                        <tr>
-                            <td><label for="make">Vehicle Make</label></td>
-                            <td><input type="radio" name="make" value="Honda" id="update-make-honda">Honda</input></td>
-                            <td><input type="radio" name="make" value="Toyota" id="update-make-toyota">Toyota</input>
-                            </td>
-                        </tr>
-
-
-
-                        <tr>
-                            <td><label for="model">Vehicle Model</label></td>
-                            <td colspan="5"><input type="text" name="model" id="update-model"></td>
-                        </tr>
-
-                        <tr>
-                            <td><label for="year">Vehicle Year</label></td>
-                            <td><input type="radio" name="year" value="2016" id="update-year-2016">2016</input></td>
-                            <td><input type="radio" name="year" value="2017" id="update-year-2017">2017</input></td>
-                            <td><input type="radio" name="year" value="2018" id="update-year-2018">2018</input></td>
-                            <td><input type="radio" name="year" value="2019" id="update-year-2019">2019</input></td>
-                            <td><input type="radio" name="year" value="2020" id="update-year-2020">2020</input></td>
-                        </tr>
-
-                        <tr>
-                            <td><label for="color">Vehicle Colour</label></td>
-                            <td><input type="radio" name="color" value="Black" id="update-color-black">Black</input>
-                            </td>
-                            <td><input type="radio" name="color" value="Blue" id="update-color-blue">Blue</input></td>
-                            <td><input type="radio" name="color" value="Silver" id="update-color-silver">Silver</input>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td><label for="trim">Vehicle Trim</label></td>
-                            <td colspan="5"><input type="text" name="trim" id="update-trim"></td>
-                        </tr>
-
-                        <tr>
-                            <td><label for="used">Used</label></td>
-                            <td><input type="radio" name="used" value="1" id="update-used-1">Used</input></td>
-                            <td><input type="radio" name="used" value="0" id="update-used-0">New</input></td>
-                        </tr>
-
-                        <tr>
-                            <td><label for="store">Store Location</label></td>
-                            <td colspan="5"><input list="update_store_location" name="store" id="update-store"></td>
-                            <datalist id="update_store_location">
-                                <option value="Portland">
-                                <option value="Salem">
-                                <option value="Eugene">
-                                <option value="Gresham">
-                                <option value="Hillsboro">
-                                <option value="Beaverton">
-                                <option value="Bend">
-                                <option value="Medford">
-                                <option value="Springfield">
-                                <option value="Corvallis">
-                                <option value="Aloha">
-                                <option value="Albany">
-                                <option value="Tigard">
-                                <option value="Lake Oswego">
-                                <option value="Keizer">
-                            </datalist>
-                        </tr>
-
-                        <tr>
-                            <td><label for="parking">Parking Location</label></td>
-                            <td colspan="5"><input type="text" name="parking" id="update-parking"></td>
-                        </tr>
-
-
-
-
-                    </table>
-
-                    <input type="hidden" name="orig_vin" id="update-orig-vin">
-                    <input type="hidden" name="request_type" value="update-submit">
-                    <input type="hidden" name="page" value="{{ current_page }}">
-                    <input type="submit" value="Submit">
-                </fieldset>
-            </form>
-        </div>
-
-    </div>
-
-
 </div>
 
 {% endif %}
+
+
+
+<!-- TestDrive Modal -->
+<div id="testdrive_modal" class="testdrive_modal">
+
+    <!-- Modal content -->
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2 id="testdrive_title"></h2>
+        <div id="testdrive_record"></div>
+    </div>
+
+</div>
+
+<!-- Update Modal -->
+<div id="update_modal" class="update_modal">
+
+    <!-- Modal content -->
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <form action="#" method="post">
+            <fieldset>
+                <legend>Vehicle Information Update</legend>
+
+                <table>
+                    <tr>
+                        <td><label for="vin">VIN</label></td>
+                        <td colspan="5"><input type="text" name="vin" id="update-vin"></input></td>
+                    </tr>
+
+                    <tr>
+                        <td><label for="type">Vehicle Type</label></td>
+                        <td><input type="radio" name="type" value="SUV" id="update-type-suv">SUV</input></td>
+                        <td><input type="radio" name="type" value="SEDAN" id="update-type-sedan">Sedan</input></td>
+                        <td><input type="radio" name="type" value="Truck" id="update-type-truck">Truck</input></td>
+                    </tr>
+
+
+                    <tr>
+                        <td><label for="make">Vehicle Make</label></td>
+                        <td><input type="radio" name="make" value="Honda" id="update-make-honda">Honda</input></td>
+                        <td><input type="radio" name="make" value="Toyota" id="update-make-toyota">Toyota</input>
+                        </td>
+                    </tr>
+
+
+
+                    <tr>
+                        <td><label for="model">Vehicle Model</label></td>
+                        <td colspan="5"><input type="text" name="model" id="update-model"></td>
+                    </tr>
+
+                    <tr>
+                        <td><label for="year">Vehicle Year</label></td>
+                        <td><input type="radio" name="year" value="2016" id="update-year-2016">2016</input></td>
+                        <td><input type="radio" name="year" value="2017" id="update-year-2017">2017</input></td>
+                        <td><input type="radio" name="year" value="2018" id="update-year-2018">2018</input></td>
+                        <td><input type="radio" name="year" value="2019" id="update-year-2019">2019</input></td>
+                        <td><input type="radio" name="year" value="2020" id="update-year-2020">2020</input></td>
+                    </tr>
+
+                    <tr>
+                        <td><label for="color">Vehicle Colour</label></td>
+                        <td><input type="radio" name="color" value="Black" id="update-color-black">Black</input>
+                        </td>
+                        <td><input type="radio" name="color" value="Blue" id="update-color-blue">Blue</input></td>
+                        <td><input type="radio" name="color" value="Silver" id="update-color-silver">Silver</input>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td><label for="trim">Vehicle Trim</label></td>
+                        <td colspan="5"><input type="text" name="trim" id="update-trim"></td>
+                    </tr>
+
+                    <tr>
+                        <td><label for="used">Used</label></td>
+                        <td><input type="radio" name="used" value="1" id="update-used-1">Used</input></td>
+                        <td><input type="radio" name="used" value="0" id="update-used-0">New</input></td>
+                    </tr>
+
+                    <tr>
+                        <td><label for="store">Store Location</label></td>
+                        <td colspan="5"><input list="update_store_location" name="store" id="update-store"></td>
+                        <datalist id="update_store_location">
+                            <option value="Portland">
+                            <option value="Salem">
+                            <option value="Eugene">
+                            <option value="Gresham">
+                            <option value="Hillsboro">
+                            <option value="Beaverton">
+                            <option value="Bend">
+                            <option value="Medford">
+                            <option value="Springfield">
+                            <option value="Corvallis">
+                            <option value="Aloha">
+                            <option value="Albany">
+                            <option value="Tigard">
+                            <option value="Lake Oswego">
+                            <option value="Keizer">
+                        </datalist>
+                    </tr>
+
+                    <tr>
+                        <td><label for="parking">Parking Location</label></td>
+                        <td colspan="5"><input type="text" name="parking" id="update-parking"></td>
+                    </tr>
+
+
+
+
+                </table>
+
+                <input type="hidden" name="orig_vin" id="update-orig-vin">
+                <input type="hidden" name="request_type" value="update-submit">
+                <input type="hidden" name="page" value="{{ current_page }}">
+                <input type="submit" value="Submit">
+            </fieldset>
+        </form>
+    </div>
+
+</div>
+
+
+
 {% if status_msg is defined %}
 <p id="status-msg">{{status_msg}}</p>
 {% endif %}

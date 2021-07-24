@@ -1,0 +1,296 @@
+{% extends "base.html" %}
+
+{% block title%}
+Customer
+{% endblock %}
+
+{% block style%}
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename = 'customer.css')}}">
+{% endblock %}
+
+
+{% block content%}
+
+
+<form action="#" method="POST">
+    <fieldset>
+        <legend>Customer Search Form</legend>
+        <table>
+
+            <tr>
+                <td>Customer ID: </td>
+                <td id="customer-id"><input type="number" name="dw_customer_id"></td>
+
+                <td>Date of Birth:</td>
+                <td id="customer-dob"><input type="date" name="dob"></td>
+            </tr>
+
+            <tr>
+                <td>First Name:</td>
+                <td id="customer-first-name"><input type="text" name="customer_first_name"></td>
+
+                <td>Last Name:</td>
+                <td id="customer-last-name"><input type="text" name="customer_last_name"></td>
+            </tr>
+
+
+            <tr>
+                <td>Address:</td>
+                <td id="customer-address"> <input type="text" name="customer_address"></td>
+
+                <td>ZIP:</td>
+                <td id="customer-zip"> <input type="text" name="customer_zip"></td>
+            </tr>
+
+
+            <tr>
+                <td>City:</td>
+                <td id="customer-city"> <input type="text" name="customer_city"></td>
+
+                <td>State:</td>
+                <td id="customer-state"> <input type="text" name="customer_state"></td>
+            </tr>
+
+
+            <tr>
+                <td>Phone:</td>
+                <td id="customer-phone"><input type="text" name="customer_phone"></td>
+
+                <td>SSN:</td>
+                <td id="customer-ssn"><input type="text" name="customer_ssn"></td>
+            </tr>
+
+        </table>
+
+        <input type="submit">
+        <input type="hidden" name="request_type" value="customer_new_search">
+    </fieldset>
+</form>
+
+
+{% if content is defined%}
+<div>
+    <table>
+        <thead>
+            <tr>
+                <th>Customer ID</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Date of Birth</th>
+                <th>Address 1</th>
+                <th>Address 2</th>
+                <th>Zip</th>
+                <th>City</th>
+                <th>State</th>
+                <th>Phone</th>
+                <th>SSN</th>
+                <th>Delete</th>
+                <th>Update</th>
+
+            </tr>
+        </thead>
+        {% if content is defined %}
+        <tbody id="content-table">
+            {% for i in content %}
+            <tr>
+                <td>{{i[0]}}</td>
+                <td>{{i[1]}}</td>
+                <td>{{i[2]}}</td>
+                <td>{{i[3]}}</td>
+                <td>{{i[4]}}</td>
+                <td>{{i[5]}}</td>
+                <td>{{i[6]}}</td>
+                <td>{{i[7]}}</td>
+                <td>{{i[8]}}</td>
+                <td>{{i[9]}}</td>
+                <td>{{i[10]}}</td>
+                <td><button onclick="delete_customer('{{i[0]}}');">Delete</button></td>
+                <td><button
+                        onclick="edit_customer('{{i[0]}}','{{i[1]}}','{{i[2]}}','{{i[3]}}','{{i[4]}}','{{i[5]}}','{{i[6]}}','{{i[7]}}','{{i[8]}}','{{i[9]}}','{{i[10]}}');">Edit</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        {% endif %}
+    </table>
+
+    <div class="page_button" style="margin: 0 auto; display:inline;">
+        <form action="#" method="POST" style="margin: 0 auto;display: inline;">
+            <input type="hidden" name="page" value={{prev_page}}>
+            <input type="hidden" name="request_type" value="customer_continue_search">
+            <input type="submit" value="Prev">
+        </form>
+
+        Page {{current_page}}
+
+        <form action="#" method="POST" style="margin: 0 auto;display: inline;">
+            <input type="hidden" name="page" value={{next_page}}>
+            <input type="hidden" name="request_type" value="customer_continue_search">
+            <input type="submit" value="Next">
+        </form>
+    </div>
+    <br>
+
+
+
+</div>
+
+
+
+<div id="edit_modal" class="edit_modal">
+
+    <!-- Modal content -->
+    <div class="modal-content">
+        <span class="close">&times;</span>
+
+
+        <form action="#" method="POST">
+            <fieldset>
+                <legend>Customer Information</legend>
+                <table>
+
+                    <tr>
+                        <td>Customer ID: </td>
+                        <td><input type="number" name="dw_customer_id" id="customer-id-update" readonly></td>
+
+                        <td>Date of Birth:</td>
+                        <td><input type="date" name="dob" id="customer-dob-update"></td>
+                    </tr>
+
+                    <tr>
+                        <td>First Name:</td>
+                        <td><input type="text" name="customer_first_name" id="customer-first-name-update"></td>
+
+                        <td>Last Name:</td>
+                        <td><input type="text" name="customer_last_name" id="customer-last-name-update"></td>
+                    </tr>
+
+
+                    <tr>
+                        <td>Address 1:</td>
+                        <td> <input type="text" name="customer_address1" id="customer-address1-update"></td>
+
+                        <td>Address 2:</td>
+                        <td> <input type="text" name="customer_address2" id="customer-address2-update"></td>
+                    </tr>
+                    <tr>
+                        <td>ZIP:</td>
+                        <td> <input type="text" name="customer_zip" id="customer-zip-update"></td>
+                    </tr>
+
+
+                    <tr>
+                        <td>City:</td>
+                        <td> <input type="text" name="customer_city" id="customer-city-update"></td>
+
+                        <td>State:</td>
+                        <td> <input type="text" name="customer_state" id="customer-state-update"></td>
+
+                    </tr>
+
+
+                    <tr>
+                        <td>Phone:</td>
+                        <td><input type="text" name="customer_phone" id="customer-phone-update"></td>
+
+                        <td>SSN:</td>
+                        <td><input type="text" name="customer_ssn" id="customer-ssn-update"></td>
+                    </tr>
+
+                </table>
+
+                <input type="submit">
+                <input type="hidden" name="request_type" value="customer_update">
+                <input type="hidden" name="page" value={{current_page}}>
+
+            </fieldset>
+        </form>
+    </div>
+
+</div>
+
+
+{% if status_msg is defined%}
+{{status_msg}}
+{% endif %}
+
+{% endif %}
+
+
+
+
+<script>
+
+
+
+    var edit_modal = document.getElementById("edit_modal");
+    var edit_span = document.getElementsByClassName("close")[0];
+
+
+
+    edit_span.onclick = function () {
+        payment_modal.style.display = "none";
+    }
+
+
+
+    window.onclick = function (event) {
+
+        if (event.target == edit_modal) {
+            edit_modal.style.display = "none";
+        }
+
+    }
+
+
+    function edit_customer(dw_customer_id, first_name, last_name, customer_dob, address_1, address_2, zip_code, city, state, tel_number, ssn) {
+        edit_modal.style.display = "Block";
+        document.getElementById("customer-id-update").value = dw_customer_id
+        document.getElementById("customer-first-name-update").value = first_name
+        document.getElementById("customer-last-name-update").value = last_name
+        document.getElementById("customer-dob-update").value = customer_dob
+        document.getElementById("customer-address1-update").value = address_1
+        document.getElementById("customer-address2-update").value = address_2
+        document.getElementById("customer-zip-update").value = zip_code
+        document.getElementById("customer-city-update").value = city
+        document.getElementById("customer-state-update").value = state
+        document.getElementById("customer-phone-update").value = tel_number
+        document.getElementById("customer-ssn-update").value = ssn
+    }
+
+
+    function delete_customer(dw_customer_id) {
+
+        console.log("{{ current_page }}")
+        var req = new XMLHttpRequest();
+        var customer_request = {}
+        customer_request.request_type = "customer_delete"
+        customer_request.dw_customer_id = dw_customer_id
+        customer_request.page = "{{ current_page }}"
+        console.log(customer_request)
+
+        req.open('POST', '/customer', true);
+        req.setRequestHeader('Content-Type', 'application/json');
+        req.addEventListener('load', function () {
+            if (req.status >= 200 && req.status < 400) {
+                console.log("Delete Request Success!")
+
+                location.reload();
+
+
+            } else {
+                console.log("Error in network request: " + req.statusText);
+            }
+        });
+        req.send(JSON.stringify(customer_request));
+        event.preventDefault();
+
+
+    }
+
+
+</script>
+
+
+
+{% endblock %}

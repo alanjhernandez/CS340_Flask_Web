@@ -31,6 +31,364 @@ def home():
     return render_template("index.html")
 
 
+@app.route("/customer", methods = ["POST","GET"])
+def customer():
+    row_per_page = 15
+    
+    if request.is_json:
+
+        if request.method  == "POST"  and request.json["request_type"] == "customer_delete":
+
+            db = connect_to_database()
+
+            row_per_page = 15
+
+            dw_customer_id = request.json["dw_customer_id"]
+
+            query = f"""
+                    DELETE from Customers_Info
+                    where dw_customer_id = '{dw_customer_id}'
+                    """
+
+            results = execute_query(db, query)
+
+
+            dw_customer_id = session["customer_search"]["key"]["dw_customer_id"]
+            dob = session["customer_search"]["key"]["dob"] 
+            customer_first_name = session["customer_search"]["key"]["customer_first_name"] 
+            customer_last_name = session["customer_search"]["key"]["customer_last_name"] 
+            address = session["customer_search"]["key"]["address"] 
+            zip_code = session["customer_search"]["key"]["zip_code"] 
+            city = session["customer_search"]["key"]["city"] 
+            state = session["customer_search"]["key"]["state"] 
+            phone = session["customer_search"]["key"]["phone"] 
+            ssn = session["customer_search"]["key"]["ssn"] 
+            session["customer_search"]["count"] -= 1
+
+            page = int(request.json["page"])
+            print(page)
+            nth_record = (page-1) * row_per_page 
+
+
+            query = f"""
+                    SELECT 
+                    dw_customer_id
+                    ,first_name
+                    ,last_name
+                    ,customer_dob
+                    ,address_1
+                    ,address_2
+                    ,zip_code
+                    ,city
+                    ,state
+                    ,tel_number
+                    ,ssn
+                    from Customers_Info
+                    where dw_customer_id like "%%{dw_customer_id}%%"
+                    and first_name like "%%{customer_first_name}%%"
+                    and last_name like "%%{customer_last_name}%%"
+              
+                    and (address_1 like "%%{address}%%" or  address_2 like "%%{address}%%")
+                    and zip_code like "%%{zip_code}%%"
+                    and state like "%%{state}%%"
+                    and city like "%%{city}%%"
+                    and tel_number like "%%{phone}%%"
+                    and ssn like "%%{ssn}%%"
+                    {dob}
+
+                    limit {nth_record}, {row_per_page}
+                    """
+
+            results = execute_query(db, query)
+            customer_info_list = [list(r) for r in results.fetchall()]
+
+ 
+            if session["customer_search"]["count"]  > (nth_record + row_per_page):
+                next_page = page + 1
+            else:
+                next_page = page
+
+            if (nth_record - row_per_page) > 0:
+                prev_page = page - 1
+            else:
+                prev_page = 1
+            
+            return render_template("customer.html", content = customer_info_list, prev_page = prev_page, current_page = page, next_page = next_page, status_msg = "Delete Successful." ) 
+
+
+    else:
+        if request.method == "GET":
+            return render_template("customer.html")
+
+        elif request.method == "POST" and request.form["request_type"] == "customer_new_search":
+
+            db = connect_to_database()
+            dw_customer_id = request.form["dw_customer_id"] 
+            dob = request.form["dob"] 
+            customer_first_name = request.form["customer_first_name"] 
+            customer_last_name = request.form["customer_last_name"] 
+            address = request.form["customer_address"] 
+            zip_code = request.form["customer_zip"] 
+            city = request.form["customer_city"] 
+            state = request.form["customer_state"] 
+            phone = request.form["customer_phone"] 
+            ssn = request.form["customer_ssn"] 
+
+            if dob != "":
+                dob = f"and customer_dob = '{dob}'"
+            
+
+
+            
+            query = f"""
+                    SELECT 
+                    dw_customer_id
+                    ,first_name
+                    ,last_name
+                    ,customer_dob
+                    ,address_1
+                    ,address_2
+                    ,zip_code
+                    ,city
+                    ,state
+                    ,tel_number
+                    ,ssn
+                    from Customers_Info
+                    where dw_customer_id like "%%{dw_customer_id}%%"
+                    and first_name like "%%{customer_first_name}%%"
+                    and last_name like "%%{customer_last_name}%%"
+              
+                    and (address_1 like "%%{address}%%" or  address_2 like "%%{address}%%")
+                    and zip_code like "%%{zip_code}%%"
+                    and state like "%%{state}%%"
+                    and city like "%%{city}%%"
+                    and tel_number like "%%{phone}%%"
+                    and ssn like "%%{ssn}%%"
+                    {dob}
+
+                    limit {row_per_page}
+                    """
+
+            results = execute_query(db, query)
+            customer_info_list = [list(r) for r in results.fetchall()]
+
+
+            query = f"""
+                    SELECT count(distinct dw_customer_id) as count
+                    from Customers_Info
+                    where dw_customer_id like "%%{dw_customer_id}%%"
+                    and first_name like "%%{customer_first_name}%%"
+                    and last_name like "%%{customer_last_name}%%"
+           
+                    and (address_1 like "%%{address}%%" or  address_2 like "%%{address}%%")
+                    and zip_code like "%%{zip_code}%%"
+                    and state like "%%{state}%%"
+                    and city like "%%{city}%%"
+                    and tel_number like "%%{phone}%%"
+                    and ssn like "%%{ssn}%%"
+                     {dob}
+                    """
+
+    
+            results = execute_query(db, query)
+            customer_count = [list(r) for r in results.fetchall()]
+           
+
+            session["customer_search"] = {}
+            session["customer_search"]["count"] = customer_count[0][0]
+            session["customer_search"]["key"] = {}
+            session["customer_search"]["key"]["dw_customer_id"] = dw_customer_id
+            session["customer_search"]["key"]["dob"] = dob
+            session["customer_search"]["key"]["customer_first_name"] = customer_first_name
+            session["customer_search"]["key"]["customer_last_name"] = customer_last_name
+            session["customer_search"]["key"]["address"] = address
+            session["customer_search"]["key"]["zip_code"] = zip_code
+            session["customer_search"]["key"]["city"] = city
+            session["customer_search"]["key"]["state"] = state
+            session["customer_search"]["key"]["phone"] = phone
+            session["customer_search"]["key"]["ssn"] = ssn
+
+ 
+
+            if customer_count[0][0] > row_per_page:
+                #next_url = url_for('vehicle_inventory', page=2)
+                next_page = 2
+            else:
+                #next_url = url_for('vehicle_inventory', page=1)
+                next_page = 1 
+
+            print(next_page)
+            #prev_url = url_for('vehicle_inventory', page=1)
+            prev_page = 1
+
+            print(prev_page, next_page)
+
+
+            return render_template("customer.html", content = customer_info_list, prev_page = prev_page, current_page = 1, next_page = next_page)
+
+
+        elif request.method  == "POST"  and request.form["request_type"] == "customer_continue_search":
+
+            db = connect_to_database()
+
+            row_per_page = 15
+
+
+            dw_customer_id = session["customer_search"]["key"]["dw_customer_id"]
+            dob = session["customer_search"]["key"]["dob"] 
+            customer_first_name = session["customer_search"]["key"]["customer_first_name"] 
+            customer_last_name = session["customer_search"]["key"]["customer_last_name"] 
+            address = session["customer_search"]["key"]["address"] 
+            zip_code = session["customer_search"]["key"]["zip_code"] 
+            city = session["customer_search"]["key"]["city"] 
+            state = session["customer_search"]["key"]["state"] 
+            phone = session["customer_search"]["key"]["phone"] 
+            ssn = session["customer_search"]["key"]["ssn"] 
+
+            page = int(request.form["page"])
+            print(page)
+            nth_record = (page-1) * row_per_page 
+
+
+            query = f"""
+                    SELECT 
+                    dw_customer_id
+                    ,first_name
+                    ,last_name
+                    ,customer_dob
+                    ,address_1
+                    ,address_2
+                    ,zip_code
+                    ,city
+                    ,state
+                    ,tel_number
+                    ,ssn
+                    from Customers_Info
+                    where dw_customer_id like "%%{dw_customer_id}%%"
+                    and first_name like "%%{customer_first_name}%%"
+                    and last_name like "%%{customer_last_name}%%"
+              
+                    and (address_1 like "%%{address}%%" or  address_2 like "%%{address}%%")
+                    and zip_code like "%%{zip_code}%%"
+                    and state like "%%{state}%%"
+                    and city like "%%{city}%%"
+                    and tel_number like "%%{phone}%%"
+                    and ssn like "%%{ssn}%%"
+                    {dob}
+
+                    limit {nth_record}, {row_per_page}
+                    """
+
+            results = execute_query(db, query)
+            customer_info_list = [list(r) for r in results.fetchall()]
+
+ 
+            if session["customer_search"]["count"]  > (nth_record + row_per_page):
+                next_page = page + 1
+            else:
+                next_page = page
+
+            if (nth_record - row_per_page) > 0:
+                prev_page = page - 1
+            else:
+                prev_page = 1
+            
+            return render_template("customer.html", content = customer_info_list, prev_page = prev_page, current_page = page, next_page = next_page, status_msg = "" ) 
+
+        elif request.method  == "POST"  and request.form["request_type"] == "customer_update":
+
+            db = connect_to_database()
+
+            row_per_page = 15
+
+            dw_customer_id = request.form["dw_customer_id"]
+            dob = request.form["dob"] 
+            first_name = request.form["customer_first_name"] 
+            last_name = request.form["customer_last_name"] 
+            address_1 = request.form["customer_address1"] 
+            address_2 = request.form["customer_address2"] 
+            zip_code = request.form["customer_zip"] 
+            city = request.form["customer_city"] 
+            state = request.form["customer_state"] 
+            tel_number = request.form["customer_phone"] 
+            ssn = request.form["customer_ssn"] 
+
+
+
+            query = f"""
+                    UPDATE Customers_Info
+                    SET customer_dob = '{dob}', first_name= '{first_name}', last_name= '{last_name}', address_1= '{address_1}', address_2= '{address_2}', zip_code= '{zip_code}', state= '{state}', city= '{city}',tel_number= '{tel_number}',ssn= '{ssn}'
+                    where dw_customer_id = '{dw_customer_id}'
+                    """
+
+            results = execute_query(db, query)
+
+
+            dw_customer_id = session["customer_search"]["key"]["dw_customer_id"]
+            dob = session["customer_search"]["key"]["dob"] 
+            customer_first_name = session["customer_search"]["key"]["customer_first_name"] 
+            customer_last_name = session["customer_search"]["key"]["customer_last_name"] 
+            address = session["customer_search"]["key"]["address"] 
+            zip_code = session["customer_search"]["key"]["zip_code"] 
+            city = session["customer_search"]["key"]["city"] 
+            state = session["customer_search"]["key"]["state"] 
+            phone = session["customer_search"]["key"]["phone"] 
+            ssn = session["customer_search"]["key"]["ssn"] 
+            session["customer_search"]["count"] -= 1
+
+            page = int(request.form["page"])
+            print(page)
+            nth_record = (page-1) * row_per_page 
+
+
+            query = f"""
+                    SELECT 
+                    dw_customer_id
+                    ,first_name
+                    ,last_name
+                    ,customer_dob
+                    ,address_1
+                    ,address_2
+                    ,zip_code
+                    ,city
+                    ,state
+                    ,tel_number
+                    ,ssn
+                    from Customers_Info
+                    where dw_customer_id like "%%{dw_customer_id}%%"
+                    and first_name like "%%{customer_first_name}%%"
+                    and last_name like "%%{customer_last_name}%%"
+              
+                    and (address_1 like "%%{address}%%" or  address_2 like "%%{address}%%")
+                    and zip_code like "%%{zip_code}%%"
+                    and state like "%%{state}%%"
+                    and city like "%%{city}%%"
+                    and tel_number like "%%{phone}%%"
+                    and ssn like "%%{ssn}%%"
+                    {dob}
+
+                    limit {nth_record}, {row_per_page}
+                    """
+
+            results = execute_query(db, query)
+            customer_info_list = [list(r) for r in results.fetchall()]
+
+ 
+            if session["customer_search"]["count"]  > (nth_record + row_per_page):
+                next_page = page + 1
+            else:
+                next_page = page
+
+            if (nth_record - row_per_page) > 0:
+                prev_page = page - 1
+            else:
+                prev_page = 1
+            
+            return render_template("customer.html", content = customer_info_list, prev_page = prev_page, current_page = page, next_page = next_page, status_msg = "Update Successful." ) 
+  
+                 
+
+
 
 @app.route("/vehinventory", methods = ["POST","GET"])
 def vehicle_inventory():
@@ -333,7 +691,7 @@ def vehicle_inventory():
 
             page = int(request.form["page"])
             print(page)
-            nth_record = (page-1) * row_per_page + 1
+            nth_record = (page-1) * row_per_page 
 
             query = f"""
                     SELECT 
@@ -899,7 +1257,7 @@ def modify_sales():
 
             page = int(request.json["page"])
             print(page)
-            nth_record = (page-1) * row_per_page + 1
+            nth_record = (page-1) * row_per_page 
 
             query = f"""
                     select 
@@ -1228,7 +1586,7 @@ def modify_sales():
 
             page = int(request.form["page"])
             print(page)
-            nth_record = (page-1) * row_per_page + 1
+            nth_record = (page-1) * row_per_page 
 
             query = f"""
                     select 
@@ -1384,7 +1742,7 @@ def modify_sales():
 
                 page = int(request.form["page"])
                 print(page)
-                nth_record = (page-1) * row_per_page + 1
+                nth_record = (page-1) * row_per_page 
 
                 query = f"""
                         select 
@@ -1542,7 +1900,7 @@ def modify_sales():
             slname = session["sales_search"]["key"]["sales_lname"] 
             sfname = session["sales_search"]["key"]["sales_fname"] 
 
-            nth_record = (page-1) * row_per_page + 1
+            nth_record = (page-1) * row_per_page 
 
             query = f"""
                     select 
