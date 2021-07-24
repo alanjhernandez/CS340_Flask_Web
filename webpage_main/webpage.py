@@ -4,7 +4,7 @@ from db_credentials import host, user, passwd, db
 from flask_paginate import Pagination
 from json import dumps
 from datetime import datetime
-import numpy as np
+#import numpy as np
 
 app = Flask(__name__)
 app.secret_key = "3546*&^*dsflk1234"
@@ -1644,9 +1644,117 @@ def modify_sales():
             
             return render_template("modify_sales.html", content = sales_list, prev_page = prev_page, current_page = page, next_page = next_page, status_msg = status_msg) 
 
-@app.route("/testdrive")
+@app.route("/testdrive", methods = ["POST","GET"])
 def test_drive():
-    return render_template("test_drive.html")
+    row_per_page = 15
+    if request.is_json:
+        return render_template("test_drive.html")
+
+    else:
+
+        if request.method  == "GET" and request.args.get('page') is None:
+            return render_template("test_drive.html")
+
+        elif request.method  == "POST"  and request.form["request_type"] == "test_drive_new_search":
+
+            print("POST")
+            db = connect_to_database()
+
+            make = request.form["make"] 
+            model = request.form["model"] 
+            year = request.form["year"] 
+            color = request.form["color"] 
+            trim = request.form["trim"] 
+            vin = request.form["vin"] 
+            cfname = request.form["customer_fname"] 
+            clname = request.form["customer_lname"] 
+
+
+            print(request.form)
+
+            query = f"""
+                    SELECT 
+                    Test_Drives.dw_test_drive_id, 
+                    Test_Drives.vin, test_drive_date, 
+                    check_out_time, return_time, 
+                    Test_Drives.dw_customer_id, 
+                    first_name, last_name, vehicle_type, vehicle_make, 
+                    vehicle_model, vehicle_year, vehicle_color, vehicle_trim, 
+                    vehicle_price
+                    FROM Vehicle_Types JOIN Customers_Info JOIN Test_Drives JOIN Vehicle_Inventories
+                    WHERE Test_Drives.dw_customer_id = Customers_Info.dw_customer_id 
+                    AND Test_Drives.vin = Vehicle_Inventories.vin 
+                    AND Vehicle_Inventories.dw_vehicle_type_id = Vehicle_Types.dw_vehicle_type_id 
+                    AND vehicle_make like "%%{make}%%"
+                    AND vehicle_model like "%%{model}%%"
+                    AND vehicle_year like "%%{year}%%"
+                    AND vehicle_color like "%%{color}%%"
+                    AND vehicle_trim like "%%{trim}%%"
+                    AND first_name like "%%{cfname}%%"
+                    AND last_name like "%%{clname}%%"
+                    AND Test_Drives.vin like "%%{vin}%%"
+                    order by Test_Drives.vin
+                    limit 15
+                    """
+
+            results = execute_query(db, query)
+            test_drive_list = [list(r) for r in results.fetchall()]
+            print(test_drive_list)
+
+
+
+
+            query = f"""
+                    SELECT
+                    count(distinct Test_Drives.vin) as test_drive_count
+
+                    FROM Vehicle_Types JOIN Customers_Info JOIN Test_Drives JOIN Vehicle_Inventories
+                    WHERE Test_Drives.dw_customer_id = Customers_Info.dw_customer_id 
+                    AND Test_Drives.vin = Vehicle_Inventories.vin 
+                    AND Vehicle_Inventories.dw_vehicle_type_id = Vehicle_Types.dw_vehicle_type_id 
+                    AND vehicle_make like "%%{make}%%"
+                    AND vehicle_model like "%%{model}%%"
+                    AND vehicle_year like "%%{year}%%"
+                    AND vehicle_color like "%%{color}%%"
+                    AND vehicle_trim like "%%{trim}%%"
+                    AND first_name like "%%{cfname}%%"
+                    AND last_name like "%%{clname}%%"
+                    AND Test_Drives.vin like "%%{vin}%%"
+                    order by Test_Drives.vin
+                    limit 15
+                    """
+
+            results = execute_query(db, query)
+            test_drive_count = [list(r) for r in results.fetchall()]
+            print(test_drive_count)
+
+            session["test_drive_search"] = {}
+            session["test_drive_search"]["count"] = test_drive_count[0][0]
+            session["test_drive_search"]["key"] = {}
+            session["test_drive_search"]["key"]["make"] = make
+            session["test_drive_search"]["key"]["model"] = model
+            session["test_drive_search"]["key"]["year"] = year
+            session["test_drive_search"]["key"]["color"] = color
+            session["test_drive_search"]["key"]["trim"] = trim
+            session["test_drive_search"]["key"]["vin"] = vin
+            session["test_drive_search"]["key"]["customer_fname"] = cfname
+            session["test_drive_search"]["key"]["customer_lname"] = clname
+
+
+            if test_drive_count[0][0] > row_per_page:
+                #next_url = url_for('vehicle_inventory', page=2)
+                next_page = 2
+            else:
+                #next_url = url_for('vehicle_inventory', page=1)
+                next_page = 1 
+
+            print(next_page)
+            #prev_url = url_for('vehicle_inventory', page=1)
+            prev_page = 1
+
+
+            return render_template("test_drive.html", content = test_drive_list, prev_page = prev_page, current_page = 1, next_page = next_page)
+
 
 @app.route("/cfproject", methods = ["POST","GET"])
 def cf_projection():

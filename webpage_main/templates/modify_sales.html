@@ -365,6 +365,27 @@ Status: {{status_msg}}
 
     </div>
 
+            </tr>
+        </thead>
+        {% if content is defined %}
+        <tbody id="content-table">
+            {% for i in content %}
+            <tr>
+                <td>{{i[0]}}</td>
+                <td>{{i[1]}}</td>
+                <td>{{i[2]}}</td>
+                <td>{{i[3]}}</td>
+                <td>{{i[4]}}</td>
+                <td>{{i[5]}}</td>
+                <td>{{i[6]}}</td>
+                <td>{{i[7]}}</td>
+                <td><button>Delete</button></td>
+                <td><button>Update</button></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        {% endif %}
+    </table>
 </div>
 
 
