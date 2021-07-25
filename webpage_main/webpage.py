@@ -1074,7 +1074,7 @@ def vehicle_inventory():
                     where b.dw_vehicle_type_id IN ({fstring_sub})
                     and a.sold_ind = '0'
                     order by 1
-                    limit 15
+                    limit {row_per_page}
                     ;
                     """
 
@@ -1082,11 +1082,15 @@ def vehicle_inventory():
             inventory_result = [ list(r) for r in results.fetchall()]
 
             query = f"""
-                    SELECT count(*) as vehicle_count
+                    SELECT count(distinct vin) as count
                     from Vehicle_Inventories as a
-                    where a.sold_ind = '0'
-                
-                    ;
+
+                    inner join Vehicle_Types as b
+                    on a.dw_vehicle_type_id = b.dw_vehicle_type_id
+
+
+                    where b.dw_vehicle_type_id IN ({fstring_sub})
+                    and a.sold_ind = '0';
                     """
                     
             results = execute_query(db, query)
@@ -1306,7 +1310,6 @@ def vehicle_inventory():
             
             return render_template("vehicle_inventory.html", content = inventory_result, prev_page = prev_page, current_page = page, next_page = next_page, status_msg = status_msg ) 
 
-
         elif request.method  == "POST"  and request.form["request_type"] == "add-submit":
 
             print(request.form)
@@ -1376,7 +1379,6 @@ def vehicle_inventory():
                     
 
                     SELECT max(substring(parking_location,1,1)) as destination 
-
                     FROM Vehicle_Inventories
                     WHERE store_location = "{store_location}"
   
@@ -1641,8 +1643,6 @@ def modify_sales():
 
             print(financial_list[0])
             return jsonify(financial_list[0])
-
-
 
         elif request.method  == "POST" and request.json["request_type"] == "payment_check":
             
@@ -1915,7 +1915,7 @@ def modify_sales():
 
 
                     order by dw_invoice_id
-                    limit 15
+                    limit {row_per_page}
                     """
 
             results = execute_query(db, query)
@@ -2017,7 +2017,6 @@ def modify_sales():
 
 
             return render_template("modify_sales.html", content = sales_list, prev_page = prev_page, current_page = 1, next_page = next_page)
-
 
         elif request.method  == "POST"  and request.form["request_type"] == "sales_continue_search":
 
@@ -2504,7 +2503,7 @@ def test_drive():
                     AND last_name like "%%{clname}%%"
                     AND Test_Drives.vin like "%%{vin}%%"
                     order by Test_Drives.vin
-                    limit 15
+                    limit {row_per_page}
                     """
 
             results = execute_query(db, query)
@@ -2531,7 +2530,7 @@ def test_drive():
                     AND last_name like "%%{clname}%%"
                     AND Test_Drives.vin like "%%{vin}%%"
                     order by Test_Drives.vin
-                    limit 15
+                    
                     """
 
             results = execute_query(db, query)
@@ -2626,7 +2625,7 @@ def cf_projection():
                     ) as a
 
 
-                    inner join eom_dt as b 
+                    inner join Projection_Months as b 
                     on b.eom_dt between a.first_payment_month and a.final_payment_month
                     and b.eom_dt between '{report_start_date}' and '{report_end_date}'
 

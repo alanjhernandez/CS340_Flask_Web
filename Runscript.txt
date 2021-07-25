@@ -9,10 +9,10 @@ pip install -r requirements.txt
 
 source ./venv/bin/activate
 export FLASK_APP=run.py
-python -m flask run -h 0.0.0.0 -p 7695 --reload
+python -m flask run -h 0.0.0.0 -p 7694 --reload
 
 
-gunicorn run:app -b 0.0.0.0:7695 -D 
+gunicorn run:app -b 0.0.0.0:7694 -D 
 
 kill -9 XXXX
 
