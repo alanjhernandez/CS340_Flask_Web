@@ -1,0 +1,337 @@
+{% extends "base.html" %}
+
+{% block title%}
+Sales
+{% endblock %}
+
+{% block style%}
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename = 'salesrep.css')}}">
+{% endblock %}
+
+{% block content%}
+
+<form action="#" method="POST">
+    <fieldset>
+        <legend>Sales Search Form</legend>
+        <table>
+
+            <tr>
+                <td>Sales ID: </td>
+                <td id="sales-id"><input type="number" name="dw_sales_rep_id"></td>
+
+
+            </tr>
+
+            <tr>
+                <td>First Name:</td>
+                <td id="sales-first-name"><input type="text" name="sales_first_name"></td>
+
+            </tr>
+
+            <tr>
+
+                <td>Last Name:</td>
+                <td id="sales-last-name"><input type="text" name="sales_last_name"></td>
+            </tr>
+
+            <tr>
+                <td>Location:</td>
+                <td>
+                    <input list="store-list" id="store_location" name="store_location"></input>
+                    <datalist id="store-list">
+                    </datalist>
+                </td>
+            </tr>
+
+        </table>
+
+        <input type="submit">
+        <input type="hidden" name="request_type" value="sales_new_search">
+    </fieldset>
+</form>
+
+<br>
+<button onclick="add_sales();">New Record</button>
+
+{% if content is defined%}
+<div>
+    <table>
+        <thead>
+            <tr>
+                <th>Sales ID</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Primary Location</th>
+                <th>Delete</th>
+                <th>Edit</th>
+
+
+            </tr>
+        </thead>
+        {% if content is defined %}
+        <tbody id="content-table">
+            {% for i in content %}
+            <tr>
+                <td>{{i[0]}}</td>
+                <td>{{i[1]}}</td>
+                <td>{{i[2]}}</td>
+                <td>{{i[3]}}</td>
+
+                <td><button onclick="delete_sales('{{i[0]}}');">Delete</button></td>
+                <td><button onclick="edit_sales('{{i[0]}}','{{i[1]}}','{{i[2]}}','{{i[3]}}');">Edit</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        {% endif %}
+    </table>
+
+    <div class="page_button" style="margin: 0 auto; display:inline;">
+        <form action="#" method="POST" style="margin: 0 auto;display: inline;">
+            <input type="hidden" name="page" value={{prev_page}}>
+            <input type="hidden" name="request_type" value="sales_continue_search">
+            <input type="submit" value="Prev">
+        </form>
+
+        Page {{current_page}}
+
+        <form action="#" method="POST" style="margin: 0 auto;display: inline;">
+            <input type="hidden" name="page" value={{next_page}}>
+            <input type="hidden" name="request_type" value="sales_continue_search">
+            <input type="submit" value="Next">
+        </form>
+    </div>
+    <br>
+
+
+</div>
+
+
+{% endif %}
+
+<div id="edit_modal" class="edit_modal">
+
+    <!-- Modal content -->
+    <div class="modal-content">
+        <span class="close" id="edit-close">&times;</span>
+
+        <form action="#" method="POST">
+            <fieldset>
+                <legend>Sales Information</legend>
+                <table>
+
+                    <tr>
+                        <td>Sales ID: </td>
+                        <td><input type="number" name="dw_sales_rep_id" id="sales-id-update" readonly></td>
+                    </tr>
+
+                    <tr>
+                        <td>First Name:</td>
+                        <td><input type="text" name="sales_first_name" id="sales-first-name-update"></td>
+                    </tr>
+
+                    <tr>
+                        <td>Last Name:</td>
+                        <td><input type="text" name="sales_last_name" id="sales-last-name-update"></td>
+                    </tr>
+
+
+                    <tr>
+                        <td>Primary Location: </td>
+                        <td>
+                            <input list="store-list" id="sales-store-location-update" name="store_location"></input>
+                            <datalist id="store-list">
+                            </datalist>
+                        </td>
+
+                    </tr>
+
+
+                </table>
+
+                <input type="submit">
+                <input type="hidden" name="request_type" value="sales_update">
+                <input type="hidden" name="page" value={{current_page}}>
+
+            </fieldset>
+        </form>
+    </div>
+
+</div>
+
+<div id="add_modal" class="add_modal">
+
+    <!-- Modal content -->
+    <div class="modal-content">
+        <span class="close" id="add-close">&times;</span>
+
+        <form action="#" method="POST">
+            <fieldset>
+                <legend>Sales Information</legend>
+                <table>
+
+                    <tr>
+                        <td>First Name:</td>
+                        <td><input type="text" name="sales_first_name" id="sales-first-name-add"></td>
+                    </tr>
+
+                    <tr>
+                        <td>Last Name:</td>
+                        <td><input type="text" name="sales_last_name" id="sales-last-name-add"></td>
+                    </tr>
+
+                    <tr>
+                        <td>Primary Location: </td>
+                        <td>
+                            <input list="store-list" id="sales-store-location-add" name="store_location"></input>
+                            <datalist id="store-list">
+                            </datalist>
+                        </td>
+
+                    </tr>
+
+                </table>
+
+                <input type="submit">
+                <input type="hidden" name="request_type" value="sales_add">
+                <input type="hidden" name="page" value={{current_page}}>
+
+            </fieldset>
+        </form>
+    </div>
+
+</div>
+
+
+{% if status_msg is defined%}
+{{status_msg}}
+{% endif %}
+
+
+<script>
+
+
+    window.addEventListener('load', (event) => {
+        pull_store()
+
+    });
+
+
+
+    function pull_store() {
+        var store_list = document.getElementById("store-list");
+        var store_list_edit = document.getElementById("sales-store-location-update");
+        var store_list_add = document.getElementById("sales-store-location-add");
+
+
+        var req = new XMLHttpRequest();
+        var store_request = {}
+        store_request.request_type = "store_pull"
+        console.log(store_request)
+
+        req.open('POST', '/salesrep', true);
+        req.setRequestHeader('Content-Type', 'application/json');
+        req.addEventListener('load', function () {
+            if (req.status >= 200 && req.status < 400) {
+                var response = JSON.parse(req.responseText);
+                console.log(response)
+                console.log("Store Request Success!")
+                store_list.innerHTML = ''
+
+
+                for (i = 0; i < response.length; i++) {
+                    console.log(i)
+                    var option_tag = document.createElement("option")
+                    option_tag.innerHTML = response[i]
+                    option_tag.value = response[i]
+                    store_list_add.appendChild(option_tag)
+                    store_list_edit.appendChild(option_tag)
+                    store_list.appendChild(option_tag)
+                }
+
+
+
+            } else {
+                console.log("Error in network request: " + req.statusText);
+            }
+        });
+        req.send(JSON.stringify(store_request));
+        event.preventDefault();
+
+
+    }
+
+    var edit_modal = document.getElementById("edit_modal");
+    var edit_span = document.getElementById("edit-close");
+    var add_modal = document.getElementById("add_modal");
+    var add_span = document.getElementById("add-close");
+
+
+
+    edit_span.onclick = function () {
+        edit_modal.style.display = "none";
+    }
+
+    add_span.onclick = function () {
+        add_modal.style.display = "none";
+    }
+
+
+    window.onclick = function (event) {
+
+        if (event.target == edit_modal) {
+            edit_modal.style.display = "none";
+        }
+        if (event.target == add_modal) {
+            add_modal.style.display = "none";
+        }
+
+    }
+
+    function add_sales() {
+        console.log(add_modal)
+        add_modal.style.display = "block";
+    }
+
+
+    function edit_sales(dw_sales_rep_id, first_name, last_name, store_location) {
+        edit_modal.style.display = "block";
+        document.getElementById("sales-id-update").value = dw_sales_rep_id
+        document.getElementById("sales-first-name-update").value = first_name
+        document.getElementById("sales-last-name-update").value = last_name
+        document.getElementById("sales-store-location-update").value = store_location
+
+    }
+
+
+    function delete_sales(dw_sales_rep_id) {
+
+        console.log("{{ current_page }}")
+        var req = new XMLHttpRequest();
+        var sales_request = {}
+        sales_request.request_type = "sales_delete"
+        sales_request.dw_sales_rep_id = dw_sales_rep_id
+        sales_request.page = "{{ current_page }}"
+        console.log(sales_request)
+
+        req.open('POST', '/salesrep', true);
+        req.setRequestHeader('Content-Type', 'application/json');
+        req.addEventListener('load', function () {
+            if (req.status >= 200 && req.status < 400) {
+                console.log("Delete Request Success!")
+
+                location.reload();
+
+            } else {
+                console.log("Error in network request: " + req.statusText);
+            }
+        });
+        req.send(JSON.stringify(sales_request));
+        event.preventDefault();
+
+    }
+
+</script>
+
+
+{% endblock %}

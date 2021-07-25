@@ -67,6 +67,9 @@ Customer
     </fieldset>
 </form>
 
+<br>
+<button onclick="add_customer();">New Record</button>
+
 
 {% if content is defined%}
 <div>
@@ -137,11 +140,13 @@ Customer
 
 
 
+{% endif %}
+
 <div id="edit_modal" class="edit_modal">
 
     <!-- Modal content -->
     <div class="modal-content">
-        <span class="close">&times;</span>
+        <span class="close" id="edit-close">&times;</span>
 
 
         <form action="#" method="POST">
@@ -210,12 +215,78 @@ Customer
 </div>
 
 
+<div id="add_modal" class="add_modal">
+
+    <!-- Modal content -->
+    <div class="modal-content">
+        <span class="close" id="add-close">&times;</span>
+
+        <form action="#" method="POST">
+            <fieldset>
+                <legend>Customer Information</legend>
+                <table>
+
+
+                    <tr>
+                        <td>First Name:</td>
+                        <td><input type="text" name="customer_first_name" id="customer-first-name-add"></td>
+
+                        <td>Last Name:</td>
+                        <td><input type="text" name="customer_last_name" id="customer-last-name-add"></td>
+                    </tr>
+
+                    <tr>
+
+                        <td>Date of Birth:</td>
+                        <td><input type="date" name="dob" id="customer-dob-add"></td>
+                    </tr>
+
+                    <tr>
+                        <td>Address 1:</td>
+                        <td> <input type="text" name="customer_address1" id="customer-address1-add"></td>
+
+                        <td>Address 2:</td>
+                        <td> <input type="text" name="customer_address2" id="customer-address2-add"></td>
+                    </tr>
+                    <tr>
+                        <td>ZIP:</td>
+                        <td> <input type="text" name="customer_zip" id="customer-zip-add"></td>
+                    </tr>
+
+                    <tr>
+                        <td>City:</td>
+                        <td> <input type="text" name="customer_city" id="customer-city-add"></td>
+
+                        <td>State:</td>
+                        <td> <input type="text" name="customer_state" id="customer-state-add"></td>
+
+                    </tr>
+
+                    <tr>
+                        <td>Phone:</td>
+                        <td><input type="text" name="customer_phone" id="customer-phone-add"></td>
+
+                        <td>SSN:</td>
+                        <td><input type="text" name="customer_ssn" id="customer-ssn-add"></td>
+                    </tr>
+
+                </table>
+
+                <input type="submit">
+                <input type="hidden" name="request_type" value="customer_add">
+                <input type="hidden" name="page" value={{current_page}}>
+
+            </fieldset>
+        </form>
+    </div>
+
+</div>
+
+
+
 {% if status_msg is defined%}
 {{status_msg}}
 {% endif %}
-
-{% endif %}
-
 
 
 
@@ -224,12 +295,20 @@ Customer
 
 
     var edit_modal = document.getElementById("edit_modal");
-    var edit_span = document.getElementsByClassName("close")[0];
+    var edit_span = document.getElementById("edit-close");
+    var add_modal = document.getElementById("add_modal");
+    var add_span = document.getElementById("add-close");
+
 
 
 
     edit_span.onclick = function () {
-        payment_modal.style.display = "none";
+        edit_modal.style.display = "none";
+    }
+
+
+    add_span.onclick = function () {
+        add_modal.style.display = "none";
     }
 
 
@@ -239,12 +318,21 @@ Customer
         if (event.target == edit_modal) {
             edit_modal.style.display = "none";
         }
+        if (event.target == add_modal) {
+            add_modal.style.display = "none";
+        }
 
     }
 
+    function add_customer() {
+        console.log(add_modal)
+        add_modal.style.display = "block";
+    }
+
+
 
     function edit_customer(dw_customer_id, first_name, last_name, customer_dob, address_1, address_2, zip_code, city, state, tel_number, ssn) {
-        edit_modal.style.display = "Block";
+        edit_modal.style.display = "block";
         document.getElementById("customer-id-update").value = dw_customer_id
         document.getElementById("customer-first-name-update").value = first_name
         document.getElementById("customer-last-name-update").value = last_name

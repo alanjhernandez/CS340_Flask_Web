@@ -386,7 +386,459 @@ def customer():
             
             return render_template("customer.html", content = customer_info_list, prev_page = prev_page, current_page = page, next_page = next_page, status_msg = "Update Successful." ) 
   
-                 
+        elif request.method  == "POST"  and request.form["request_type"] == "customer_add":
+
+            print(request.form)
+
+
+            db = connect_to_database()
+
+
+            dob = request.form["dob"] 
+            first_name = request.form["customer_first_name"] 
+            last_name = request.form["customer_last_name"] 
+            address_1 = request.form["customer_address1"] 
+            address_2 = request.form["customer_address2"] 
+            zip_code = request.form["customer_zip"] 
+            city = request.form["customer_city"] 
+            state = request.form["customer_state"] 
+            phone = request.form["customer_phone"] 
+            ssn = request.form["customer_ssn"] 
+
+            query = f"""
+                    INSERT INTO Customers_Info (first_name, last_name, customer_dob, address_1, address_2, zip_code, state, city, tel_number, ssn) VALUES ('{first_name}','{last_name}','{dob}','{address_1}','{address_2}','{zip_code}','{state}','{city}','{phone}','{ssn}');
+                    """
+
+            results = execute_query(db, query)
+
+
+            query = f"""
+                    SELECT max(dw_customer_id)
+                    from Customers_Info;
+                    """
+
+            results = execute_query(db, query)
+            dw_customer_id = [r[0] for r in results.fetchall()]
+
+            status_msg = "Insert Successful. Customer ID : " + str(dw_customer_id[0])
+           
+
+
+            if "search" in session:
+
+                dw_customer_id = session["customer_search"]["key"]["dw_customer_id"]
+                dob = session["customer_search"]["key"]["dob"] 
+                customer_first_name = session["customer_search"]["key"]["customer_first_name"] 
+                customer_last_name = session["customer_search"]["key"]["customer_last_name"] 
+                address = session["customer_search"]["key"]["address"] 
+                zip_code = session["customer_search"]["key"]["zip_code"] 
+                city = session["customer_search"]["key"]["city"] 
+                state = session["customer_search"]["key"]["state"] 
+                phone = session["customer_search"]["key"]["phone"] 
+                ssn = session["customer_search"]["key"]["ssn"] 
+                session["customer_search"]["count"] -= 1
+
+                page = int(request.form["page"])
+                print(page)
+                nth_record = (page-1) * row_per_page 
+
+
+                query = f"""
+                        SELECT 
+                        dw_customer_id
+                        ,first_name
+                        ,last_name
+                        ,customer_dob
+                        ,address_1
+                        ,address_2
+                        ,zip_code
+                        ,city
+                        ,state
+                        ,tel_number
+                        ,ssn
+                        from Customers_Info
+                        where dw_customer_id like "%%{dw_customer_id}%%"
+                        and first_name like "%%{customer_first_name}%%"
+                        and last_name like "%%{customer_last_name}%%"
+                
+                        and (address_1 like "%%{address}%%" or  address_2 like "%%{address}%%")
+                        and zip_code like "%%{zip_code}%%"
+                        and state like "%%{state}%%"
+                        and city like "%%{city}%%"
+                        and tel_number like "%%{phone}%%"
+                        and ssn like "%%{ssn}%%"
+                        {dob}
+
+                        limit {nth_record}, {row_per_page}
+                        """
+
+                results = execute_query(db, query)
+                customer_info_list = [list(r) for r in results.fetchall()]
+
+    
+                if session["customer_search"]["count"]  > (nth_record + row_per_page):
+                    next_page = page + 1
+                else:
+                    next_page = page
+
+                if (nth_record - row_per_page) > 0:
+                    prev_page = page - 1
+                else:
+                    prev_page = 1
+            
+                return render_template("customer.html", content = customer_info_list, prev_page = prev_page, current_page = page, next_page = next_page, status_msg = status_msg ) 
+            else:
+                return render_template("customer.html", status_msg = status_msg )                
+
+
+@app.route("/salesrep", methods = ["POST","GET"])
+def sales():
+
+    row_per_page = 15
+
+    if request.is_json:
+
+        if request.method  == "POST" and request.json["request_type"] == "store_pull":
+            
+            db = connect_to_database()
+            
+            query = f"""
+                    SELECT 
+                    store_location
+                    from Vehicle_Inventories
+                    group by 1
+                    """
+            results = execute_query(db, query)
+            store_list = [r[0] for r in results.fetchall()]
+
+            print(store_list)
+
+            return jsonify(store_list)
+
+
+        elif request.method  == "POST"  and request.json["request_type"] == "sales_delete":
+
+            db = connect_to_database()
+
+            row_per_page = 15
+
+            dw_sales_rep_id = request.json["dw_sales_rep_id"]
+
+            query = f"""
+                    DELETE from Sales_Reps
+                    where dw_sales_rep_id = '{dw_sales_rep_id}'
+                    """
+
+            results = execute_query(db, query)
+
+            
+
+
+            dw_sales_rep_id = session["sales_search"]["key"]["dw_sales_rep_id"] 
+            sales_location = session["sales_search"]["key"]["sales_location"] 
+            sales_first_name = session["sales_search"]["key"]["sales_first_name"] 
+            sales_last_name = session["sales_search"]["key"]["sales_last_name"] 
+            session["sales_search"]["count"] -= 1
+
+            page = int(request.json["page"])
+            print(page)
+            nth_record = (page-1) * row_per_page 
+
+
+            query = f"""
+                    SELECT 
+                    dw_sales_rep_id
+                    ,first_name
+                    ,last_name
+                    ,primary_location
+                    from Sales_Reps
+                    where dw_sales_rep_id like "%%{dw_sales_rep_id}%%"
+                    and first_name like "%%{sales_first_name}%%"
+                    and last_name like "%%{sales_last_name}%%"
+                    and primary_location like "%%{sales_location}%%"
+
+                    limit {nth_record}, {row_per_page}
+                    """
+
+            results = execute_query(db, query)
+            sales_info_list = [list(r) for r in results.fetchall()]
+
+ 
+            if session["sales_search"]["count"]  > (nth_record + row_per_page):
+                next_page = page + 1
+            else:
+                next_page = page
+
+            if (nth_record - row_per_page) > 0:
+                prev_page = page - 1
+            else:
+                prev_page = 1
+            
+            return render_template("salesrep.html", content = sales_info_list, prev_page = prev_page, current_page = page, next_page = next_page, status_msg =  "Delete Successful." ) 
+            
+
+
+    
+    else:
+        if request.method == "GET":
+            return render_template("salesrep.html")
+
+        elif request.method  == "POST" and request.form["request_type"] == "sales_new_search":
+
+            db = connect_to_database()
+            dw_sales_rep_id = request.form["dw_sales_rep_id"] 
+            sales_location = request.form["store_location"] 
+            sales_first_name = request.form["sales_first_name"] 
+            sales_last_name = request.form["sales_last_name"] 
+        
+
+
+            
+            query = f"""
+                    SELECT 
+                    dw_sales_rep_id
+                    ,first_name
+                    ,last_name
+                    ,primary_location
+                    from Sales_Reps
+                    where dw_sales_rep_id like "%%{dw_sales_rep_id}%%"
+                    and first_name like "%%{sales_first_name}%%"
+                    and last_name like "%%{sales_last_name}%%"
+                    and primary_location like "%%{sales_location}%%"
+              
+    
+                    limit {row_per_page}
+                    """
+
+            results = execute_query(db, query)
+            sales_info_list = [list(r) for r in results.fetchall()]
+
+
+            query = f"""
+                    SELECT count(distinct dw_sales_rep_id) as count
+                    from Sales_Reps
+                    where dw_sales_rep_id like "%%{dw_sales_rep_id}%%"
+                    and first_name like "%%{sales_first_name}%%"
+                    and last_name like "%%{sales_last_name}%%"
+                    and primary_location like "%%{sales_location}%%"
+                    """
+
+    
+            results = execute_query(db, query)
+            sales_count = [list(r) for r in results.fetchall()]
+           
+
+            session["sales_search"] = {}
+            session["sales_search"]["count"] = sales_count[0][0]
+            session["sales_search"]["key"] = {}
+            session["sales_search"]["key"]["dw_sales_rep_id"] = dw_sales_rep_id
+            session["sales_search"]["key"]["sales_location"] = sales_location
+            session["sales_search"]["key"]["sales_first_name"] = sales_first_name
+            session["sales_search"]["key"]["sales_last_name"] = sales_last_name
+
+
+ 
+
+            if sales_count[0][0] > row_per_page:
+                #next_url = url_for('vehicle_inventory', page=2)
+                next_page = 2
+            else:
+                #next_url = url_for('vehicle_inventory', page=1)
+                next_page = 1 
+
+            print(next_page)
+            #prev_url = url_for('vehicle_inventory', page=1)
+            prev_page = 1
+
+            print(prev_page, next_page)
+
+
+            return render_template("salesrep.html", content = sales_info_list, prev_page = prev_page, current_page = 1, next_page = next_page)
+
+        elif request.method  == "POST"  and request.form["request_type"] == "sales_continue_search":
+
+            db = connect_to_database()
+
+            row_per_page = 15
+
+
+            dw_sales_rep_id = session["sales_search"]["key"]["dw_sales_rep_id"] 
+            sales_location = session["sales_search"]["key"]["sales_location"] 
+            sales_first_name = session["sales_search"]["key"]["sales_first_name"] 
+            sales_last_name = session["sales_search"]["key"]["sales_last_name"] 
+
+            page = int(request.form["page"])
+            print(page)
+            nth_record = (page-1) * row_per_page 
+
+
+            query = f"""
+                    SELECT 
+                    dw_sales_rep_id
+                    ,first_name
+                    ,last_name
+                    ,primary_location
+                    from Sales_Reps
+                    where dw_sales_rep_id like "%%{dw_sales_rep_id}%%"
+                    and first_name like "%%{sales_first_name}%%"
+                    and last_name like "%%{sales_last_name}%%"
+                    and primary_location like "%%{sales_location}%%"
+
+                    limit {nth_record}, {row_per_page}
+                    """
+
+            results = execute_query(db, query)
+            sales_info_list = [list(r) for r in results.fetchall()]
+
+ 
+            if session["sales_search"]["count"]  > (nth_record + row_per_page):
+                next_page = page + 1
+            else:
+                next_page = page
+
+            if (nth_record - row_per_page) > 0:
+                prev_page = page - 1
+            else:
+                prev_page = 1
+            
+            return render_template("salesrep.html", content = sales_info_list, prev_page = prev_page, current_page = page, next_page = next_page, status_msg = "" ) 
+
+        elif request.method  == "POST"  and request.form["request_type"] == "sales_update":
+
+            db = connect_to_database()
+
+            row_per_page = 15
+
+            dw_sales_rep_id = request.form["dw_sales_rep_id"]
+            first_name = request.form["sales_first_name"]
+            last_name = request.form["sales_last_name"]
+            primary_location = request.form["store_location"]
+
+            query = f"""
+                    UPDATE Sales_Reps
+                    SET first_name = '{first_name}', last_name = '{last_name}', primary_location = '{primary_location}'
+                    where dw_sales_rep_id = '{dw_sales_rep_id}'
+                    """
+
+            results = execute_query(db, query)
+
+
+            dw_sales_rep_id = session["sales_search"]["key"]["dw_sales_rep_id"] 
+            sales_location = session["sales_search"]["key"]["sales_location"] 
+            sales_first_name = session["sales_search"]["key"]["sales_first_name"] 
+            sales_last_name = session["sales_search"]["key"]["sales_last_name"] 
+
+            page = int(request.form["page"])
+            print(page)
+            nth_record = (page-1) * row_per_page 
+
+
+            query = f"""
+                    SELECT 
+                    dw_sales_rep_id
+                    ,first_name
+                    ,last_name
+                    ,primary_location
+                    from Sales_Reps
+                    where dw_sales_rep_id like "%%{dw_sales_rep_id}%%"
+                    and first_name like "%%{sales_first_name}%%"
+                    and last_name like "%%{sales_last_name}%%"
+                    and primary_location like "%%{sales_location}%%"
+
+                    limit {nth_record}, {row_per_page}
+                    """
+
+            results = execute_query(db, query)
+            sales_info_list = [list(r) for r in results.fetchall()]
+
+ 
+            if session["sales_search"]["count"]  > (nth_record + row_per_page):
+                next_page = page + 1
+            else:
+                next_page = page
+
+            if (nth_record - row_per_page) > 0:
+                prev_page = page - 1
+            else:
+                prev_page = 1
+            
+            return render_template("salesrep.html", content = sales_info_list, prev_page = prev_page, current_page = page, next_page = next_page, status_msg =  "Update Successful." ) 
+            
+        elif request.method  == "POST"  and request.form["request_type"] == "sales_add":
+
+            db = connect_to_database()
+
+            row_per_page = 15
+
+            first_name = request.form["sales_first_name"]
+            last_name = request.form["sales_last_name"]
+            primary_location = request.form["store_location"]
+
+            query = f"""
+                    INSERT INTO Sales_Reps (first_name, last_name, primary_location) VALUES ( '{first_name}', '{last_name}', '{primary_location}')
+            
+                    """
+
+            results = execute_query(db, query)
+
+            query = f"""
+                    select max(dw_sales_rep_id) as dw_sales_rep_id
+                    from Sales_Reps
+                    """
+
+            results = execute_query(db, query)
+
+            dw_sales_rep_id = [r[0] for r in results.fetchall()]
+
+            status_msg = 'Insert Successful. The Sales ID is ' + str(dw_sales_rep_id[0])
+            
+            if "sales_search" in session:
+
+                dw_sales_rep_id = session["sales_search"]["key"]["dw_sales_rep_id"] 
+                sales_location = session["sales_search"]["key"]["sales_location"] 
+                sales_first_name = session["sales_search"]["key"]["sales_first_name"] 
+                sales_last_name = session["sales_search"]["key"]["sales_last_name"] 
+
+                page = int(request.form["page"])
+                print(page)
+                nth_record = (page-1) * row_per_page 
+
+
+                query = f"""
+                        SELECT 
+                        dw_sales_rep_id
+                        ,first_name
+                        ,last_name
+                        ,primary_location
+                        from Sales_Reps
+                        where dw_sales_rep_id like "%%{dw_sales_rep_id}%%"
+                        and first_name like "%%{sales_first_name}%%"
+                        and last_name like "%%{sales_last_name}%%"
+                        and primary_location like "%%{sales_location}%%"
+
+                        limit {nth_record}, {row_per_page}
+                        """
+
+                results = execute_query(db, query)
+                sales_info_list = [list(r) for r in results.fetchall()]
+
+    
+                if session["sales_search"]["count"]  > (nth_record + row_per_page):
+                    next_page = page + 1
+                else:
+                    next_page = page
+
+                if (nth_record - row_per_page) > 0:
+                    prev_page = page - 1
+                else:
+                    prev_page = 1
+                
+                return render_template("salesrep.html", content = sales_info_list, prev_page = prev_page, current_page = page, next_page = next_page, status_msg =  status_msg ) 
+            else:
+                return render_template("salesrep.html", status_msg =  status_msg ) 
+
+
+
 
 
 
