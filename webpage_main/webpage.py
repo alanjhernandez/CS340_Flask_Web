@@ -799,6 +799,10 @@ def sales():
                 sales_first_name = session["sales_search"]["key"]["sales_first_name"] 
                 sales_last_name = session["sales_search"]["key"]["sales_last_name"] 
 
+                ###########################################################################
+                ##############################ADD +1 after INSERT##########################
+                ###########################################################################
+
                 page = int(request.form["page"])
                 print(page)
                 nth_record = (page-1) * row_per_page 
@@ -838,6 +842,227 @@ def sales():
                 return render_template("salesrep.html", status_msg =  status_msg ) 
 
 
+
+@app.route("/financial_arrangement", methods = ["POST","GET"])
+def financial_arrangement():
+    row_per_page = 15
+
+    if request.is_json:
+        if request.method == "POST" and request.json["request_type"] == "fincl_option_delete":
+            db = connect_to_database()
+
+            dw_fincl_option_id = request.json["dw_fincl_option_id"]
+
+            query = f"""
+                    DELETE from Financial_Options where dw_fincl_option_id = '{dw_fincl_option_id}';
+                    """
+            results = execute_query(db, query)
+
+            query = f"""
+                    SELECT 
+                    dw_fincl_option_id
+                    ,int_rate
+                    ,num_of_payment
+                    from Financial_Options
+                    
+                    limit {row_per_page}
+                    """
+
+            results = execute_query(db, query)
+            fincl_arrangement_list = [list(r) for r in results.fetchall()]
+
+
+            query = f"""
+                    SELECT count(*) as count
+                    from Financial_Options
+                    """
+
+            results = execute_query(db, query)
+            fincl_arrangement_count = [list(r) for r in results.fetchall()]
+
+            session["fincl_option_read"] = {}
+            session["fincl_option_read"]["count"] = fincl_arrangement_count[0][0]          
+
+            if session["fincl_option_read"]["count"] > row_per_page:
+                next_page = 2
+            else:
+                next_page = 1 
+
+            prev_page = 1
+
+            return render_template("financial_arrangement.html", content = fincl_arrangement_list, prev_page = prev_page, current_page = 1, next_page = next_page, status_msg = "Delete Successful.") 
+
+
+        
+    else:
+        if request.method == "GET":
+
+            db = connect_to_database()
+
+            query = f"""
+                    SELECT 
+                    dw_fincl_option_id
+                    ,int_rate
+                    ,num_of_payment
+                    from Financial_Options
+                    
+                    limit {row_per_page}
+                    """
+
+            results = execute_query(db, query)
+            fincl_arrangement_list = [list(r) for r in results.fetchall()]
+
+
+            query = f"""
+                    SELECT count(*) as count
+                    from Financial_Options
+                    """
+
+            results = execute_query(db, query)
+            fincl_arrangement_count = [list(r) for r in results.fetchall()]
+
+            session["fincl_option_read"] = {}
+            session["fincl_option_read"]["count"] = fincl_arrangement_count[0][0]          
+
+            if session["fincl_option_read"]["count"] > row_per_page:
+                next_page = 2
+            else:
+                next_page = 1 
+
+            prev_page = 1
+
+            return render_template("financial_arrangement.html", content = fincl_arrangement_list, prev_page = prev_page, current_page = 1, next_page = next_page) 
+
+        elif request.method == "POST" and request.form["request_type"] == "fincl_continue_read":
+
+            db = connect_to_database()
+
+            page = int(request.form["page"])
+            print(page)
+            nth_record = (page-1) * row_per_page 
+
+            query = f"""
+                    SELECT 
+                    dw_fincl_option_id
+                    ,int_rate
+                    ,num_of_payment
+                    from Financial_Options
+                    
+                    limit {nth_record}, {row_per_page}
+                    """
+
+            results = execute_query(db, query)
+            fincl_arrangement_list = [list(r) for r in results.fetchall()]
+
+            if session["fincl_option_read"]["count"]  > (nth_record + row_per_page):
+                next_page = page + 1
+            else:
+                next_page = page
+
+            if (nth_record - row_per_page) > 0:
+                prev_page = page - 1
+            else:
+                prev_page = 1
+
+            return render_template("financial_arrangement.html", content = fincl_arrangement_list, prev_page = prev_page, current_page = 1, next_page = next_page) 
+
+
+        elif request.method == "POST" and request.form["request_type"] == "fincl_add":
+
+            db = connect_to_database()
+
+            int_rate = request.form["fincl_int_rate"]
+            num_of_payment = request.form["fincl_num_of_payment"]
+
+            query = f"""
+                    INSERT INTO Financial_Options (int_rate, num_of_payment) VALUES ('{int_rate}','{num_of_payment}');
+                    """
+
+            results = execute_query(db, query)
+
+            query = f"""
+                    SELECT 
+                    dw_fincl_option_id
+                    ,int_rate
+                    ,num_of_payment
+                    from Financial_Options
+                    
+                    limit {row_per_page}
+                    """
+
+            results = execute_query(db, query)
+            fincl_arrangement_list = [list(r) for r in results.fetchall()]
+
+
+            query = f"""
+                    SELECT count(*) as count
+                    from Financial_Options
+                    """
+
+            results = execute_query(db, query)
+            fincl_arrangement_count = [list(r) for r in results.fetchall()]
+
+            session["fincl_option_read"] = {}
+            session["fincl_option_read"]["count"] = fincl_arrangement_count[0][0]          
+
+            if session["fincl_option_read"]["count"] > row_per_page:
+                next_page = 2
+            else:
+                next_page = 1 
+
+            prev_page = 1
+
+            return render_template("financial_arrangement.html", content = fincl_arrangement_list, prev_page = prev_page, current_page = 1, next_page = next_page, status_msg = "Insert Successful.") 
+
+        elif request.method == "POST" and request.form["request_type"] == "fincl_edit":
+
+            db = connect_to_database()
+
+            int_rate = request.form["int_rate"]
+            num_of_payment = request.form["num_of_payment"]
+            dw_fincl_option_id = request.form["dw_fincl_option_id"]
+
+            query = f"""
+                    UPDATE Financial_Options
+                    SET int_rate = '{int_rate}', num_of_payment = '{num_of_payment}'
+                    where dw_fincl_option_id = '{dw_fincl_option_id}'
+                    """
+
+            results = execute_query(db, query)
+
+            query = f"""
+                    SELECT 
+                    dw_fincl_option_id
+                    ,int_rate
+                    ,num_of_payment
+                    from Financial_Options
+                    
+                    limit {row_per_page}
+                    """
+
+            results = execute_query(db, query)
+            fincl_arrangement_list = [list(r) for r in results.fetchall()]
+
+
+            query = f"""
+                    SELECT count(*) as count
+                    from Financial_Options
+                    """
+
+            results = execute_query(db, query)
+            fincl_arrangement_count = [list(r) for r in results.fetchall()]
+
+            session["fincl_option_read"] = {}
+            session["fincl_option_read"]["count"] = fincl_arrangement_count[0][0]          
+
+            if session["fincl_option_read"]["count"] > row_per_page:
+                next_page = 2
+            else:
+                next_page = 1 
+
+            prev_page = 1
+
+            return render_template("financial_arrangement.html", content = fincl_arrangement_list, prev_page = prev_page, current_page = 1, next_page = next_page, status_msg = "Update Successful.") 
 
 
 
