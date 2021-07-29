@@ -841,6 +841,467 @@ def sales():
             else:
                 return render_template("salesrep.html", status_msg =  status_msg ) 
 
+@app.route("/vehicle_type", methods = ["POST","GET"])
+def vehicle_type():
+    row_per_page = 15
+
+    
+
+    if request.is_json:
+        if request.method == "POST" and request.json["request_type"] == "vehicle_type_delete":
+
+            db = connect_to_database()
+
+
+            dw_vehicle_type_id = request.json["dw_vehicle_type_id"]
+            page = int(request.json["page"])
+
+            query = f"""
+                    DELETE FROM Vehicle_Types
+                    WHERE dw_vehicle_type_id = '{dw_vehicle_type_id}'
+                    """ 
+
+            results = execute_query(db, query)      
+            status_msg = "Delete Successful."
+
+
+
+            print(page)
+
+            nth_record = (page-1) * row_per_page 
+
+
+            session["vehicle_type_search"]["count"] -= 1
+            vehicle_make = session["vehicle_type_search"]["key"]["vehicle_make"] 
+            vehicle_model = session["vehicle_type_search"]["key"]["vehicle_model"] 
+            vehicle_year = session["vehicle_type_search"]["key"]["vehicle_year"] 
+            vehicle_color = session["vehicle_type_search"]["key"]["vehicle_color"] 
+            vehicle_trim = session["vehicle_type_search"]["key"]["vehicle_trim"] 
+            vehicle_type = session["vehicle_type_search"]["key"]["vehicle_type"] 
+            dw_vehicle_type_id = session["vehicle_type_search"]["key"]["dw_vehicle_type_id"] 
+
+
+
+            query = f"""
+                    select 
+                    dw_vehicle_type_id
+                    ,vehicle_type
+                    ,vehicle_make
+                    ,vehicle_model
+                    ,vehicle_year
+                    ,vehicle_color
+                    ,vehicle_trim
+                    ,vehicle_price
+
+                    from Vehicle_Types
+
+                    where dw_vehicle_type_id like "%%{dw_vehicle_type_id}%%"
+                    or vehicle_type like "%%{vehicle_type}%%"
+                    or vehicle_make like "%%{vehicle_make}%%"
+                    or vehicle_model like "%%{vehicle_model}%%"
+                    or vehicle_year like "%%{vehicle_year}%%"
+                    or vehicle_trim like "%%{vehicle_trim}%%"
+                    or vehicle_color like "%%{vehicle_color}%%"
+
+                    order by dw_vehicle_type_id
+                    limit {nth_record}, {row_per_page}
+                    """
+
+            results = execute_query(db, query)
+            vehicle_type_list = [list(r) for r in results.fetchall()]
+            print(vehicle_type_list)
+
+
+            if session["vehicle_type_search"]["count"] > (nth_record + row_per_page):
+                next_page = page + 1
+            else:
+                next_page = page
+
+            if (nth_record - row_per_page) > 0:
+                prev_page = page - 1
+            else:
+                prev_page = 1
+
+            
+            return render_template("vehicle_type.html", content = vehicle_type_list, prev_page = prev_page, current_page = page, next_page = next_page, status_msg = status_msg )
+
+
+
+
+    else:
+
+        if request.method == "GET":
+            return render_template("vehicle_type.html")
+
+        
+        elif request.method == "POST" and request.form['request_type'] == "vehicle_type_new_search":
+
+            db = connect_to_database()
+
+            vehicle_make = request.form["vehicle_make"] 
+            vehicle_model = request.form["vehicle_model"] 
+            vehicle_year = request.form["vehicle_year"] 
+            vehicle_color = request.form["vehicle_color"] 
+            vehicle_trim = request.form["vehicle_trim"] 
+            vehicle_type = request.form["vehicle_type"] 
+            dw_vehicle_type_id = request.form["dw_vehicle_type_id"] 
+           
+
+            query = f"""
+                    select 
+                    dw_vehicle_type_id
+                    ,vehicle_type
+                    ,vehicle_make
+                    ,vehicle_model
+                    ,vehicle_year
+                    ,vehicle_color
+                    ,vehicle_trim
+                    ,vehicle_price
+
+                    from Vehicle_Types
+
+                    where dw_vehicle_type_id like "%%{dw_vehicle_type_id}%%"
+                    or vehicle_type like "%%{vehicle_type}%%"
+                    or vehicle_make like "%%{vehicle_make}%%"
+                    or vehicle_model like "%%{vehicle_model}%%"
+                    or vehicle_year like "%%{vehicle_year}%%"
+                    or vehicle_trim like "%%{vehicle_trim}%%"
+                    or vehicle_color like "%%{vehicle_color}%%"
+
+                    order by dw_vehicle_type_id
+                    limit {row_per_page}
+                    """
+
+            results = execute_query(db, query)
+            vehicle_type_list = [list(r) for r in results.fetchall()]
+
+
+            query = f"""
+                    select count(*) as cnt
+
+                    from Vehicle_Types
+
+                    where dw_vehicle_type_id like "%%{dw_vehicle_type_id}%%"
+                    or vehicle_type like "%%{vehicle_type}%%"
+                    or vehicle_make like "%%{vehicle_make}%%"
+                    or vehicle_model like "%%{vehicle_model}%%"
+                    or vehicle_year like "%%{vehicle_year}%%"
+                    or vehicle_trim like "%%{vehicle_trim}%%"
+                    or vehicle_color like "%%{vehicle_color}%%"
+
+
+                    """
+
+            results = execute_query(db, query)
+            vehicle_type_count = [list(r) for r in results.fetchall()]
+            
+
+            session["vehicle_type_search"] = {}
+            session["vehicle_type_search"]["count"] = vehicle_type_count[0][0]
+            session["vehicle_type_search"]["key"] = {}
+            session["vehicle_type_search"]["key"]["vehicle_make"] = vehicle_make
+            session["vehicle_type_search"]["key"]["vehicle_model"] = vehicle_model
+            session["vehicle_type_search"]["key"]["vehicle_year"] = vehicle_year
+            session["vehicle_type_search"]["key"]["vehicle_color"] = vehicle_color
+            session["vehicle_type_search"]["key"]["vehicle_trim"] = vehicle_trim
+            session["vehicle_type_search"]["key"]["vehicle_type"] = vehicle_type
+            session["vehicle_type_search"]["key"]["dw_vehicle_type_id"] = dw_vehicle_type_id
+
+
+
+ 
+            if vehicle_type_count[0][0] > row_per_page:
+                next_page = 2
+            else:
+                next_page = 1 
+
+            print(next_page)
+            prev_page = 1
+
+
+            return render_template("vehicle_type.html", content = vehicle_type_list, prev_page = prev_page, current_page = 1, next_page = next_page)
+
+        elif request.method == "POST" and request.form['request_type'] == "vehicle_type_continue_search":
+
+            db = connect_to_database()
+
+            row_per_page = 15
+
+            vehicle_make = session["vehicle_type_search"]["key"]["vehicle_make"] 
+            vehicle_model = session["vehicle_type_search"]["key"]["vehicle_model"] 
+            vehicle_year = session["vehicle_type_search"]["key"]["vehicle_year"] 
+            vehicle_color = session["vehicle_type_search"]["key"]["vehicle_color"] 
+            vehicle_trim = session["vehicle_type_search"]["key"]["vehicle_trim"] 
+            vehicle_type = session["vehicle_type_search"]["key"]["vehicle_type"] 
+            dw_vehicle_type_id = session["vehicle_type_search"]["key"]["dw_vehicle_type_id"] 
+
+            page = int(request.form["page"])
+            print(page)
+
+            nth_record = (page-1) * row_per_page 
+
+            query = f"""
+                    select 
+                    dw_vehicle_type_id
+                    ,vehicle_type
+                    ,vehicle_make
+                    ,vehicle_model
+                    ,vehicle_year
+                    ,vehicle_color
+                    ,vehicle_trim
+                    ,vehicle_price
+
+                    from Vehicle_Types
+
+                    where dw_vehicle_type_id like "%%{dw_vehicle_type_id}%%"
+                    or vehicle_type like "%%{vehicle_type}%%"
+                    or vehicle_make like "%%{vehicle_make}%%"
+                    or vehicle_model like "%%{vehicle_model}%%"
+                    or vehicle_year like "%%{vehicle_year}%%"
+                    or vehicle_trim like "%%{vehicle_trim}%%"
+                    or vehicle_color like "%%{vehicle_color}%%"
+
+                    order by dw_vehicle_type_id
+                    limit {nth_record}, {row_per_page}
+                    """
+
+            results = execute_query(db, query)
+            vehicle_type_list = [list(r) for r in results.fetchall()]
+            print(vehicle_type_list)
+
+
+            if session["vehicle_type_search"]["count"] > (nth_record + row_per_page):
+                next_page = page + 1
+            else:
+                next_page = page
+
+            if (nth_record - row_per_page) > 0:
+                prev_page = page - 1
+            else:
+                prev_page = 1
+            
+            return render_template("vehicle_type.html", content = vehicle_type_list, prev_page = prev_page, current_page = page, next_page = next_page, status_msg = "" ) 
+
+
+
+        elif request.method == "POST" and request.form['request_type'] == "vehicle_type_add":
+
+            db = connect_to_database()
+
+            row_per_page = 15
+
+            vehicle_make = request.form["vehicle_make"].upper()
+            vehicle_model = request.form["vehicle_model"].upper()
+            vehicle_year = request.form["vehicle_year"] 
+            vehicle_color = request.form["vehicle_color"].upper() 
+            vehicle_trim = request.form["vehicle_trim"].upper() 
+            vehicle_type = request.form["vehicle_type"].upper() 
+            vehicle_price = request.form["vehicle_price"] 
+            dw_vehicle_type_id = request.form["dw_vehicle_type_id"].upper()
+
+            page = int(request.form["page"])
+            print(page)
+
+            query = f"""
+                    select *
+                    from Vehicle_Types
+                    where dw_vehicle_type_id = "{dw_vehicle_type_id}"
+                    """
+
+            results = execute_query(db, query)
+            vehicle_type_id_exist_list = [list(r) for r in results.fetchall()]
+
+            if len(vehicle_type_id_exist_list) > 0:
+                status_msg = 'Insert Failed. Vehicle Type ID exists.'
+            else:
+
+                query = f"""
+                        INSERT INTO Vehicle_Types (dw_vehicle_type_id, vehicle_type, vehicle_make, vehicle_model, vehicle_year, vehicle_color, vehicle_trim, vehicle_price) VALUES('{dw_vehicle_type_id}','{vehicle_type}','{vehicle_make}','{vehicle_model}','{vehicle_year}','{vehicle_color}','{vehicle_trim}','{vehicle_price}')
+                        """
+
+                results = execute_query(db, query)
+                status_msg = 'Insert Successful'
+
+            if "vehicle_type_search" in session:
+                page = int(request.form["page"])
+                print(page)
+
+                nth_record = (page-1) * row_per_page 
+
+
+                session["vehicle_type_search"]["count"] += 1
+                vehicle_make = session["vehicle_type_search"]["key"]["vehicle_make"] 
+                vehicle_model = session["vehicle_type_search"]["key"]["vehicle_model"] 
+                vehicle_year = session["vehicle_type_search"]["key"]["vehicle_year"] 
+                vehicle_color = session["vehicle_type_search"]["key"]["vehicle_color"] 
+                vehicle_trim = session["vehicle_type_search"]["key"]["vehicle_trim"] 
+                vehicle_type = session["vehicle_type_search"]["key"]["vehicle_type"] 
+                dw_vehicle_type_id = session["vehicle_type_search"]["key"]["dw_vehicle_type_id"] 
+
+
+                query = f"""
+                        select 
+                        dw_vehicle_type_id
+                        ,vehicle_type
+                        ,vehicle_make
+                        ,vehicle_model
+                        ,vehicle_year
+                        ,vehicle_color
+                        ,vehicle_trim
+                        ,vehicle_price
+
+                        from Vehicle_Types
+
+                        where dw_vehicle_type_id like "%%{dw_vehicle_type_id}%%"
+                        or vehicle_type like "%%{vehicle_type}%%"
+                        or vehicle_make like "%%{vehicle_make}%%"
+                        or vehicle_model like "%%{vehicle_model}%%"
+                        or vehicle_year like "%%{vehicle_year}%%"
+                        or vehicle_trim like "%%{vehicle_trim}%%"
+                        or vehicle_color like "%%{vehicle_color}%%"
+
+                        order by dw_vehicle_type_id
+                        limit {nth_record}, {row_per_page}
+                        """
+
+                results = execute_query(db, query)
+                vehicle_type_list = [list(r) for r in results.fetchall()]
+                print(vehicle_type_list)
+
+
+                if session["vehicle_type_search"]["count"] > (nth_record + row_per_page):
+                    next_page = page + 1
+                else:
+                    next_page = page
+
+                if (nth_record - row_per_page) > 0:
+                    prev_page = page - 1
+                else:
+                    prev_page = 1
+
+                
+                
+                return render_template("vehicle_type.html", content = vehicle_type_list, prev_page = prev_page, current_page = page, next_page = next_page, status_msg = status_msg )
+
+            else:
+                return render_template("vehicle_type.html", status_msg = status_msg )
+
+
+        elif request.method == "POST" and request.form['request_type'] == "vehicle_type_update":
+
+            db = connect_to_database()
+
+            row_per_page = 15
+
+            vehicle_make = request.form["vehicle_make"].upper()
+            vehicle_model = request.form["vehicle_model"].upper()
+            vehicle_year = request.form["vehicle_year"] 
+            vehicle_color = request.form["vehicle_color"].upper() 
+            vehicle_trim = request.form["vehicle_trim"].upper() 
+            vehicle_type = request.form["vehicle_type"].upper() 
+            vehicle_price = request.form["vehicle_price"] 
+            dw_vehicle_type_id = request.form["dw_vehicle_type_id"].upper()
+            dw_vehicle_type_id_old = request.form["old_vehicle_type_id"].upper()
+
+            if dw_vehicle_type_id_old == dw_vehicle_type_id:
+                query = f"""
+                        UPDATE Vehicle_Types
+                        SET dw_vehicle_type_id = '{dw_vehicle_type_id}', vehicle_make  = '{vehicle_make}', vehicle_model  = '{vehicle_model}', vehicle_year  = '{vehicle_year}', vehicle_color  = '{vehicle_color}', vehicle_trim  = '{vehicle_trim}', vehicle_type  = '{vehicle_type}', vehicle_price  = '{vehicle_price}'
+                        where dw_vehicle_type_id = '{dw_vehicle_type_id_old}'
+                        """
+                results = execute_query(db, query)
+
+                status_msg = 'Update Successful.'
+            
+            else:
+                query = f"""
+                        select count(*) as count from Vehicle_Types where dw_vehicle_type_id = '{dw_vehicle_type_id}'
+                        """
+                results = execute_query(db, query)
+                vehicle_type_id_exist_list = [list(r) for r in results.fetchall()]
+
+                if vehicle_type_id_exist_list[0][0]> 0:
+                    status_msg = 'Update Failed. Vehicle Type ID Exists.'
+
+                else:
+                    query = f"""
+                            UPDATE Vehicle_Types
+                            SET dw_vehicle_type_id = '{dw_vehicle_type_id}', vehicle_make  = '{vehicle_make}', vehicle_model  = '{vehicle_model}', vehicle_year  = '{vehicle_year}', vehicle_color  = '{vehicle_color}', vehicle_trim  = '{vehicle_trim}', vehicle_type  = '{vehicle_type}', vehicle_price  = '{vehicle_price}'
+                            where dw_vehicle_type_id = '{dw_vehicle_type_id_old}'
+                            """
+                    results = execute_query(db, query)
+                    status_msg = 'Update Successful.'
+
+
+            page = int(request.form["page"])
+            print(page)
+
+            nth_record = (page-1) * row_per_page 
+
+
+            session["vehicle_type_search"]["count"] += 1
+            vehicle_make = session["vehicle_type_search"]["key"]["vehicle_make"] 
+            vehicle_model = session["vehicle_type_search"]["key"]["vehicle_model"] 
+            vehicle_year = session["vehicle_type_search"]["key"]["vehicle_year"] 
+            vehicle_color = session["vehicle_type_search"]["key"]["vehicle_color"] 
+            vehicle_trim = session["vehicle_type_search"]["key"]["vehicle_trim"] 
+            vehicle_type = session["vehicle_type_search"]["key"]["vehicle_type"] 
+            dw_vehicle_type_id = session["vehicle_type_search"]["key"]["dw_vehicle_type_id"] 
+
+            query = f"""
+                    select 
+                    dw_vehicle_type_id
+                    ,vehicle_type
+                    ,vehicle_make
+                    ,vehicle_model
+                    ,vehicle_year
+                    ,vehicle_color
+                    ,vehicle_trim
+                    ,vehicle_price
+
+                    from Vehicle_Types
+
+                    where dw_vehicle_type_id like "%%{dw_vehicle_type_id}%%"
+                    or vehicle_type like "%%{vehicle_type}%%"
+                    or vehicle_make like "%%{vehicle_make}%%"
+                    or vehicle_model like "%%{vehicle_model}%%"
+                    or vehicle_year like "%%{vehicle_year}%%"
+                    or vehicle_trim like "%%{vehicle_trim}%%"
+                    or vehicle_color like "%%{vehicle_color}%%"
+
+                    order by dw_vehicle_type_id
+                    limit {nth_record}, {row_per_page}
+                    """
+
+            results = execute_query(db, query)
+            vehicle_type_list = [list(r) for r in results.fetchall()]
+            print(vehicle_type_list)
+
+
+            if session["vehicle_type_search"]["count"] > (nth_record + row_per_page):
+                next_page = page + 1
+            else:
+                next_page = page
+
+            if (nth_record - row_per_page) > 0:
+                prev_page = page - 1
+            else:
+                prev_page = 1
+
+            
+            
+            return render_template("vehicle_type.html", content = vehicle_type_list, prev_page = prev_page, current_page = page, next_page = next_page, status_msg = status_msg )
+
+
+
+
+
+
+
+
+
+
+
 
 
 @app.route("/financial_arrangement", methods = ["POST","GET"])

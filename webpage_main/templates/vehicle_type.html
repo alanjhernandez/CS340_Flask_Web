@@ -1,0 +1,436 @@
+{% extends "base.html" %}
+
+{% block title%}
+Vehicle Type
+{% endblock %}
+
+{% block style%}
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename = 'vehicle_type.css')}}">
+{% endblock %}
+
+{% block content%}
+
+<form action="#" method="POST">
+    <fieldset>
+        <legend>Vehicle Type Search Form</legend>
+        <table>
+
+            <tr>
+                <td>Vehicle Type ID: </td>
+                <td id="vehicle-type-id"><input type="text" name="dw_vehicle_type_id"></td>
+            </tr>
+
+            <tr>
+                <td>Vehicle Make </td>
+                <td id="vehicle-make"><input type="text" name="vehicle_make"></td>
+            </tr>
+
+
+            <tr>
+                <td>Vehicle Type </td>
+                <td id="vehicle-type"><input type="text" name="vehicle_type"></td>
+            </tr>
+
+
+            <tr>
+                <td>Vehicle Model </td>
+                <td id="vehicle-model"><input type="text" name="vehicle_model"></td>
+            </tr>
+
+            <tr>
+                <td>Vehicle Year </td>
+                <td id="vehicle-year"><input type="number" name="vehicle_year" min="1000" max="9999"></td>
+            </tr>
+
+
+            <tr>
+                <td>Vehicle Color </td>
+                <td id="vehicle-color"><input type="text" name="vehicle_color"></td>
+            </tr>
+
+            <tr>
+                <td>Vehicle Trim </td>
+                <td id="vehicle-trim"><input type="text" name="vehicle_trim"></td>
+            </tr>
+
+
+        </table>
+
+        <input type="submit">
+        <input type="hidden" name="request_type" value="vehicle_type_new_search">
+    </fieldset>
+</form>
+
+
+
+
+<br>
+<button onclick="add_vehicle_type();">New Record</button>
+
+{% if content is defined%}
+<div>
+    <table>
+        <thead>
+            <tr>
+                <th>Vehicle Type ID</th>
+                <th>Type</th>
+                <th>Make</th>
+                <th>Model</th>
+                <th>Year</th>
+                <th>Color</th>
+                <th>Trim</th>
+                <th>Price</th>
+                <th>Delete</th>
+                <th>Update</th>
+
+            </tr>
+        </thead>
+        {% if content is defined %}
+        <tbody id="content-table">
+            {% for i in content %}
+            <tr>
+                <td>{{i[0]}}</td>
+                <td>{{i[1]}}</td>
+                <td>{{i[2]}}</td>
+                <td>{{i[3]}}</td>
+                <td>{{i[4]}}</td>
+                <td>{{i[5]}}</td>
+                <td>{{i[6]}}</td>
+                <td>{{i[7]}}</td>
+                <td><button onclick="delete_vehicle_type('{{i[0]}}');">Delete</button></td>
+                <td><button
+                        onclick="edit_vehicle_type('{{i[0]}}','{{i[1]}}','{{i[2]}}','{{i[3]}}','{{i[4]}}','{{i[5]}}','{{i[6]}}','{{i[7]}}');">Edit</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        {% endif %}
+    </table>
+
+    <div class="page_button" style="margin: 0 auto; display:inline;">
+        <form action="#" method="POST" style="margin: 0 auto;display: inline;">
+            <input type="hidden" name="page" value={{prev_page}}>
+            <input type="hidden" name="request_type" value="vehicle_type_continue_search">
+            <input type="submit" value="Prev">
+        </form>
+
+        Page {{current_page}}
+
+        <form action="#" method="POST" style="margin: 0 auto;display: inline;">
+            <input type="hidden" name="page" value={{next_page}}>
+            <input type="hidden" name="request_type" value="vehicle_type_continue_search">
+            <input type="submit" value="Next">
+        </form>
+    </div>
+    <br>
+
+
+</div>
+
+
+{% endif %}
+
+<div id="edit_modal" class="edit_modal">
+
+    <!-- Modal content -->
+    <div class="modal-content">
+        <span class="close" id="edit-close">&times;</span>
+
+        <form action="#" method="POST">
+            <fieldset>
+                <legend>Vehicle Type Information</legend>
+                <table>
+
+                    <tr>
+                        <td>Vehicle Type ID </td>
+                        <td><input type="text" name="dw_vehicle_type_id" readonly id="vehicle-type-id-edit"></td>
+                    </tr>
+
+                    <tr>
+                        <td>Vehicle Make </td>
+                        <td><input type="text" name="vehicle_make" required id="vehicle-make-edit"
+                                onfocusout="generate_vehicle_type_id_edit();">
+                        </td>
+                    </tr>
+
+
+                    <tr>
+                        <td>Vehicle Type </td>
+                        <td><input type="text" name="vehicle_type" id="vehicle-type-edit" required
+                                onfocusout="generate_vehicle_type_id_edit();">
+                        </td>
+                    </tr>
+
+
+                    <tr>
+                        <td>Vehicle Model </td>
+                        <td><input type="text" name="vehicle_model" required id="vehicle-model-edit"
+                                onfocusout="generate_vehicle_type_id_edit();"> </td>
+                    </tr>
+
+                    <tr>
+                        <td>Vehicle Year </td>
+                        <td><input type="number" min="1000" max="9999" name="vehicle_year" id="vehicle-year-edit"
+                                onfocusout="generate_vehicle_type_id_edit();" required></td>
+                    </tr>
+
+
+                    <tr>
+                        <td>Vehicle Color </td>
+                        <td><input type="text" name="vehicle_color" required id="vehicle-color-edit"
+                                onfocusout="generate_vehicle_type_id_edit();"></td>
+                    </tr>
+
+                    <tr>
+                        <td>Vehicle Trim </td>
+                        <td><input type="text" name="vehicle_trim" required id="vehicle-trim-edit"
+                                onfocusout="generate_vehicle_type_id_edit();">
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>Vehicle Price </td>
+                        <td><input type="integer" name="vehicle_price" id="vehicle-price-edit"></td>
+                    </tr>
+
+
+                </table>
+
+                <input type="submit">
+                <input type="hidden" name="request_type" value="vehicle_type_update">
+                <input type="hidden" name="page" value={{current_page}}>
+                <input type="hidden" name="old_vehicle_type_id" id="old_vehicle_type_update">
+
+            </fieldset>
+        </form>
+    </div>
+
+</div>
+
+<div id=" add_modal" class="add_modal">
+
+    <!-- Modal content -->
+    <div class="modal-content">
+        <span class="close" id="add-close">&times;</span>
+
+        <form action="#" method="POST">
+            <fieldset>
+                <legend>Vehicle Type Information</legend>
+                <table>
+
+                    <tr>
+                        <td>Vehicle Type ID </td>
+                        <td><input type="text" name="dw_vehicle_type_id" readonly id="vehicle-type-id-add">
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>Vehicle Make </td>
+                        <td><input type="text" name="vehicle_make" required id="vehicle-make-add"
+                                onfocusout="generate_vehicle_type_id();"></td>
+                    </tr>
+
+
+                    <tr>
+                        <td>Vehicle Type </td>
+                        <td><input type="text" name="vehicle_type" id="vehicle-type-add" required
+                                onfocusout="generate_vehicle_type_id();"></td>
+                    </tr>
+
+
+                    <tr>
+                        <td>Vehicle Model </td>
+                        <td><input type="text" name="vehicle_model" required id="vehicle-model-add"
+                                onfocusout="generate_vehicle_type_id();"> </td>
+                    </tr>
+
+                    <tr>
+                        <td>Vehicle Year </td>
+                        <td><input type="number" min="1000" max="9999" name="vehicle_year" id="vehicle-year-add"
+                                onfocusout="generate_vehicle_type_id();" required>
+                        </td>
+                    </tr>
+
+
+                    <tr>
+                        <td>Vehicle Color </td>
+                        <td><input type="text" name="vehicle_color" required id="vehicle-color-add"
+                                onfocusout="generate_vehicle_type_id();"></td>
+                    </tr>
+
+                    <tr>
+                        <td>Vehicle Trim </td>
+                        <td><input type="text" name="vehicle_trim" required id="vehicle-trim-add"
+                                onfocusout="generate_vehicle_type_id();"></td>
+                    </tr>
+
+                    <tr>
+                        <td>Vehicle Price </td>
+                        <td id="vehicle-price"><input type="integer" name="vehicle_price"></td>
+                    </tr>
+
+
+                </table>
+
+                <input type="submit">
+                <input type="hidden" name="request_type" value="vehicle_type_add">
+                <input type="hidden" name="page" value={{current_page}}>
+
+            </fieldset>
+        </form>
+    </div>
+
+</div>
+
+
+{% if status_msg is defined%}
+{{status_msg}}
+{% endif %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+
+
+
+
+
+    var edit_modal = document.getElementById("edit_modal");
+    var edit_span = document.getElementById("edit-close");
+    var add_modal = document.getElementsByClassName("add_modal")[0];
+    var add_span = document.getElementById("add-close");
+
+    console.log(add_modal)
+
+    function add_vehicle_type() {
+        add_modal.style.display = "block";
+    }
+
+    edit_span.onclick = function () {
+        edit_modal.style.display = "none";
+    }
+
+    add_span.onclick = function () {
+        add_modal.style.display = "none";
+    }
+
+
+    window.onclick = function (event) {
+
+        if (event.target == edit_modal) {
+            edit_modal.style.display = "none";
+        }
+        if (event.target == add_modal) {
+            add_modal.style.display = "none";
+        }
+
+    }
+
+
+
+
+
+    function generate_vehicle_type_id() {
+
+        var vehicle_make = document.getElementById("vehicle-make-add").value
+        var vehicle_type = document.getElementById("vehicle-type-add").value
+        var vehicle_model = document.getElementById("vehicle-model-add").value
+        var vehicle_year = document.getElementById("vehicle-year-add").value
+        var vehicle_color = document.getElementById("vehicle-color-add").value
+        var vehicle_trim = document.getElementById("vehicle-trim-add").value
+
+
+        if (typeof vehicle_make != "undefined" & typeof vehicle_type != "undefined" & typeof vehicle_model != "undefined" & typeof vehicle_year != "undefined" & typeof vehicle_color != "undefined" & typeof vehicle_trim != "undefined") {
+
+            console.log(vehicle_make.substring(0, 2) + vehicle_model.substring(0, 4) + vehicle_year + vehicle_color.substring(0, 3) + vehicle_trim.substring(0, 2))
+            document.getElementById("vehicle-type-id-add").value = vehicle_make.substring(0, 2).toUpperCase() + vehicle_model.substring(0, 4).toUpperCase() + vehicle_year + vehicle_color.substring(0, 3).toUpperCase() + vehicle_trim.substring(0, 2).toUpperCase()
+
+        }
+
+
+    }
+
+
+
+    function generate_vehicle_type_id_edit() {
+
+        var vehicle_make = document.getElementById("vehicle-make-edit").value
+        var vehicle_type = document.getElementById("vehicle-type-edit").value
+        var vehicle_model = document.getElementById("vehicle-model-edit").value
+        var vehicle_year = document.getElementById("vehicle-year-edit").value
+        var vehicle_color = document.getElementById("vehicle-color-edit").value
+        var vehicle_trim = document.getElementById("vehicle-trim-edit").value
+
+
+        if (typeof vehicle_make != "undefined" & typeof vehicle_type != "undefined" & typeof vehicle_model != "undefined" & typeof vehicle_year != "undefined" & typeof vehicle_color != "undefined" & typeof vehicle_trim != "undefined") {
+
+            console.log(vehicle_make.substring(0, 2) + vehicle_model.substring(0, 4) + vehicle_year + vehicle_color.substring(0, 3) + vehicle_trim.substring(0, 2))
+            document.getElementById("vehicle-type-id-edit").value = vehicle_make.substring(0, 2).toUpperCase() + vehicle_model.substring(0, 4).toUpperCase() + vehicle_year + vehicle_color.substring(0, 3).toUpperCase() + vehicle_trim.substring(0, 2).toUpperCase()
+
+        }
+
+
+    }
+
+
+
+    function edit_vehicle_type(dw_vehicle_type_id, vehicle_type, vehicle_make, vehicle_model, vehicle_year, vehicle_color, vehicle_trim, vehicle_price) {
+        edit_modal.style.display = "block";
+        document.getElementById("vehicle-type-id-edit").value = dw_vehicle_type_id
+        document.getElementById("vehicle-make-edit").value = vehicle_make
+        document.getElementById("vehicle-type-edit").value = vehicle_type
+        document.getElementById("vehicle-model-edit").value = vehicle_model
+        document.getElementById("vehicle-year-edit").value = vehicle_year
+        document.getElementById("vehicle-color-edit").value = vehicle_color
+        document.getElementById("vehicle-trim-edit").value = vehicle_trim
+        document.getElementById("vehicle-price-edit").value = vehicle_price
+        document.getElementById("old_vehicle_type_update").value = dw_vehicle_type_id
+    }
+
+
+
+    function delete_vehicle_type(dw_vehicle_type_id) {
+
+        console.log("{{ current_page }}")
+        var req = new XMLHttpRequest();
+        var vehicle_type_request = {}
+        vehicle_type_request.request_type = "vehicle_type_delete"
+        vehicle_type_request.dw_vehicle_type_id = dw_vehicle_type_id
+        vehicle_type_request.page = "{{ current_page }}"
+        console.log(vehicle_type_request)
+
+        req.open('POST', '/vehicle_type', true);
+        req.setRequestHeader('Content-Type', 'application/json');
+        req.addEventListener('load', function () {
+            if (req.status >= 200 && req.status < 400) {
+                console.log("Delete Request Success!")
+
+                location.reload();
+
+            } else {
+                console.log("Error in network request: " + req.statusText);
+            }
+        });
+        req.send(JSON.stringify(vehicle_type_request));
+        event.preventDefault();
+
+    }
+
+
+
+
+</script>
+
+
+{% endblock %}
