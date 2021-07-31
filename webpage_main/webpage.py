@@ -31,6 +31,589 @@ def home():
     return render_template("index.html")
 
 
+@app.route("/monthly_payment", methods = ["POST","GET"])
+def monthly_payment():
+
+    row_per_page = 15
+    
+    if request.is_json:
+        if request.method == "POST" and request.json["request_type"] == "monthly_payment_invoice_check":
+
+            db = connect_to_database()
+            dw_invoice_id = request.json["dw_invoice_id"] 
+
+            query = f"""
+                    SELECT 
+                    a.vin
+                    ,d.first_name
+                    ,d.last_name
+                    ,b.vehicle_make
+                    ,b.vehicle_model
+                    ,b.vehicle_year
+                    ,a.monthly_payment_amount
+                    from Sales_Records as a 
+                    left join Vehicle_Types as b 
+                    on a.dw_vehicle_type_id = b.dw_vehicle_type_id 
+                    left join Customers_Salesreps as c 
+                    on a.dw_invoice_id = c.dw_invoice_id 
+                    left join Customers_Info as d 
+                    on c.dw_customer_id = d.dw_customer_id 
+                    where a.dw_invoice_id = '{dw_invoice_id}';
+                    """
+            results = execute_query(db, query)
+            invoice_info = [list(r) for r in results.fetchall()]
+
+         
+            if len(invoice_info) > 0:
+                return jsonify(invoice_info[0])
+            else:
+                return jsonify("-1")
+
+
+        elif request.method == "POST" and request.json["request_type"] == "monthly_payment_amount_check":
+
+            db = connect_to_database()
+            dw_invoice_id = request.json["dw_invoice_id"] 
+
+            query = f"""
+                    select 
+                    a.dw_invoice_id
+                    ,int_rate
+                    ,current_balance
+                    ,nth_payment
+                    ,a.vin
+                    from Sales_Records as a
+                    left join Financial_Options as b
+                    on a.dw_fincl_option_id = b.dw_fincl_option_id
+                    left join (
+                    select dw_invoice_id
+                    , min(current_balance) as current_balance
+                    , max(nth_payment) as nth_payment
+                    from Monthly_Payments
+                    where dw_invoice_id = '{dw_invoice_id}'
+                    group by 1
+                    ) as c on a.dw_invoice_id = c.dw_invoice_id
+                    where a.dw_invoice_id = '{dw_invoice_id}'
+                    """
+            results = execute_query(db, query)
+            payment_info = [list(r) for r in results.fetchall()]
+
+         
+            if len(payment_info) > 0:
+                return jsonify(payment_info[0])
+            else:
+                return jsonify("-1")
+
+
+        elif request.method  == "POST"  and request.json["request_type"] == "monthly_payment_delete":
+
+            db = connect_to_database()
+
+            row_per_page = 15
+
+            dw_payment_id = request.json["dw_payment_id"]
+
+            print(dw_payment_id)
+
+            query = f"""
+                    DELETE FROM Monthly_Payments where dw_payment_id = '{dw_payment_id}'
+
+                    """
+
+            results = execute_query(db, query)
+            status_msg = 'Delete Successful.'
+
+            dw_customer_id = session["payment_search"]["key"]["dw_customer_id"]
+            dw_invoice_id = session["payment_search"]["key"]["dw_invoice_id"]
+            first_name = session["payment_search"]["key"]["first_name"]
+            last_name = session["payment_search"]["key"]["last_name"] 
+            vin = session["payment_search"]["key"]["vin"]
+            page = int(request.json["page"])
+            print(page)
+            nth_record = (page-1) * row_per_page 
+
+
+            query = f"""
+                    select 
+                    a.dw_customer_id
+                    ,dw_invoice_id
+                    ,a.vin
+                    ,dw_payment_id
+                    ,payment_date
+                    ,payment_amount
+                    ,current_balance
+                    ,first_name
+                    ,last_name
+                    ,customer_dob
+                    ,address_1
+                    ,address_2
+                    ,zip_code
+                    ,city
+                    ,state
+                    ,ssn
+                    ,tel_number
+                    ,d.dw_vehicle_type_id
+                    ,vehicle_type
+                    ,vehicle_make
+                    ,vehicle_model
+                    ,vehicle_year
+                    ,vehicle_color
+                    ,vehicle_trim
+                    ,vehicle_price
+
+                    from Monthly_Payments as a
+                    
+                    left JOIN Customers_Info as b
+                    on a.dw_customer_id = b.dw_customer_id
+
+                    left JOIN Vehicle_Inventories as c
+                    on a.vin = c.vin
+
+                    left join Vehicle_Types as d
+                    on c.dw_vehicle_type_id = d.dw_vehicle_type_id
+
+                    where a.dw_customer_id like "%%{dw_customer_id}%%"
+                    and dw_invoice_id like "%%{dw_invoice_id}%%"
+                    and first_name like "%%{first_name}%%"
+                    and last_name like "%%{last_name}%%"
+                    and a.vin like "%%{vin}%%"
+
+                    limit {nth_record}, {row_per_page}
+                    """
+
+            results = execute_query(db, query)
+            payment_info_list = [list(r) for r in results.fetchall()]
+
+ 
+            if session["payment_search"]["count"]  > (nth_record + row_per_page):
+                next_page = page + 1
+            else:
+                next_page = page
+
+            if (nth_record - row_per_page) > 0:
+                prev_page = page - 1
+            else:
+                prev_page = 1
+            
+            return render_template("monthly_payment.html", content = payment_info_list, prev_page = prev_page, current_page = page, next_page = next_page, status_msg = "" ) 
+
+
+    else:
+        if request.method == "GET":
+            if "payment_search" in session:
+                session.pop("payment_search")
+            return render_template("monthly_payment.html" ) 
+
+        elif request.method == "POST" and request.form["request_type"] == "monthly_payment_new_search":
+
+            db = connect_to_database()
+
+            dw_customer_id = request.form["dw_customer_id"] 
+            dw_invoice_id = request.form["dw_invoice_id"] 
+            first_name = request.form["first_name"] 
+            last_name = request.form["last_name"] 
+            vin = request.form["vin"] 
+
+
+
+            
+            query = f"""
+                    select 
+                    a.dw_customer_id
+                    ,dw_invoice_id
+                    ,a.vin
+                    ,dw_payment_id
+                    ,payment_date
+                    ,payment_amount
+                    ,current_balance
+                    ,first_name
+                    ,last_name
+                    ,customer_dob
+                    ,address_1
+                    ,address_2
+                    ,zip_code
+                    ,city
+                    ,state
+                    ,ssn
+                    ,tel_number
+                    ,d.dw_vehicle_type_id
+                    ,vehicle_type
+                    ,vehicle_make
+                    ,vehicle_model
+                    ,vehicle_year
+                    ,vehicle_color
+                    ,vehicle_trim
+                    ,vehicle_price
+
+                    from Monthly_Payments as a
+                    
+                    left JOIN Customers_Info as b
+                    on a.dw_customer_id = b.dw_customer_id
+
+                    left JOIN Vehicle_Inventories as c
+                    on a.vin = c.vin
+
+                    left join Vehicle_Types as d
+                    on c.dw_vehicle_type_id = d.dw_vehicle_type_id
+
+                    where a.dw_customer_id like "%%{dw_customer_id}%%"
+                    and dw_invoice_id like "%%{dw_invoice_id}%%"
+                    and first_name like "%%{first_name}%%"
+                    and last_name like "%%{last_name}%%"
+                    and a.vin like "%%{vin}%%"
+                    limit {row_per_page}
+                    """
+
+            results = execute_query(db, query)
+            payment_info_list = [list(r) for r in results.fetchall()]
+
+
+            query = f"""
+                    SELECT count(*) as count
+                    from Monthly_Payments as a
+                    left JOIN Customers_Info as b
+                    on a.dw_customer_id = b.dw_customer_id
+
+                    where a.dw_customer_id like "%%{dw_customer_id}%%"
+                    and dw_invoice_id like "%%{dw_invoice_id}%%"
+                    and first_name like "%%{first_name}%%"
+                    and last_name like "%%{last_name}%%"
+                    and vin like "%%{vin}%%"
+                    """
+
+    
+            results = execute_query(db, query)
+            payment_count = [list(r) for r in results.fetchall()]
+           
+
+            session["payment_search"] = {}
+            session["payment_search"]["count"] = payment_count[0][0]
+            session["payment_search"]["key"] = {}
+            session["payment_search"]["key"]["dw_customer_id"] = dw_customer_id
+            session["payment_search"]["key"]["dw_invoice_id"] = dw_invoice_id
+            session["payment_search"]["key"]["first_name"] = first_name
+            session["payment_search"]["key"]["last_name"] = last_name
+            session["payment_search"]["key"]["vin"] = vin
+  
+
+            if payment_count[0][0] > row_per_page:
+                #next_url = url_for('vehicle_inventory', page=2)
+                next_page = 2
+            else:
+                #next_url = url_for('vehicle_inventory', page=1)
+                next_page = 1 
+
+            print(next_page)
+            #prev_url = url_for('vehicle_inventory', page=1)
+            prev_page = 1
+
+            print(prev_page, next_page)
+
+
+            return render_template("monthly_payment.html", content = payment_info_list, prev_page = prev_page, current_page = 1, next_page = next_page)
+
+        elif request.method  == "POST"  and request.form["request_type"] == "monthly_payment_continue_search":
+
+            db = connect_to_database()
+
+            row_per_page = 15
+
+
+            dw_customer_id = session["payment_search"]["key"]["dw_customer_id"]
+            dw_invoice_id = session["payment_search"]["key"]["dw_invoice_id"]
+            first_name = session["payment_search"]["key"]["first_name"]
+            last_name = session["payment_search"]["key"]["last_name"] 
+            vin = session["payment_search"]["key"]["vin"]
+            page = int(request.form["page"])
+            print(page)
+            nth_record = (page-1) * row_per_page 
+
+
+            query = f"""
+                    select 
+                    a.dw_customer_id
+                    ,dw_invoice_id
+                    ,a.vin
+                    ,dw_payment_id
+                    ,payment_date
+                    ,payment_amount
+                    ,current_balance
+                    ,first_name
+                    ,last_name
+                    ,customer_dob
+                    ,address_1
+                    ,address_2
+                    ,zip_code
+                    ,city
+                    ,state
+                    ,ssn
+                    ,tel_number
+                    ,d.dw_vehicle_type_id
+                    ,vehicle_type
+                    ,vehicle_make
+                    ,vehicle_model
+                    ,vehicle_year
+                    ,vehicle_color
+                    ,vehicle_trim
+                    ,vehicle_price
+
+                    from Monthly_Payments as a
+                    
+                    left JOIN Customers_Info as b
+                    on a.dw_customer_id = b.dw_customer_id
+
+                    left JOIN Vehicle_Inventories as c
+                    on a.vin = c.vin
+
+                    left join Vehicle_Types as d
+                    on c.dw_vehicle_type_id = d.dw_vehicle_type_id
+
+                    where a.dw_customer_id like "%%{dw_customer_id}%%"
+                    and dw_invoice_id like "%%{dw_invoice_id}%%"
+                    and first_name like "%%{first_name}%%"
+                    and last_name like "%%{last_name}%%"
+                    and a.vin like "%%{vin}%%"
+
+                    limit {nth_record}, {row_per_page}
+                    """
+
+            results = execute_query(db, query)
+            payment_info_list = [list(r) for r in results.fetchall()]
+
+ 
+            if session["payment_search"]["count"]  > (nth_record + row_per_page):
+                next_page = page + 1
+            else:
+                next_page = page
+
+            if (nth_record - row_per_page) > 0:
+                prev_page = page - 1
+            else:
+                prev_page = 1
+            
+            return render_template("monthly_payment.html", content = payment_info_list, prev_page = prev_page, current_page = page, next_page = next_page, status_msg = "" ) 
+
+
+        elif request.method  == "POST"  and request.form["request_type"] == "monthly_payment_add":
+
+            db = connect_to_database()
+
+            row_per_page = 15
+
+            print(request.form)
+            dw_invoice_id = request.form["dw_invoice_id"]
+            payment_date = request.form["payment_date"]
+            payment_amount = float(request.form["monthly_payment_amount"])
+            nth_payment = request.form["nth_payment"]
+            
+            current_balance = float(request.form["current_balance"])
+            print(current_balance)
+            vin = request.form["vin"]
+
+            if current_balance < 0:
+                payment_amount = payment_amount + current_balance
+                current_balance = 0
+
+            query = f"""
+                    INSERT INTO Monthly_Payments (dw_invoice_id, payment_date, nth_payment, current_balance, vin, payment_amount, dw_customer_id) VALUES ('{dw_invoice_id}','{payment_date}','{nth_payment}','{current_balance}','{vin}','{payment_amount}',(select dw_customer_id from Customers_Salesreps where dw_invoice_id = '{dw_invoice_id}'))
+                    """
+            results = execute_query(db, query)
+            status_msg = "Insert Successful. The payment is " + str(payment_amount)
+
+
+
+
+
+
+            if "payment_search" in session:
+
+                dw_customer_id = session["payment_search"]["key"]["dw_customer_id"]
+                dw_invoice_id = session["payment_search"]["key"]["dw_invoice_id"]
+                first_name = session["payment_search"]["key"]["first_name"]
+                last_name = session["payment_search"]["key"]["last_name"] 
+                vin = session["payment_search"]["key"]["vin"]
+                page = int(request.form["page"])
+                print(page)
+                nth_record = (page-1) * row_per_page 
+
+
+                query = f"""
+                        select 
+                        a.dw_customer_id
+                        ,dw_invoice_id
+                        ,a.vin
+                        ,dw_payment_id
+                        ,payment_date
+                        ,payment_amount
+                        ,current_balance
+                        ,first_name
+                        ,last_name
+                        ,customer_dob
+                        ,address_1
+                        ,address_2
+                        ,zip_code
+                        ,city
+                        ,state
+                        ,ssn
+                        ,tel_number
+                        ,d.dw_vehicle_type_id
+                        ,vehicle_type
+                        ,vehicle_make
+                        ,vehicle_model
+                        ,vehicle_year
+                        ,vehicle_color
+                        ,vehicle_trim
+                        ,vehicle_price
+
+                        from Monthly_Payments as a
+                        
+                        left JOIN Customers_Info as b
+                        on a.dw_customer_id = b.dw_customer_id
+
+                        left JOIN Vehicle_Inventories as c
+                        on a.vin = c.vin
+
+                        left join Vehicle_Types as d
+                        on c.dw_vehicle_type_id = d.dw_vehicle_type_id
+
+                        where a.dw_customer_id like "%%{dw_customer_id}%%"
+                        and dw_invoice_id like "%%{dw_invoice_id}%%"
+                        and first_name like "%%{first_name}%%"
+                        and last_name like "%%{last_name}%%"
+                        and a.vin like "%%{vin}%%"
+
+                        limit {nth_record}, {row_per_page}
+                        """
+
+                results = execute_query(db, query)
+                payment_info_list = [list(r) for r in results.fetchall()]
+
+    
+                if session["payment_search"]["count"]  > (nth_record + row_per_page):
+                    next_page = page + 1
+                else:
+                    next_page = page
+
+                if (nth_record - row_per_page) > 0:
+                    prev_page = page - 1
+                else:
+                    prev_page = 1
+                
+                return render_template("monthly_payment.html", content = payment_info_list, prev_page = prev_page, current_page = page, next_page = next_page, status_msg = status_msg ) 
+            else:
+                return render_template("monthly_payment.html", status_msg = status_msg)
+
+
+        elif request.method  == "POST"  and request.form["request_type"] == "monthly_payment_update":
+
+            db = connect_to_database()
+
+            row_per_page = 15
+
+            dw_invoice_id = request.form["dw_invoice_id"]
+            vin = request.form["vin"]
+            dw_payment_id = request.form["dw_payment_id"]
+            payment_date = request.form["payment_date"]
+            payment_amount = request.form["payment_amount"] 
+            current_balance = request.form["current_balance"]
+            
+
+
+            query = f"""
+                    Update Monthly_Payments
+                    SET payment_date = '{payment_date}', payment_amount = '{payment_amount}', current_balance = '{current_balance}'
+                    WHERE dw_payment_id = '{dw_payment_id}'
+                     """
+            results = execute_query(db, query)
+
+
+
+            status_msg = "Update Successful."
+
+
+
+
+
+
+            if "payment_search" in session:
+
+                dw_customer_id = session["payment_search"]["key"]["dw_customer_id"]
+                dw_invoice_id = session["payment_search"]["key"]["dw_invoice_id"]
+                first_name = session["payment_search"]["key"]["first_name"]
+                last_name = session["payment_search"]["key"]["last_name"] 
+                vin = session["payment_search"]["key"]["vin"]
+                page = int(request.form["page"])
+                print(page)
+                nth_record = (page-1) * row_per_page 
+
+
+                query = f"""
+                        select 
+                        a.dw_customer_id
+                        ,dw_invoice_id
+                        ,a.vin
+                        ,dw_payment_id
+                        ,payment_date
+                        ,payment_amount
+                        ,current_balance
+                        ,first_name
+                        ,last_name
+                        ,customer_dob
+                        ,address_1
+                        ,address_2
+                        ,zip_code
+                        ,city
+                        ,state
+                        ,ssn
+                        ,tel_number
+                        ,d.dw_vehicle_type_id
+                        ,vehicle_type
+                        ,vehicle_make
+                        ,vehicle_model
+                        ,vehicle_year
+                        ,vehicle_color
+                        ,vehicle_trim
+                        ,vehicle_price
+
+                        from Monthly_Payments as a
+                        
+                        left JOIN Customers_Info as b
+                        on a.dw_customer_id = b.dw_customer_id
+
+                        left JOIN Vehicle_Inventories as c
+                        on a.vin = c.vin
+
+                        left join Vehicle_Types as d
+                        on c.dw_vehicle_type_id = d.dw_vehicle_type_id
+
+                        where a.dw_customer_id like "%%{dw_customer_id}%%"
+                        and dw_invoice_id like "%%{dw_invoice_id}%%"
+                        and first_name like "%%{first_name}%%"
+                        and last_name like "%%{last_name}%%"
+                        and a.vin like "%%{vin}%%"
+
+                        limit {nth_record}, {row_per_page}
+                        """
+
+                results = execute_query(db, query)
+                payment_info_list = [list(r) for r in results.fetchall()]
+
+    
+                if session["payment_search"]["count"]  > (nth_record + row_per_page):
+                    next_page = page + 1
+                else:
+                    next_page = page
+
+                if (nth_record - row_per_page) > 0:
+                    prev_page = page - 1
+                else:
+                    prev_page = 1
+                
+                return render_template("monthly_payment.html", content = payment_info_list, prev_page = prev_page, current_page = page, next_page = next_page, status_msg = status_msg ) 
+            else:
+                return render_template("monthly_payment.html", status_msg = status_msg)
+
+
 @app.route("/customer", methods = ["POST","GET"])
 def customer():
     row_per_page = 15
@@ -225,7 +808,6 @@ def customer():
 
 
             return render_template("customer.html", content = customer_info_list, prev_page = prev_page, current_page = 1, next_page = next_page)
-
 
         elif request.method  == "POST"  and request.form["request_type"] == "customer_continue_search":
 
@@ -424,7 +1006,7 @@ def customer():
            
 
 
-            if "search" in session:
+            if "customer_search" in session:
 
                 dw_customer_id = session["customer_search"]["key"]["dw_customer_id"]
                 dob = session["customer_search"]["key"]["dob"] 
