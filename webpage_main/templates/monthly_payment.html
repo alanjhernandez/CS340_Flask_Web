@@ -188,9 +188,10 @@ Monthly Payment
 
         <form action="#" method="POST">
             <fieldset>
-                <legend>Vehicle Type Information</legend>
+                <legend>Payment Information</legend>
                 <table>
-
+                    <h4>Type in the Invoice ID and the default payment schedule will be populated. If non-deflaut
+                        payment is used, please make sure the inputs are accurate.</h4>
                     <tr>
                         <td>Invoice ID </td>
                         <td><input type="text" name="dw_invoice_id" id="payment-invoice-id-add" required
@@ -199,27 +200,50 @@ Monthly Payment
                         <td id="payment-invoice-id-add-description"></td>
                     </tr>
 
+
                     <tr>
                         <td>Payment Date </td>
                         <td><input type="date" name="payment_date" required id="payment-date-add"></td>
                     </tr>
 
                     <tr>
+                        <td>Current Balance with accrued interest</td>
+                        <td><input type="number" name="accrued_balance" required id="payment-accrued-balance-add"
+                                readonly step=0.000001>
+                        </td>
+                    </tr>
+
+
+                    <tr>
+                        <td>N-th Payment </td>
+                        <td><input type="number" name="nth_payment" required id="payment-nth-payment-add"></td>
+                    </tr>
+
+
+
+                    <tr>
                         <td>Payment Amount</td>
                         <td><input type="text" name="monthly_payment_amount" id="payment-amount-add" required
-                                onfocusout="generate_monthly_payment_info();"></td>
-                        <td id="payment-amount-add-description"></td>
+                                step=0.000001></td>
+
+                    </tr>
+
+
+                    <tr>
+                        <td>Current Balance</td>
+                        <td><input type="text" name="current_balance" id="payment-current-balance-add" required
+                                step=0.000001>
+                            </input> </td>
+
                     </tr>
 
 
 
                 </table>
-
+                <br>
                 <input type="submit">
                 <input type="hidden" name="request_type" value="monthly_payment_add">
                 <input type="hidden" name="page" value={{current_page}}>
-                <input type="hidden" name="nth_payment" id="nth_payment">
-                <input type="hidden" name="current_balance" id="current_balance">
                 <input type="hidden" name="vin" id="payment-vin-add">
 
 
@@ -467,7 +491,15 @@ Monthly Payment
                     if (response == "-1") {
                         document.getElementById("payment-invoice-id-add-description").textContent = "Invoice Not Exist."
                     } else {
-                        document.getElementById("payment-invoice-id-add-description").textContent = "Customer: " + response[2] + ", " + response[1] + "'s " + response[5] + " " + response[3] + " " + response[4] + " (VIN: " + response[0] + ") Your default payment is :" + response[6]
+                        document.getElementById("payment-invoice-id-add-description").textContent = response[2] + ", " + response[1] + "'s " + response[5] + " " + response[3] + " " + response[4] + " (VIN: " + response[0] + ")"
+                        document.getElementById("payment-date-add").value = response[12]
+                        document.getElementById("payment-accrued-balance-add").value = response[7] * (1 + response[11] / 12)
+                        document.getElementById("payment-amount-add").value = response[6]
+                        document.getElementById("payment-current-balance-add").value = response[7] * (1 + response[11] / 12) - response[6]
+                        document.getElementById("payment-nth-payment-add").value = response[8] + 1
+                        document.getElementById("payment-vin-add").value = response[0]
+
+
                     }
 
 
@@ -481,54 +513,6 @@ Monthly Payment
 
     }
 
-
-
-    function generate_monthly_payment_info() {
-
-
-        var payment_amount = document.getElementById("payment-amount-add").value
-        var dw_invoice_id = document.getElementById("payment-invoice-id-add").value
-
-
-        if (dw_invoice_id != "" & payment_amount != "") {
-            console.log("{{ current_page }}")
-            var req = new XMLHttpRequest();
-            var monthly_payment_request = {}
-            monthly_payment_request.request_type = "monthly_payment_amount_check"
-            monthly_payment_request.dw_invoice_id = dw_invoice_id
-            monthly_payment_request.payment_amount = payment_amount
-            monthly_payment_request.page = "{{ current_page }}"
-
-            req.open('POST', '/monthly_payment', true);
-            req.setRequestHeader('Content-Type', 'application/json');
-            req.addEventListener('load', function () {
-                if (req.status >= 200 && req.status < 400) {
-                    var response = JSON.parse(req.responseText);
-                    console.log(response)
-                    if (response == "-1") {
-                        document.getElementById("payment-invoice-id-add-description").textContent = "Invoice Not Exist."
-                    } else {
-                        new_balance = (response[2] * (1 + response[1] / 12) - payment_amount).toFixed(2)
-                        document.getElementById("payment-amount-add-description").textContent = "Last Payment Balance without accrued interest: $" + response[2] + ", Balance after proposed payment: $" + new_balance.toString()
-                        document.getElementById("nth_payment").value = response[3] + 1
-                        document.getElementById("current_balance").value = new_balance
-                        document.getElementById("payment-vin-add").value = response[4]
-
-                        console.log(document.getElementById("nth_payment").value, document.getElementById("current_balance").value, document.getElementById("payment-vin-add").value)
-                    }
-
-
-                } else {
-                    console.log("Error in network request: " + req.statusText);
-                }
-            });
-            req.send(JSON.stringify(monthly_payment_request));
-            event.preventDefault();
-        }
-
-
-
-    }
 
 
 

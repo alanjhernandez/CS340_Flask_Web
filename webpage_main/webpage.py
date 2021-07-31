@@ -51,6 +51,12 @@ def monthly_payment():
                     ,b.vehicle_model
                     ,b.vehicle_year
                     ,a.monthly_payment_amount
+                    ,e.current_balance
+                    ,nth_payment
+                    ,cast(DATE(payment_date) as varchar(10)) as payment_date
+                    ,a.vin
+                    ,int_rate
+                    ,cast(DATE_ADD(DATE(payment_date), INTERVAL 1 MONTH) as varchar(10)) as next_payment_date
                     from Sales_Records as a 
                     left join Vehicle_Types as b 
                     on a.dw_vehicle_type_id = b.dw_vehicle_type_id 
@@ -58,49 +64,28 @@ def monthly_payment():
                     on a.dw_invoice_id = c.dw_invoice_id 
                     left join Customers_Info as d 
                     on c.dw_customer_id = d.dw_customer_id 
+                    left join (
+                    select dw_invoice_id
+                    , min(current_balance) as current_balance
+                    , max(nth_payment) as nth_payment
+                    , max(payment_date) as payment_date
+                    from Monthly_Payments
+                    where dw_invoice_id = '{dw_invoice_id}'
+                    group by 1
+                    ) as e 
+                    on a.dw_invoice_id = e.dw_invoice_id
+                    left join Financial_Options as f
+                    on a.dw_fincl_option_id = f.dw_fincl_option_id
                     where a.dw_invoice_id = '{dw_invoice_id}';
                     """
             results = execute_query(db, query)
             invoice_info = [list(r) for r in results.fetchall()]
 
+            print(invoice_info)
+
          
             if len(invoice_info) > 0:
                 return jsonify(invoice_info[0])
-            else:
-                return jsonify("-1")
-
-
-        elif request.method == "POST" and request.json["request_type"] == "monthly_payment_amount_check":
-
-            db = connect_to_database()
-            dw_invoice_id = request.json["dw_invoice_id"] 
-
-            query = f"""
-                    select 
-                    a.dw_invoice_id
-                    ,int_rate
-                    ,current_balance
-                    ,nth_payment
-                    ,a.vin
-                    from Sales_Records as a
-                    left join Financial_Options as b
-                    on a.dw_fincl_option_id = b.dw_fincl_option_id
-                    left join (
-                    select dw_invoice_id
-                    , min(current_balance) as current_balance
-                    , max(nth_payment) as nth_payment
-                    from Monthly_Payments
-                    where dw_invoice_id = '{dw_invoice_id}'
-                    group by 1
-                    ) as c on a.dw_invoice_id = c.dw_invoice_id
-                    where a.dw_invoice_id = '{dw_invoice_id}'
-                    """
-            results = execute_query(db, query)
-            payment_info = [list(r) for r in results.fetchall()]
-
-         
-            if len(payment_info) > 0:
-                return jsonify(payment_info[0])
             else:
                 return jsonify("-1")
 
@@ -488,8 +473,35 @@ def monthly_payment():
                 results = execute_query(db, query)
                 payment_info_list = [list(r) for r in results.fetchall()]
 
+        
+
+                query = f"""
+                        select count(*) as count
+
+                        from Monthly_Payments as a
+                        
+                        left JOIN Customers_Info as b
+                        on a.dw_customer_id = b.dw_customer_id
+
+                        left JOIN Vehicle_Inventories as c
+                        on a.vin = c.vin
+
+                        left join Vehicle_Types as d
+                        on c.dw_vehicle_type_id = d.dw_vehicle_type_id
+
+                        where a.dw_customer_id like "%%{dw_customer_id}%%"
+                        and dw_invoice_id like "%%{dw_invoice_id}%%"
+                        and first_name like "%%{first_name}%%"
+                        and last_name like "%%{last_name}%%"
+                        and a.vin like "%%{vin}%%"
+
+                        """
+
+                results = execute_query(db, query)
+                payment_count = [list(r) for r in results.fetchall()]
+
     
-                if session["payment_search"]["count"]  > (nth_record + row_per_page):
+                if payment_count[0][0]  > (nth_record + row_per_page):
                     next_page = page + 1
                 else:
                     next_page = page
@@ -1407,6 +1419,8 @@ def sales():
 
                 results = execute_query(db, query)
                 sales_info_list = [list(r) for r in results.fetchall()]
+
+    
 
     
                 if session["sales_search"]["count"]  > (nth_record + row_per_page):
