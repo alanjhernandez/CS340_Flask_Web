@@ -121,7 +121,7 @@ Test Drive Record
                 <td>{{i[14]}}</td>
                 <td><button onclick="delete_test_drive('{{i[0]}}');">Delete</button></td>
                 <td><button
-                    onclick="edit_test_drive('{{i[0]}}','{{i[5]}}','{{i[1]}}','{{i[2]}}','{{i[3]}}','{{i[4]}}');">Edit</button>
+                        onclick="edit_test_drive('{{i[0]}}','{{i[5]}}','{{i[1]}}','{{i[2]}}','{{i[3]}}','{{i[4]}}');">Edit</button>
                 </td>
                 <!--
                 <td><button
@@ -171,20 +171,21 @@ Test Drive Record
 
                     <tr>
                         <td>Test Drive ID </td>
-                        <td colspan="2"><input type="number"  name="dw_test_drive_id" readonly id="edit-test_drive-test_drive_id"></input></td>
+                        <td colspan="2"><input type="number" name="dw_test_drive_id" readonly
+                                id="edit-test_drive-test_drive_id"></input></td>
 
                     </tr>
 
                     <tr>
                         <td>Customer ID </td>
-                        <td colspan="2"><input type="number" id="edit-test_drive-customerid"
-                                 name="dw_customer_id" required></input></td>
+                        <td colspan="2"><input type="number" id="edit-test_drive-customerid" name="dw_customer_id"
+                                required></input></td>
                     </tr>
 
 
                     <tr>
                         <td>VIN</td>
-                        <td colspan="2"><input type="text" id="edit-test_drive-vin" name="vin" required ></input>
+                        <td colspan="2"><input type="text" id="edit-test_drive-vin" name="vin" required></input>
                         </td>
                     </tr>
 
@@ -196,22 +197,24 @@ Test Drive Record
 
                     <tr>
                         <td>Check Out Time</td>
-                        <td colspan="2"> <input type="datetime" id="edit-test_drive-checkout_time" name="check_out_time"></td>
+                        <td colspan="2"> <input type="datetime" id="edit-test_drive-checkout_time"
+                                name="check_out_time"></td>
 
                     </tr>
                     <tr>
                         <td>Return Time</td>
-                        <td colspan="2"> <input type="datetime" id="edit-test_drive-return_time" name="return_time"></td>
+                        <td colspan="2"> <input type="datetime" id="edit-test_drive-return_time" name="return_time">
+                        </td>
 
                     </tr>
 
 
                 </table>
-                
+
                 <input type="submit">
                 <input type="hidden" name="request_type" value="test_drive_edit">
                 <input type="hidden" name="page" value="{{ current_page }}">
-                
+
             </fieldset>
 
         </form>
@@ -245,15 +248,17 @@ Test Drive Record
 
                     <tr>
                         <td>Customer ID</td>
-                        <td colspan="2"><input type="number" id="add-test_drive-customerid" onfocusout="check_customer_id()"
-                                name="dw_customer_id" required></input>
+                        <td colspan="2"><input type="number" id="add-test_drive-customerid"
+                                onfocusout="check_customer_id()" name="dw_customer_id" required></input>
                         </td>
-                        <td colspan="3" id="add-test_drive-customer-name"></td> <!--update-->
+                        <td colspan="3" id="add-test_drive-customer-name"></td>
+                        <!--update-->
                     </tr>
 
 
                     <tr>
-                        <td>VIN</td><!--FK from Vehicle Inventories-->
+                        <td>VIN</td>
+                        <!--FK from Vehicle Inventories-->
                         <td colspan="2"><input type="text" id="add-test_drive-vin" onfocusout="check_vin()" name="vin"
                                 required></input>
                         </td>
@@ -262,21 +267,22 @@ Test Drive Record
 
                     <tr>
                         <td>Test Drive Date</td>
-                        <td colspan="2"> <input type="date" id="add-test_drive-date" name="test_drive_date" required></td>
+                        <td colspan="2"> <input type="date" id="add-test_drive-date" name="test_drive_date" required>
+                        </td>
 
                     </tr>
 
                     <tr>
                         <td>Check Out Time</td>
-                        <td colspan="2"><input type="datetime" id="add-test_drive-checkout_time"
-                                name="checkout_time" placeholder="YYYY-MM-DD HH:MM:SS" required></input>
+                        <td colspan="2"><input type="datetime" id="add-test_drive-checkout_time" name="checkout_time"
+                                placeholder="YYYY-MM-DD HH:MM:SS" required></input>
 
                         </td>
 
                     <tr>
                         <td>Return Time</td>
-                        <td colspan="2"><input type="datetime" placeholder="YYYY-MM-DD HH:MM:SS" id="add-test_drive-return_time"
-                                name="return_time" required></input>
+                        <td colspan="2"><input type="datetime" placeholder="YYYY-MM-DD HH:MM:SS"
+                                id="add-test_drive-return_time" name="return_time" required></input>
                         </td>
                     </tr>
 
@@ -355,7 +361,7 @@ Test Drive Record
         test_drive_request.page = "{{ current_page }}"
         console.log(test_drive_request)
 
-        req.open('POST', '/test_drive', true);
+        req.open('POST', '/testdrive', true);
         req.setRequestHeader('Content-Type', 'application/json');
         req.addEventListener('load', function () {
             if (req.status >= 200 && req.status < 400) {
@@ -368,7 +374,7 @@ Test Drive Record
                 console.log("Error in network request: " + req.statusText);
             }
         });
-        req.send(JSON.stringify(sales_request));
+        req.send(JSON.stringify(test_drive_request));
         event.preventDefault();
 
 

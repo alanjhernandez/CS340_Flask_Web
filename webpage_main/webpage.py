@@ -2306,8 +2306,6 @@ def vehicle_inventory():
         
         elif request.method  == "POST" and request.form["request_type"] == "new_search":
 
-            print("POST")
-
             if "search" in session:
                 session.pop("search")
 
@@ -2330,6 +2328,8 @@ def vehicle_inventory():
                     """
             results = execute_query(db, query)
             vehicle_type_id_list = [r[0] for r in results.fetchall()]
+
+            
 
             
             fstring_sub = ','.join(['%s'] * len(vehicle_type_id_list))
@@ -2363,19 +2363,18 @@ def vehicle_inventory():
             results = execute_query(db, query, vehicle_type_id_list)
             inventory_result = [ list(r) for r in results.fetchall()]
 
+            print(vehicle_type_id_list)
+
             query = f"""
                     SELECT count(distinct vin) as count
                     from Vehicle_Inventories as a
 
-                    inner join Vehicle_Types as b
-                    on a.dw_vehicle_type_id = b.dw_vehicle_type_id
 
-
-                    where b.dw_vehicle_type_id IN ({fstring_sub})
+                    where a.dw_vehicle_type_id IN ({fstring_sub})
                     and a.sold_ind = '0';
                     """
                     
-            results = execute_query(db, query)
+            results = execute_query(db, query, vehicle_type_id_list)
             inventory_count = [ r for r in results.fetchall()]
   
             session["search"] = {}
