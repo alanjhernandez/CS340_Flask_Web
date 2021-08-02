@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="{{url_for('static', filename = 'base.css')}}">
-
+    <!--
     <style>
         body {
             background: #ffffff;
@@ -50,6 +50,7 @@
             display: flex;
         }
     </style>
+    -->
 
 
     {% block style %}{% endblock %}
@@ -62,12 +63,16 @@
     <div class="logo">
         <img src="https://i.ibb.co/pZXyQLX/picturetopeople-org-05f120e90b334018ee8283fef5ce76c7270c8f7c9534d4d811.png"
             alt="Title" style="width:50%" loading="lazy">
+            <!--Image source: https://www.offleaseonly.com/preowned-nissan-suvs/-->
     </div>
     <div class="nav-bar">
 
-        <div> <a href="/">HomePage</a> </div>
+        <div> <a href="/">Home</a> </div>
         <div> <a href="/customer">Customer</a> </div>
         <div> <a href="/salesrep">Sales Representatives</a> </div>
+        <div> <a href="/financial_arrangement">Financial Arrangement</a> </div>
+        <div> <a href="/vehicle_type">Vehicle Type</a> </div>
+        <div> <a href="/monthly_payment">Monthly Payment</a> </div>
         <div> <a href="/vehinventory">View/Modify Vehicle Inventory</a> </div>
         <div> <a href="/modsales">Add/Modify/Search Sales Record</a> </div>
         <div> <a href="/testdrive">Search/Add Test Drive Record</a></div>

@@ -1,0 +1,562 @@
+{% extends "base.html" %}
+
+{% block title%}
+Monthly Payment
+{% endblock %}
+
+{% block style%}
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename = 'monthly_payment.css')}}">
+{% endblock %}
+
+{% block content%}
+
+<form action="#" method="POST">
+    <fieldset>
+        <legend>Payment Information Search Form</legend>
+        <table>
+
+            <tr>
+                <td>Invoice ID: </td>
+                <td id="payment-invoice-id"><input type="text" name="dw_invoice_id"></td>
+            </tr>
+
+            <tr>
+                <td>Customer ID </td>
+                <td id="payment-customer-id"><input type="text" name="dw_customer_id"></td>
+            </tr>
+
+            <tr>
+                <td>Customer First Name </td>
+                <td id="payment-first-name"><input type="text" name="first_name"></td>
+            </tr>
+
+            <tr>
+                <td>Customer Last Name </td>
+                <td id="payment-last-name"><input type="text" name="last_name"></td>
+            </tr>
+
+            <tr>
+                <td>VIN</td>
+                <td id="payment-vin"><input type="text" name="vin"></td>
+            </tr>
+
+
+        </table>
+
+        <input type="submit">
+        <input type="hidden" name="request_type" value="monthly_payment_new_search">
+    </fieldset>
+</form>
+
+
+
+<br>
+<button onclick="add_monthly_payment();">New Record</button>
+
+{% if content is defined%}
+<div>
+    <table>
+        <thead>
+            <tr>
+                <th>Customer ID</th>
+                <th>Customer Name</th>
+                <th>Invoice ID</th>
+                <th>VIN</th>
+                <th>Payment ID</th>
+                <th>Payment Date</th>
+                <th>Payment Amount</th>
+                <th>Current Balance</th>
+                <th>Delete</th>
+                <th>Update</th>
+
+            </tr>
+        </thead>
+        {% if content is defined %}
+        <tbody id="content-table">
+            {% for i in content %}
+            <tr>
+                <td>{{i[0]}}</td>
+                <td> <button class="person_btn"
+                        onclick="check_customer( '{{i[0]}}',  '{{i[7]}}', '{{i[8]}}', '{{i[9]}}', '{{i[10]}}', '{{i[11]}}', '{{i[12]}}', '{{i[13]}}', '{{i[14]}}', '{{i[15]}}', '{{i[16]}}' );">{{i[8]
+                        + ", " + i[7]}}</button></td>
+                <td>{{i[1]}}</td>
+                <td> <button class="person_btn"
+                        onclick="check_vin( '{{i[17]}}', '{{i[18]}}', '{{i[19]}}', '{{i[20]}}', '{{i[21]}}', '{{i[22]}}', '{{i[23]}}', '{{i[24]}}');">{{i[2]}}</button>
+                </td>
+                <td>{{i[3]}}</td>
+                <td>{{i[4]}}</td>
+                <td>{{i[5]}}</td>
+                <td>{{i[6]}}</td>
+                <td><button onclick="delete_monthly_payment('{{i[3]}}');">Delete</button>
+                </td>
+                <td><button
+                        onclick="edit_monthly_payment('{{i[1]}}','{{i[2]}}','{{i[3]}}','{{i[4]}}','{{i[5]}}','{{i[6]}}');">Edit</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        {% endif %}
+    </table>
+
+    <div class="page_button" style="margin: 0 auto; display:inline;">
+        <form action="#" method="POST" style="margin: 0 auto;display: inline;">
+            <input type="hidden" name="page" value={{prev_page}}>
+            <input type="hidden" name="request_type" value="monthly_payment_continue_search">
+            <input type="submit" value="Prev">
+        </form>
+
+        Page {{current_page}}
+
+        <form action="#" method="POST" style="margin: 0 auto;display: inline;">
+            <input type="hidden" name="page" value={{next_page}}>
+            <input type="hidden" name="request_type" value="monthly_payment_continue_search">
+            <input type="submit" value="Next">
+        </form>
+    </div>
+    <br>
+
+</div>
+
+
+{% endif %}
+
+<div id="edit_modal" class="edit_modal">
+
+    <!-- Modal content -->
+    <div class="modal-content">
+        <span class="close" id="edit-close">&times;</span>
+
+        <form action="#" method="POST">
+            <fieldset>
+                <legend>Payment Information - Please make sure the balance is accurate after updating the values
+                </legend>
+                <table>
+
+                    <tr>
+                        <td>Invoice ID</td>
+                        <td><input type="text" name="dw_invoice_id" readonly id="payment-invoice-id-edit"></td>
+                    </tr>
+
+                    <tr>
+                        <td>VIN </td>
+                        <td><input type="text" name="vin" readonly required id="payment-vin-edit">
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>Payment ID </td>
+                        <td><input type="text" name="dw_payment_id" id="payment-id-edit" readonly required>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>Payment Date </td>
+                        <td><input type="date" name="payment_date" required id="payment-date-edit"> </td>
+                    </tr>
+
+                    <tr>
+                        <td>Payment Amount</td>
+                        <td><input type="number" name="payment_amount" id="payment-amount-edit" step="0.00001" required>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>Balance </td>
+                        <td><input type="number" name="current_balance" required id="payment-balance-edit"
+                                step="0.00001"></td>
+                    </tr>
+
+
+
+                </table>
+
+                <input type="submit">
+                <input type="hidden" name="request_type" value="monthly_payment_update">
+                <input type="hidden" name="page" value={{current_page}}>
+
+            </fieldset>
+        </form>
+    </div>
+
+</div>
+
+<div id=" add_modal" class="add_modal">
+
+    <!-- Modal content -->
+    <div class="modal-content">
+        <span class="close" id="add-close">&times;</span>
+
+        <form action="#" method="POST">
+            <fieldset>
+                <legend>Payment Information</legend>
+                <table>
+                    <h4>Type in the Invoice ID and the default payment schedule will be populated. If non-deflaut
+                        payment is used, please make sure the inputs are accurate.</h4>
+                    <tr>
+                        <td>Invoice ID </td>
+                        <td><input type="text" name="dw_invoice_id" id="payment-invoice-id-add" required
+                                onfocusout="generate_invoice_info();">
+                        </td>
+                        <td id="payment-invoice-id-add-description"></td>
+                    </tr>
+
+
+                    <tr>
+                        <td>Payment Date </td>
+                        <td><input type="date" name="payment_date" required id="payment-date-add"></td>
+                    </tr>
+
+                    <tr>
+                        <td>Current Balance with accrued interest</td>
+                        <td><input type="number" name="accrued_balance" required id="payment-accrued-balance-add"
+                                readonly step=0.000001>
+                        </td>
+                    </tr>
+
+
+                    <tr>
+                        <td>N-th Payment </td>
+                        <td><input type="number" name="nth_payment" required id="payment-nth-payment-add"></td>
+                    </tr>
+
+
+
+                    <tr>
+                        <td>Payment Amount</td>
+                        <td><input type="text" name="monthly_payment_amount" id="payment-amount-add" required
+                                step=0.000001></td>
+
+                    </tr>
+
+
+                    <tr>
+                        <td>Current Balance</td>
+                        <td><input type="text" name="current_balance" id="payment-current-balance-add" required
+                                step=0.000001>
+                            </input> </td>
+
+                    </tr>
+
+
+
+                </table>
+                <br>
+                <input type="submit">
+                <input type="hidden" name="request_type" value="monthly_payment_add">
+                <input type="hidden" name="page" value={{current_page}}>
+                <input type="hidden" name="vin" id="payment-vin-add">
+
+
+            </fieldset>
+        </form>
+    </div>
+
+</div>
+
+
+<div id=" vehicle_modal" class="vehicle_modal">
+
+    <!-- Modal content -->
+    <div class="modal-content">
+        <span class="close" id="vehicle-close">&times;</span>
+
+        <fieldset>
+            <legend>Vehicle Type Information</legend>
+            <table>
+
+                <tr>
+                    <td>Vehicle Type ID </td>
+                    <td id="vehicle-type-id"></td>
+                </tr>
+
+                <tr>
+                    <td>Vehicle Make </td>
+                    <td id="vehicle-make"></td>
+                </tr>
+
+                <tr>
+                    <td>Vehicle Type </td>
+                    <td id="vehicle-type"></td>
+                </tr>
+
+                <tr>
+                    <td>Vehicle Model </td>
+                    <td id="vehicle-model"></td>
+                </tr>
+
+                <tr>
+                    <td>Vehicle Year </td>
+                    <td id="vehicle-year"></td>
+                </tr>
+
+                <tr>
+                    <td>Vehicle Color </td>
+                    <td id="vehicle-color"></td>
+                </tr>
+
+                <tr>
+                    <td>Vehicle Trim </td>
+                    <td id="vehicle-trim"></td>
+                </tr>
+
+                <tr>
+                    <td>Vehicle Price </td>
+                    <td id="vehicle-price"></td>
+                </tr>
+
+            </table>
+
+
+        </fieldset>
+
+    </div>
+
+</div>
+
+<div id="customer_modal" class="customer_modal">
+
+    <!-- Modal content -->
+    <div class="modal-content">
+        <span class="close" id="customer-close">&times;</span>
+
+        <h1>Customer Information</h1>
+
+        <table>
+
+            <tr>
+                <td>Customer ID: </td>
+                <td id="customer-id"></td>
+            </tr>
+
+            <tr>
+                <td>First Name:</td>
+                <td id="customer-first-name"></td>
+            </tr>
+
+            <tr>
+                <td>Last Name:</td>
+                <td id="customer-last-name"></td>
+            </tr>
+
+
+            <tr>
+                <td>Date of Birth:</td>
+                <td id="customer-dob"></td>
+            </tr>
+
+            <tr>
+                <td>Address:</td>
+                <td id="customer-address"></td>
+            </tr>
+
+            <tr>
+                <td>Phone:</td>
+                <td id="customer-phone"></td>
+            </tr>
+
+
+            <tr>
+                <td>SSN:</td>
+                <td id="customer-ssn"></td>
+            </tr>
+
+
+        </table>
+
+
+    </div>
+
+</div>
+
+
+{% if status_msg is defined%}
+{{status_msg}}
+{% endif %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+
+
+
+
+    var edit_modal = document.getElementById("edit_modal");
+    var edit_span = document.getElementById("edit-close");
+    var add_modal = document.getElementsByClassName("add_modal")[0];
+    var add_span = document.getElementById("add-close");
+    var vehicle_modal = document.getElementsByClassName("vehicle_modal")[0];
+    var vehicle_span = document.getElementById("vehicle-close");
+    var customer_modal = document.getElementsByClassName("customer_modal")[0];
+    var customer_span = document.getElementById("customer-close");
+
+
+    function add_monthly_payment() {
+        add_modal.style.display = "block";
+    }
+
+    edit_span.onclick = function () {
+        edit_modal.style.display = "none";
+    }
+
+    add_span.onclick = function () {
+        add_modal.style.display = "none";
+    }
+
+    vehicle_span.onclick = function () {
+        vehicle_modal.style.display = "none";
+    }
+
+
+    customer_span.onclick = function () {
+        customer_modal.style.display = "none";
+    }
+
+    window.onclick = function (event) {
+
+        if (event.target == edit_modal) {
+            edit_modal.style.display = "none";
+        }
+        if (event.target == add_modal) {
+            add_modal.style.display = "none";
+        }
+        if (event.target == vehicle_modal) {
+            vehicle_modal.style.display = "none";
+        }
+        if (event.target == customer_modal) {
+            customer_modal.style.display = "none";
+        }
+    }
+
+    function check_vin(dw_vehicle_type_id, vehicle_type, vehicle_make, vehicle_model, vehicle_year, vehicle_color, vehicle_trim, vehicle_price) {
+        vehicle_modal.style.display = "block";
+
+        document.getElementById("vehicle-type-id").textContent = dw_vehicle_type_id
+        document.getElementById("vehicle-type").textContent = vehicle_type
+        document.getElementById("vehicle-make").textContent = vehicle_make
+        document.getElementById("vehicle-model").textContent = vehicle_model
+        document.getElementById("vehicle-year").textContent = vehicle_year
+        document.getElementById("vehicle-color").textContent = vehicle_color
+        document.getElementById("vehicle-trim").textContent = vehicle_trim
+        document.getElementById("vehicle-price").textContent = vehicle_price
+
+    }
+
+
+
+    function check_customer(dw_customer_id, first_name, last_name, customer_dob, address_1, address_2, zip_code, city, state, ssn, tel_number) {
+        customer_modal.style.display = "block";
+
+        document.getElementById("customer-id").textContent = dw_customer_id
+        document.getElementById("customer-first-name").textContent = first_name
+        document.getElementById("customer-last-name").textContent = last_name
+        document.getElementById("customer-dob").textContent = customer_dob
+        document.getElementById("customer-address").textContent = address_1 + ', ' + address_2 + ', ' + city + ', ' + state + ', ' + zip_code
+        document.getElementById("customer-phone").textContent = tel_number
+        document.getElementById("customer-ssn").textContent = ssn
+    }
+
+
+
+    function generate_invoice_info() {
+
+
+        var dw_invoice_id = document.getElementById("payment-invoice-id-add").value
+
+        console.log(dw_invoice_id)
+
+        if (dw_invoice_id != "") {
+            console.log("{{ current_page }}")
+            var req = new XMLHttpRequest();
+            var monthly_payment_request = {}
+            monthly_payment_request.request_type = "monthly_payment_invoice_check"
+            monthly_payment_request.dw_invoice_id = dw_invoice_id
+            monthly_payment_request.page = "{{ current_page }}"
+
+            req.open('POST', '/monthly_payment', true);
+            req.setRequestHeader('Content-Type', 'application/json');
+            req.addEventListener('load', function () {
+                if (req.status >= 200 && req.status < 400) {
+                    var response = JSON.parse(req.responseText);
+                    console.log(response)
+                    if (response == "-1") {
+                        document.getElementById("payment-invoice-id-add-description").textContent = "Invoice Not Exist."
+                    } else {
+                        document.getElementById("payment-invoice-id-add-description").textContent = response[2] + ", " + response[1] + "'s " + response[5] + " " + response[3] + " " + response[4] + " (VIN: " + response[0] + ")"
+                        document.getElementById("payment-date-add").value = response[12]
+                        document.getElementById("payment-accrued-balance-add").value = response[7] * (1 + response[11] / 12)
+                        document.getElementById("payment-amount-add").value = response[6]
+                        document.getElementById("payment-current-balance-add").value = response[7] * (1 + response[11] / 12) - response[6]
+                        document.getElementById("payment-nth-payment-add").value = response[8] + 1
+                        document.getElementById("payment-vin-add").value = response[0]
+
+
+                    }
+
+
+                } else {
+                    console.log("Error in network request: " + req.statusText);
+                }
+            });
+            req.send(JSON.stringify(monthly_payment_request));
+            event.preventDefault();
+        }
+
+    }
+
+
+
+
+    function edit_monthly_payment(dw_invoice_id, vin, dw_payment_id, payment_date, payment_amount, current_balance) {
+        edit_modal.style.display = "block";
+        document.getElementById("payment-invoice-id-edit").value = dw_invoice_id
+        document.getElementById("payment-vin-edit").value = vin
+        document.getElementById("payment-id-edit").value = dw_payment_id
+        document.getElementById("payment-date-edit").value = payment_date
+        document.getElementById("payment-amount-edit").value = payment_amount
+        document.getElementById("payment-balance-edit").value = current_balance
+
+    }
+
+
+    function delete_monthly_payment(dw_payment_id) {
+
+        console.log("{{ current_page }}")
+        var req = new XMLHttpRequest();
+        var monthly_payment_request = {}
+        monthly_payment_request.request_type = "monthly_payment_delete"
+        monthly_payment_request.dw_payment_id = dw_payment_id
+        monthly_payment_request.page = "{{ current_page }}"
+        console.log(monthly_payment_request)
+
+        req.open('POST', '/monthly_payment', true);
+        req.setRequestHeader('Content-Type', 'application/json');
+        req.addEventListener('load', function () {
+            if (req.status >= 200 && req.status < 400) {
+                console.log("Delete Request Success!")
+
+                location.reload();
+
+            } else {
+                console.log("Error in network request: " + req.statusText);
+            }
+        });
+        req.send(JSON.stringify(monthly_payment_request));
+        event.preventDefault();
+
+    }
+
+
+
+</script>
+
+{% endblock %}

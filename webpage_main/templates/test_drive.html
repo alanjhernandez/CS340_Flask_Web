@@ -4,7 +4,9 @@
 Test Drive Record
 {% endblock %}
 
-
+{% block style%}
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename = 'test_drive.css')}}">
+{% endblock %}
 
 {% block content%}
 <form action="#" method="POST">
@@ -72,94 +74,93 @@ Test Drive Record
 
 <p><button onclick="add_new_test_drive();">New Record</button></p>
 
-{% if prev_page is defined %}
-<table>
-    <thead>
-        <tr>
-            <th>Test Drive ID</th>
-            <th>vin</th>
-            <th>Test Drive Date</th>
-            <th>Check out Time</th>
-            <th>Return Time</th>
-            <th>Customer ID</th>
-            <th>Customer First Name</th>
-            <th>Customer Last Name</th>
-            <th>Type</th>
-            <th>Make</th>
-            <th>Model</th>
-            <th>Year</th>
-            <th>Color</th>
-            <th>Trim</th>
-            <th>Price</th>
-            <th>Delete</th>
-            <th>Update</th>
+{% if content is defined %}
+<div>
+    <table>
+        <thead>
+            <tr>
+                <th>Test Drive ID</th>
+                <th>Vin</th>
+                <th>Test Drive Date</th>
+                <th>Check out Time</th>
+                <th>Return Time</th>
+                <th>Customer ID</th>
+                <th>Customer First Name</th>
+                <th>Customer Last Name</th>
+                <th>Type</th>
+                <th>Make</th>
+                <th>Model</th>
+                <th>Year</th>
+                <th>Color</th>
+                <th>Trim</th>
+                <th>Price</th>
+                <th>Delete</th>
+                <th>Update</th>
 
 
-        </tr>
-    </thead>
-    {% if content is defined %}
-    <tbody id="content-table">
-        {% for i in content %}
-        <tr>
-            <td>{{i[0]}}</td>
-            <td>{{i[1]}}</td>
-            <td>{{i[2]}}</td>
-            <td>{{i[3]}}</td>
-            <td>{{i[4]}}</td>
-            <td>{{i[5]}}</td>
-            <td>{{i[6]}}</td>
-            <td>{{i[7]}}</td>
-            <td>{{i[8]}}</td>
-            <td>{{i[9]}}</td>
-            <td>{{i[10]}}</td>
-            <td>{{i[11]}}</td>
-            <td>{{i[12]}}</td>
-            <td>{{i[13]}}</td>
-            <td>{{i[14]}}</td>
-            <td><button onclick="delete_test_drive('{{i[0]}}');">Delete</button></td>
-            <td><button
-                onclick="edit_sales('{{i[0]}}','{{i[1]}}','{{i[2]}}','{{i[3]}}','{{i[4]}}','{{i[5]}}','{{i[6]}}','{{i[7]}}','{{i[8]}}','{{i[9]}}','{{i[10]}}','{{i[11]}}','{{i[12]}}','{{i[13]}}','{{i[14]}}','{{i[15]}}','{{i[16]}}');">Edit</button>
-            </td>
-            <!--remove i[] that are not needed for javascript-->
-        </tr>
-        {% endfor %}
-    </tbody>
-    {% endif %}
-</table>
+            </tr>
+        </thead>
+        {% if content is defined %}
+        <tbody id="content-table">
+            {% for i in content %}
+            <tr>
+                <td>{{i[0]}}</td>
+                <td>{{i[1]}}</td>
+                <td>{{i[2]}}</td>
+                <td>{{i[3]}}</td>
+                <td>{{i[4]}}</td>
+                <td>{{i[5]}}</td>
+                <td>{{i[6]}}</td>
+                <td>{{i[7]}}</td>
+                <td>{{i[8]}}</td>
+                <td>{{i[9]}}</td>
+                <td>{{i[10]}}</td>
+                <td>{{i[11]}}</td>
+                <td>{{i[12]}}</td>
+                <td>{{i[13]}}</td>
+                <td>{{i[14]}}</td>
+                <td><button onclick="delete_test_drive('{{i[0]}}');">Delete</button></td>
+                <td><button
+                    onclick="edit_test_drive('{{i[0]}}','{{i[5]}}','{{i[1]}}','{{i[2]}}','{{i[3]}}','{{i[4]}}');">Edit</button>
+                </td>
+                <!--
+                <td><button
+                    onclick="edit_test_drive('{{i[0]}}','{{i[1]}}','{{i[2]}}','{{i[3]}}','{{i[4]}}','{{i[5]}}','{{i[6]}}','{{i[7]}}','{{i[8]}}','{{i[9]}}','{{i[10]}}','{{i[11]}}','{{i[12]}}','{{i[13]}}','{{i[14]}}');">Edit</button>
+                </td>
+                -->
+            </tr>
+            {% endfor %}
+        </tbody>
+        {% endif %}
+    </table>
 
 
-<div class="page_button" style="margin: 0 auto; display:inline;">
-    <form action="#" method="POST" style="margin: 0 auto;display: inline;">
-        <input type="hidden" name="page" value={{prev_page}}>
-        <input type="hidden" name="request_type" value="test_drive_continue_search">
-        <input type="submit" value="Prev">
-    </form>
+    <div class="page_button" style="margin: 0 auto; display:inline;">
+        <form action="#" method="POST" style="margin: 0 auto;display: inline;">
+            <input type="hidden" name="page" value={{prev_page}}>
+            <input type="hidden" name="request_type" value="test_drive_continue_search">
+            <input type="submit" value="Prev">
+        </form>
 
-    Page {{current_page}}
+        Page {{current_page}}
 
-    <form action="#" method="POST" style="margin: 0 auto;display: inline;">
-        <input type="hidden" name="page" value={{next_page}}>
-        <input type="hidden" name="request_type" value="test_drive_continue_search">
-        <input type="submit" value="Next">
-    </form>
+        <form action="#" method="POST" style="margin: 0 auto;display: inline;">
+            <input type="hidden" name="page" value={{next_page}}>
+            <input type="hidden" name="request_type" value="test_drive_continue_search">
+            <input type="submit" value="Next">
+        </form>
+    </div>
+    <br>
 </div>
-<br>
 
 {% endif %}
 
-{% if status_msg is defined %}
-
-Status: {{status_msg}}
-
-{% endif %}
-
-
-<!--Adding new test drive-->
-<div id="add_modal" class="add_modal">
+<!--Editing test drive-->
+<div id="edit_modal" class="edit_modal">
 
     <!-- Modal content -->
     <div class="modal-content">
-        <span class="close">&times;</span>
+        <span class="close" id="edit-close">&times;</span>
 
         <form action="#" method="POST">
             <fieldset>
@@ -167,14 +168,80 @@ Status: {{status_msg}}
                 <legend>Test Drive Information</legend>
 
                 <table>
-                    <!-- 
+
+                    <tr>
+                        <td>Test Drive ID </td>
+                        <td colspan="2"><input type="number"  name="dw_test_drive_id" readonly id="edit-test_drive-test_drive_id"></input></td>
+
+                    </tr>
+
+                    <tr>
+                        <td>Customer ID </td>
+                        <td colspan="2"><input type="number" id="edit-test_drive-customerid"
+                                 name="dw_customer_id" required></input></td>
+                    </tr>
+
+
+                    <tr>
+                        <td>VIN</td>
+                        <td colspan="2"><input type="text" id="edit-test_drive-vin" name="vin" required ></input>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>Test Drive Date</td>
+                        <td colspan="2"> <input type="date" id="edit-test_drive-drive_date" name="test_drive_date"></td>
+
+                    </tr>
+
+                    <tr>
+                        <td>Check Out Time</td>
+                        <td colspan="2"> <input type="datetime" id="edit-test_drive-checkout_time" name="check_out_time"></td>
+
+                    </tr>
+                    <tr>
+                        <td>Return Time</td>
+                        <td colspan="2"> <input type="datetime" id="edit-test_drive-return_time" name="return_time"></td>
+
+                    </tr>
+
+
+                </table>
+                
+                <input type="submit">
+                <input type="hidden" name="request_type" value="test_drive_edit">
+                <input type="hidden" name="page" value="{{ current_page }}">
+                
+            </fieldset>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!--Adding new test drive-->
+<div id="add_modal" class="add_modal">
+
+    <!-- Modal content -->
+    <div class="modal-content">
+        <span class="close" id="add-close">&times;</span>
+
+        <form action="#" method="POST">
+            <fieldset>
+
+                <legend>Test Drive Information</legend>
+
+                <table>
+                    <!--
                     <tr>
                         <td>Test Drive ID</td>
                         <td colspan="2"><input type="number" id="add-test_drive-test_drive_id" onfocusout="check_test_drive_id()"
-                                name="testdriveid" required></input></td>
+                                name="dw_test_drive_id" readonly></input></td>
                         <td colspan="3" id="add-sales-customer-name"></td>
                     </tr>
-                    --> 
+                    -->
 
                     <tr>
                         <td>Customer ID</td>
@@ -201,14 +268,14 @@ Status: {{status_msg}}
 
                     <tr>
                         <td>Check Out Time</td>
-                        <td colspan="2"><input type="time" id="add-test_drive-checkout_time"
-                                name="checkou_titme" required></input>
+                        <td colspan="2"><input type="datetime" id="add-test_drive-checkout_time"
+                                name="checkout_time" placeholder="YYYY-MM-DD HH:MM:SS" required></input>
 
                         </td>
 
                     <tr>
                         <td>Return Time</td>
-                        <td colspan="2"><input type="time" id="add-test_drive-return_time"
+                        <td colspan="2"><input type="datetime" placeholder="YYYY-MM-DD HH:MM:SS" id="add-test_drive-return_time"
                                 name="return_time" required></input>
                         </td>
                     </tr>
@@ -226,360 +293,65 @@ Status: {{status_msg}}
         </form>
 
     </div>
-
-            </tr>
-        </thead>
-        {% if content is defined %}
-        <tbody id="content-table">
-            {% for i in content %}
-            <tr> <!--Edit amount depending on number of items above-->
-                <td>{{i[0]}}</td>
-                <td>{{i[1]}}</td>
-                <td>{{i[2]}}</td>
-                <td>{{i[3]}}</td>
-                <td>{{i[4]}}</td>
-                <td>{{i[5]}}</td>
-                <td>{{i[6]}}</td>
-                <td>{{i[7]}}</td>
-                <td><button>Delete</button></td>
-                <td><button>Update</button></td>
-            </tr>
-            {% endfor %}
-        </tbody>
-        {% endif %}
-    </table>
 </div>
 
-<!--Editing test drive-->
-<div id="edit_modal" class="edit_modal">
-
-    <!-- Modal content -->
-    <div class="modal-content">
-        <span class="close">&times;</span>
-
-        <form action="#" method="POST">
-            <fieldset>
-
-                <legend>Test Drive Information - Please delete the test drive record if the vehicle is not
-                    correct.</legend>
-
-                <table>
-
-                    <tr>
-                        <td>Test Drive ID </td>
-                        <td colspan="2"><input type="number" id="edit-test_drive-test_drive_id" name="dw_test_drive_id" required
-                                readonly></input></td>
-
-                    </tr>
-                    <tr>
-                        <td>Customer ID </td>
-                        <td colspan="2"><input type="number" id="edit-test_drive-customerid"
-                                onfocusout="edit_check_customer_id()" name="dw_customer_id" required></input></td>
-                        <td colspan="3" id="edit-test_drive-customer-name"></td>
-                    </tr>
-
-
-                    <tr>
-                        <td>VIN</td>
-                        <td colspan="2"><input type="text" id="edit-sales-vin" name="vin" required readonly></input>
-                        </td>
-                        <td colspan="3" id="edit-sales-veh-description"></td>
-                    </tr>
-
-                    <tr>
-                        <td>Test Drive Date</td>
-                        <td colspan="2"> <input type="date" id="edit-test_drive-drive_date" name="test_drive_date"></td>
-
-                    </tr>
-
-                    <tr>
-                        <td>Check Out Time</td>
-                        <td colspan="2"> <input type="time" id="edit-test_drive-checkout_time" name="check_out_time"></td>
-
-                    </tr>
-                    <tr>
-                        <td>Return Time</td>
-                        <td colspan="2"> <input type="time" id="edit-test_drive-return_time" name="return_time"></td>
-
-                    </tr>
-
-
-                </table>
-
-                <input type="hidden" name="page" value="{{ current_page }}">
-                <input type="hidden" name="request_type" value="test_drive_edit">
-                <input type="submit">
-
-            </fieldset>
-
-        </form>
-
-    </div>
-
-</div>
+{% if status_msg is defined%}
+{{status_msg}}
+{% endif %}
 
 <script>
-    //var customer_modal = document.getElementById("customer_modal");
-    //var customer_span = document.getElementsByClassName("close")[0];
-    //var sales_modal = document.getElementById("sales_modal");
-    //var sales_span = document.getElementsByClassName("close")[1];
-    //var payment_modal = document.getElementById("payment_modal");
-    //var payment_span = document.getElementsByClassName("close")[2];
-    var add_modal = document.getElementById("add_modal");
-    var add_span = document.getElementsByClassName("close")[3];
     var edit_modal = document.getElementById("edit_modal");
-    var edit_span = document.getElementsByClassName("close")[4];
+    var edit_span = document.getElementById("edit-close");
+    var add_modal = document.getElementsByClassName("add_modal")[0];
+    var add_span = document.getElementById("add-close");
 
-    var vin_exist_bool = false
-    var customer_exist_bool = false
-    //var sales_exist_bool = false
-    //var financial_exist_bool = false
-    var dp_exist_bool = false
+    console.log(add_modal)
 
-
-    /*
-    customer_span.onclick = function () {
-        customer_modal.style.display = "none";
-    }
-    
-    sales_span.onclick = function () {
-        sales_modal.style.display = "none";
-    }
-    
-    payment_span.onclick = function () {
-        payment_modal.style.display = "none";
-    }
-    */
-    add_span.onclick = function () {
-        add_modal.style.display = "none";
-    }
-    
-    edit_span.onclick = function () {
-        edit_modal.style.display = "none";
-    }
-
-
-
-
-    window.onclick = function (event) {
-        /*
-        if (event.target == customer_modal) {
-            customer_modal.style.display = "none";
-        }
-        
-        if (event.target == sales_modal) {
-            sales_modal.style.display = "none";
-        }
-
-        if (event.target == payment_modal) {
-            payment_modal.style.display = "none";
-        }
-        */
-        if (event.target == add_modal) {
-            add_modal.style.display = "none";
-        }
-        if (event.target == edit_modal) {
-            edit_modal.style.display = "none";
-        }
-
-    }
-
-    /*
-    window.addEventListener('load', (event) => {
-        pull_financial()
-
-    });
-    */
-
-
-
-    function edit_test_drive(dw_test_drive_id, vdw_customer_idin, vin, test_drive_date, check_out_time, return_time, customer_first_name, customer_last_name) {
-        edit_modal.style.display = "block";
-        document.getElementById("edit-test_drive-test_drive_id").value = dw_test_drive_id
-        document.getElementById("edit-test_drive-customeridcustomerid").value = dw_customer_id
-        document.getElementById("edit-test_drive-vin").value = vin
-        document.getElementById("edit-test_drive-drive_date").value = test_drive_date
-        document.getElementById("edit-test_drive-checkout_time").value = check_out_time
-        document.getElementById("edit-test_drive-return_time").value = return_time
-        document.getElementById("edit-test_drive-customer-name").textContent = "Customer Name:" + customer_last_name + ", " + customer_first_name
-
-    }
-
-    //updated for test drive
-    function edit_check_customer_id() {
-        var customerid = document.getElementById("edit-test_drive-customerid").value;
-        var customer_name = document.getElementById("edit-test_drive-customer-name");
-
-        if (customerid != "") {
-            console.log(customerid)
-
-
-            var req = new XMLHttpRequest();
-            var customer_request = {}
-            customer_request.request_type = "customer_check"
-            customer_request.dw_customer_id = customerid
-            console.log(customer_request)
-
-            req.open('POST', '/testdrive', true);
-            req.setRequestHeader('Content-Type', 'application/json');
-            req.addEventListener('load', function () {
-                if (req.status >= 200 && req.status < 400) {
-                    var response = JSON.parse(req.responseText);
-                    console.log(response)
-                    console.log("Customer Info Request Success!")
-
-                    if (response == "-1") {
-                        customer_name.textContent = "No customer Information."
-                    } else {
-                        customer_name.textContent = "Customer Name:" + response[2] + ", " + response[1]
-                    }
-
-
-                } else {
-                    console.log("Error in network request: " + req.statusText);
-                }
-            });
-            req.send(JSON.stringify(customer_request));
-            event.preventDefault();
-
-
-
-        }
-
-    }
-    
-    //removed function refresh_monthly_payment() {
-
-
-
-
-    //removed function pull_financial() {
-
-
-
-    //removed function check_financial() {
-
-
-
-    //removed function check_dp() {
-
-
-    function check_vin() {
-        var vin = document.getElementById("add-test_drive-vin").value;
-        var vin_description = document.getElementById("add-sales-veh-description");
-        var vin_price = document.getElementById("add-sales-price");
-        var vin_type = document.getElementById("add-sales-types");
-
-        if (vin != "") {
-            console.log(vin)
-
-
-            var req = new XMLHttpRequest();
-            var sales_request = {}
-            sales_request.request_type = "vehicle_check"
-            sales_request.vin = vin
-            console.log(sales_request)
-
-            req.open('POST', '/test_drive', true);
-            req.setRequestHeader('Content-Type', 'application/json');
-            req.addEventListener('load', function () {
-                if (req.status >= 200 && req.status < 400) {
-                    var response = JSON.parse(req.responseText);
-                    console.log(response)
-                    console.log("Vehicle Info Request Success!")
-                    if (response == "-1") {
-                        vin_description.textContent = "No vehicle information"
-                        vin_exist_bool = false
-                    } else {
-                        vin_description.textContent = response[1] + "-" + response[2] + "-" + response[3] + "-" + response[4] + "-" + response[5] + "-" + response[6]
-                        vin_price.value = response[7]
-                        vin_type.value = response[0]
-                        vin_exist_bool = true
-                    }
-
-                    if (sales_exist_bool == true & customer_exist_bool == true & vin_exist_bool == true & financial_exist_bool == true & dp_exist_bool == true) {
-                        refresh_monthly_payment()
-                    }
-
-                } else {
-                    console.log("Error in network request: " + req.statusText);
-                }
-            });
-            req.send(JSON.stringify(sales_request));
-            event.preventDefault();
-
-
-
-        }
-
-    }
-
-    //updated for test_drive
-    function check_customer_id() {
-        var customerid = document.getElementById("add-test_drive-customerid").value;
-        var customer_name = document.getElementById("add-test_drive-customer-name");
-
-        if (customerid != "") {
-            console.log(customerid)
-
-
-            var req = new XMLHttpRequest();
-            var customer_request = {}
-            customer_request.request_type = "customer_check"
-            customer_request.dw_customer_id = customerid
-            console.log(customer_request)
-
-            req.open('POST', '/testdrive', true);
-            req.setRequestHeader('Content-Type', 'application/json');
-            req.addEventListener('load', function () {
-                if (req.status >= 200 && req.status < 400) {
-                    var response = JSON.parse(req.responseText);
-                    console.log(response)
-                    console.log("Customer Info Request Success!")
-
-                    if (response == "-1") {
-                        customer_name.textContent = "No customer Information."
-                        customer_exist_bool = false
-                    } else {
-                        customer_name.textContent = "Customer ID exists - Customer Name:" + response[2] + ", " + response[1] + "(SSN: " + response[10] + ")"
-                        customer_exist_bool = true
-                    }
-
-                } else {
-                    console.log("Error in network request: " + req.statusText);
-                }
-            });
-            req.send(JSON.stringify(customer_request));
-            event.preventDefault();
-
-
-
-        }
-
-    }
-
-    
-    //removed sales check
 
     function add_new_test_drive() {
         add_modal.style.display = "block";
     }
 
-    //removed check_customer(customerid) {
+    edit_span.onclick = function () {
+        edit_modal.style.display = "none";
+    }
 
-    //removed check_sales(salesid) {
+    add_span.onclick = function () {
+        add_modal.style.display = "none";
+    }
 
 
-    //removed payment_schedule(invoiceid) {
+    window.onclick = function (event) {
+
+        if (event.target == edit_modal) {
+            edit_modal.style.display = "none";
+        }
+        if (event.target == add_modal) {
+            add_modal.style.display = "none";
+        }
+
+    }
 
 
-    function delete_test_drive(invoice) {
+    function edit_test_drive(tid, cid, vin, tddate, cotime, retime) {
+        edit_modal.style.display = "block";
+        document.getElementById("edit-test_drive-test_drive_id").value = tid
+        document.getElementById("edit-test_drive-customerid").value = cid
+        document.getElementById("edit-test_drive-vin").value = vin
+        document.getElementById("edit-test_drive-drive_date").value = tddate
+        document.getElementById("edit-test_drive-checkout_time").value = cotime
+        document.getElementById("edit-test_drive-return_time").value = retime
+
+    }
+
+
+    function delete_test_drive(dw_test_drive_id) {
 
         console.log("{{ current_page }}")
         var req = new XMLHttpRequest();
         var test_drive_request = {}
         test_drive_request.request_type = "test_drive_delete"
-        test_drive_request.dw_test_drive_id = invoice
+        test_drive_request.dw_test_drive_id = dw_test_drive_id
         test_drive_request.page = "{{ current_page }}"
         console.log(test_drive_request)
 
