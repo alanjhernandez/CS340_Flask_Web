@@ -1492,12 +1492,12 @@ def vehicle_type():
                     from Vehicle_Types
 
                     where dw_vehicle_type_id like "%%{dw_vehicle_type_id}%%"
-                    or vehicle_type like "%%{vehicle_type}%%"
-                    or vehicle_make like "%%{vehicle_make}%%"
-                    or vehicle_model like "%%{vehicle_model}%%"
-                    or vehicle_year like "%%{vehicle_year}%%"
-                    or vehicle_trim like "%%{vehicle_trim}%%"
-                    or vehicle_color like "%%{vehicle_color}%%"
+                    and vehicle_type like "%%{vehicle_type}%%"
+                    and vehicle_make like "%%{vehicle_make}%%"
+                    and vehicle_model like "%%{vehicle_model}%%"
+                    and vehicle_year like "%%{vehicle_year}%%"
+                    and vehicle_trim like "%%{vehicle_trim}%%"
+                    and vehicle_color like "%%{vehicle_color}%%"
 
                     order by dw_vehicle_type_id
                     limit {nth_record}, {row_per_page}
@@ -1527,12 +1527,16 @@ def vehicle_type():
     else:
 
         if request.method == "GET":
+            if "vehicle_type_search" in session:
+                session.pop("vehicle_type_search")
             return render_template("vehicle_type.html")
 
         
         elif request.method == "POST" and request.form['request_type'] == "vehicle_type_new_search":
 
             db = connect_to_database()
+
+            print(request.form)
 
             vehicle_make = request.form["vehicle_make"] 
             vehicle_model = request.form["vehicle_model"] 
@@ -1557,12 +1561,12 @@ def vehicle_type():
                     from Vehicle_Types
 
                     where dw_vehicle_type_id like "%%{dw_vehicle_type_id}%%"
-                    or vehicle_type like "%%{vehicle_type}%%"
-                    or vehicle_make like "%%{vehicle_make}%%"
-                    or vehicle_model like "%%{vehicle_model}%%"
-                    or vehicle_year like "%%{vehicle_year}%%"
-                    or vehicle_trim like "%%{vehicle_trim}%%"
-                    or vehicle_color like "%%{vehicle_color}%%"
+                    and vehicle_type like "%%{vehicle_type}%%"
+                    and vehicle_make like "%%{vehicle_make}%%"
+                    and vehicle_model like "%%{vehicle_model}%%"
+                    and vehicle_year like "%%{vehicle_year}%%"
+                    and vehicle_trim like "%%{vehicle_trim}%%"
+                    and vehicle_color like "%%{vehicle_color}%%"
 
                     order by dw_vehicle_type_id
                     limit {row_per_page}
@@ -1571,6 +1575,7 @@ def vehicle_type():
             results = execute_query(db, query)
             vehicle_type_list = [list(r) for r in results.fetchall()]
 
+            print(vehicle_type_list)
 
             query = f"""
                     select count(*) as cnt
@@ -1578,12 +1583,12 @@ def vehicle_type():
                     from Vehicle_Types
 
                     where dw_vehicle_type_id like "%%{dw_vehicle_type_id}%%"
-                    or vehicle_type like "%%{vehicle_type}%%"
-                    or vehicle_make like "%%{vehicle_make}%%"
-                    or vehicle_model like "%%{vehicle_model}%%"
-                    or vehicle_year like "%%{vehicle_year}%%"
-                    or vehicle_trim like "%%{vehicle_trim}%%"
-                    or vehicle_color like "%%{vehicle_color}%%"
+                    and vehicle_type like "%%{vehicle_type}%%"
+                    and vehicle_make like "%%{vehicle_make}%%"
+                    and vehicle_model like "%%{vehicle_model}%%"
+                    and vehicle_year like "%%{vehicle_year}%%"
+                    and vehicle_trim like "%%{vehicle_trim}%%"
+                    and vehicle_color like "%%{vehicle_color}%%"
 
 
                     """
@@ -1650,12 +1655,12 @@ def vehicle_type():
                     from Vehicle_Types
 
                     where dw_vehicle_type_id like "%%{dw_vehicle_type_id}%%"
-                    or vehicle_type like "%%{vehicle_type}%%"
-                    or vehicle_make like "%%{vehicle_make}%%"
-                    or vehicle_model like "%%{vehicle_model}%%"
-                    or vehicle_year like "%%{vehicle_year}%%"
-                    or vehicle_trim like "%%{vehicle_trim}%%"
-                    or vehicle_color like "%%{vehicle_color}%%"
+                    and vehicle_type like "%%{vehicle_type}%%"
+                    and vehicle_make like "%%{vehicle_make}%%"
+                    and vehicle_model like "%%{vehicle_model}%%"
+                    and vehicle_year like "%%{vehicle_year}%%"
+                    and vehicle_trim like "%%{vehicle_trim}%%"
+                    and vehicle_color like "%%{vehicle_color}%%"
 
                     order by dw_vehicle_type_id
                     limit {nth_record}, {row_per_page}
@@ -1695,8 +1700,6 @@ def vehicle_type():
             vehicle_price = request.form["vehicle_price"] 
             dw_vehicle_type_id = request.form["dw_vehicle_type_id"].upper()
 
-            page = int(request.form["page"])
-            print(page)
 
             query = f"""
                     select *
@@ -1749,12 +1752,12 @@ def vehicle_type():
                         from Vehicle_Types
 
                         where dw_vehicle_type_id like "%%{dw_vehicle_type_id}%%"
-                        or vehicle_type like "%%{vehicle_type}%%"
-                        or vehicle_make like "%%{vehicle_make}%%"
-                        or vehicle_model like "%%{vehicle_model}%%"
-                        or vehicle_year like "%%{vehicle_year}%%"
-                        or vehicle_trim like "%%{vehicle_trim}%%"
-                        or vehicle_color like "%%{vehicle_color}%%"
+                        and vehicle_type like "%%{vehicle_type}%%"
+                        and vehicle_make like "%%{vehicle_make}%%"
+                        and vehicle_model like "%%{vehicle_model}%%"
+                        and vehicle_year like "%%{vehicle_year}%%"
+                        and vehicle_trim like "%%{vehicle_trim}%%"
+                        and vehicle_color like "%%{vehicle_color}%%"
 
                         order by dw_vehicle_type_id
                         limit {nth_record}, {row_per_page}
@@ -1858,12 +1861,12 @@ def vehicle_type():
                     from Vehicle_Types
 
                     where dw_vehicle_type_id like "%%{dw_vehicle_type_id}%%"
-                    or vehicle_type like "%%{vehicle_type}%%"
-                    or vehicle_make like "%%{vehicle_make}%%"
-                    or vehicle_model like "%%{vehicle_model}%%"
-                    or vehicle_year like "%%{vehicle_year}%%"
-                    or vehicle_trim like "%%{vehicle_trim}%%"
-                    or vehicle_color like "%%{vehicle_color}%%"
+                    and vehicle_type like "%%{vehicle_type}%%"
+                    and vehicle_make like "%%{vehicle_make}%%"
+                    and vehicle_model like "%%{vehicle_model}%%"
+                    and vehicle_year like "%%{vehicle_year}%%"
+                    and vehicle_trim like "%%{vehicle_trim}%%"
+                    and vehicle_color like "%%{vehicle_color}%%"
 
                     order by dw_vehicle_type_id
                     limit {nth_record}, {row_per_page}
@@ -1887,15 +1890,6 @@ def vehicle_type():
             
             
             return render_template("vehicle_type.html", content = vehicle_type_list, prev_page = prev_page, current_page = page, next_page = next_page, status_msg = status_msg )
-
-
-
-
-
-
-
-
-
 
 
 
@@ -2124,11 +2118,312 @@ def financial_arrangement():
 
 
 
+
+
+
+@app.route("/info_check", methods = ["POST","GET"])
+def info_check():
+    if request.is_json:
+        if request.method  == "POST" and request.json["request_type"] == "inventory_store_pull":
+            db = connect_to_database()
+
+            query = f"""
+                    SELECT 
+                    store_location
+                    from Vehicle_Inventories as a
+                    group by 1
+                    """
+
+            results = execute_query(db, query)
+            store_list = [r[0] for r in results.fetchall()]
+
+            return jsonify(store_list)
+
+        elif request.method  == "POST" and request.json["request_type"] == "inventory_make_pull":
+            db = connect_to_database()
+
+            query = f"""
+                    SELECT 
+                    vehicle_make
+                    from Vehicle_Types as a
+                    group by 1;
+                    """
+
+            results = execute_query(db, query)
+            make_list = [r[0] for r in results.fetchall()]
+
+            print(make_list)
+            return jsonify(make_list)
+
+        elif request.method  == "POST" and request.json["request_type"] == "inventory_info_pull":
+            db = connect_to_database()
+            make = request.json["make"]
+
+            query = f"""
+                    SELECT 
+                    vehicle_model
+                    from Vehicle_Types as a
+                    where  vehicle_make like '%%{make}%%'
+                    group by 1
+                    """
+
+            results = execute_query(db, query)
+            model_list = [list(r) for r in results.fetchall()]
+
+
+            query = f"""
+                    SELECT 
+                    vehicle_year
+                    from Vehicle_Types as a
+                    where  vehicle_make like '%%{make}%%'
+                    group by 1
+                    """
+
+            results = execute_query(db, query)
+            year_list = [list(r) for r in results.fetchall()]
+
+            query = f"""
+                    SELECT 
+                    vehicle_color
+                    from Vehicle_Types as a
+                    where  vehicle_make like '%%{make}%%'
+                    group by 1
+                    """
+
+            results = execute_query(db, query)
+            colour_list = [list(r) for r in results.fetchall()]
+
+
+            query = f"""
+                    SELECT 
+                    vehicle_type
+                    from Vehicle_Types as a
+                    where  vehicle_make like '%%{make}%%'
+                    group by 1
+                    """
+
+            results = execute_query(db, query)
+            type_list = [list(r) for r in results.fetchall()]
+
+
+
+            result_list = [model_list, year_list, colour_list, type_list]
+
+            print(result_list)
+            return jsonify(result_list)
+
+
+
+
+        elif request.method  == "POST" and request.json["request_type"] == "inventory_trim_pull":
+            db = connect_to_database()
+            make = request.json["make"]
+            model = request.json['model']
+
+
+
+            query = f"""
+                    SELECT 
+                    vehicle_trim
+                    from Vehicle_Types as a
+                    where  vehicle_make like '%%{make}%%'
+                    and vehicle_model like '%%{model}%%'
+                    group by 1
+                    """
+
+            results = execute_query(db, query)
+            trim_list = [r[0] for r in results.fetchall()]
+
+
+            return jsonify(trim_list)
+
+        elif request.method  == "POST" and request.json["request_type"] == "customer_check":
+            
+            db = connect_to_database()
+            dw_customer_id = request.json["dw_customer_id"] 
+            
+            query = f"""
+                    SELECT 
+                    dw_customer_id
+                    ,first_name
+                    ,last_name
+                    ,customer_dob
+                    ,address_1
+                    ,address_2
+                    ,zip_code
+                    ,state
+                    ,city
+                    ,tel_number
+                    ,ssn
+                    from Customers_Info
+                    where dw_customer_id = "{dw_customer_id}"
+                    """
+            results = execute_query(db, query)
+            customer_info_list = [list(r) for r in results.fetchall()]
+
+            if len(customer_info_list) > 0:
+                customer_info_list[0][3] = customer_info_list[0][3].strftime("%Y-%m-%d")
+
+            print(customer_info_list)
+            if len(customer_info_list) > 0:
+                return jsonify(customer_info_list[0])
+            else:
+                return jsonify("-1")
+
+        elif request.method  == "POST" and request.json["request_type"] == "sales_check":
+            
+            db = connect_to_database()
+            dw_sales_rep_id = request.json["dw_sales_rep_id"] 
+            
+            query = f"""
+                    SELECT 
+                    dw_sales_rep_id
+                    ,first_name
+                    ,last_name
+                    ,primary_location
+                    from Sales_Reps
+                    where dw_sales_rep_id = "{dw_sales_rep_id}"
+                    """
+            results = execute_query(db, query)
+            sales_info_list = [list(r) for r in results.fetchall()]
+
+
+            print(sales_info_list)
+            if len(sales_info_list) > 0:
+                return jsonify(sales_info_list[0])
+            else:
+                return jsonify("-1")
+
+        elif request.method  == "POST" and request.json["request_type"] == "vehicle_check":
+            
+            db = connect_to_database()
+            vin = request.json["vin"] 
+            
+            query = f"""
+                    select 
+                    dw_vehicle_type_id
+                    ,vehicle_type
+                    ,vehicle_make
+                    ,vehicle_model
+                    ,vehicle_year
+                    ,vehicle_color
+                    ,vehicle_trim
+                    ,vehicle_price
+                    from Vehicle_Types 
+                    where dw_vehicle_type_id in(SELECT dw_vehicle_type_id FROM Vehicle_Inventories where vin = '{vin}' and sold_ind = '0')
+                    
+                    """
+            results = execute_query(db, query)
+            vin_list = [list(r) for r in results.fetchall()]
+
+
+            print(vin_list)
+            if len(vin_list) > 0:
+                return jsonify(vin_list[0])
+            else:
+                return jsonify("-1")
+
+        elif request.method  == "POST" and request.json["request_type"] == "financial_pull":
+            
+            db = connect_to_database()
+            
+            query = f"""
+                    select 
+                    dw_fincl_option_id
+                    ,int_rate
+                    ,num_of_payment
+                    from Financial_Options
+                    """
+            results = execute_query(db, query)
+            financial_list = [list(r) for r in results.fetchall()]
+
+
+            print(financial_list)
+            return jsonify(financial_list)
+
+        elif request.method  == "POST" and request.json["request_type"] == "financial_check":
+            
+            db = connect_to_database()
+            dw_fincl_option_id = request.json["dw_fincl_option_id"] 
+            
+            query = f"""
+                    select 
+                    dw_fincl_option_id
+                    ,int_rate
+                    ,num_of_payment
+                    from Financial_Options
+                    where dw_fincl_option_id = '{dw_fincl_option_id}';
+                    """
+            results = execute_query(db, query)
+            financial_list = [list(r) for r in results.fetchall()]
+
+
+            print(financial_list[0])
+            return jsonify(financial_list[0])
+
+        elif request.method  == "POST" and request.json["request_type"] == "payment_check":
+            
+            db = connect_to_database()
+            dw_invoice_id = request.json["dw_invoice_id"] 
+            
+            query = f"""
+                    SELECT 
+                    dw_payment_id
+                    ,dw_invoice_id
+                    ,cast(payment_date as varchar(10)) as payment_date
+                    ,nth_payment
+                    ,payment_amount
+                    ,current_balance
+                    from Monthly_Payments
+                    where dw_invoice_id = "{dw_invoice_id}"
+                    order by 3
+                    """
+            results = execute_query(db, query)
+            payment_data = [list(r) for r in results.fetchall()]
+
+
+            print(payment_data)
+            payment_json = {}
+            if len(payment_data) == 0:
+                payment_json["Full"] = "Z"
+            elif payment_data[(len(payment_data)-1)][5] <= 0:
+                payment_json["Full"] = "Y"
+            else:
+                payment_json["Full"] = "N"
+            
+            payment_json["Data"] = payment_data
+
+            return jsonify(payment_json)
+        elif request.method  == "POST" and request.json["request_type"] == "date_pull":
+            db = connect_to_database()
+
+            query = f"""
+                    SELECT 
+                    cast(eom_dt as varchar(10)) as eom_dt
+                    from Projection_Months as a
+                    group by 1
+                    order by 1
+                    """
+
+            results = execute_query(db, query)
+            date_list = [r[0] for r in results.fetchall()]
+
+            return jsonify(date_list)
+
+
+
+
+    else:
+        return render_template("error404.html") 
+
+
+
+
+
+
 @app.route("/vehinventory", methods = ["POST","GET"])
 def vehicle_inventory():
     row_per_page = 15
-
-
 
     if request.is_json:
         if request.method  == "POST" and request.json["request_type"] == "testdrive_check":
@@ -2181,31 +2476,22 @@ def vehicle_inventory():
             
 
 
+            db = connect_to_database()
             make = session["search"]["key"]["make"]
             model = session["search"]["key"]["model"]
             year = session["search"]["key"]["year"]
             color = session["search"]["key"]["color"]
             trim = session["search"]["key"]["trim"]
-            session["search"]["count"] -= 1
+            used = session["search"]["key"]["used"]
+            store = session["search"]["key"]["store"]
+            type = session["search"]["key"]["type"]
+            vin = session["search"]["key"]["vin"]
 
 
 
-            query = f"""
-                    SELECT dw_vehicle_type_id
-                    from Vehicle_Types 
-                    where vehicle_make like "%%{make}%%"
-                    and vehicle_model like "%%{model}%%"
-                    and vehicle_year like "%%{year}%%"
-                    and vehicle_color like "%%{color}%%"
-                    and vehicle_trim like "%%{trim}%%"
+            print(page)
+            nth_record = (page-1) * row_per_page 
 
-                    """
-
-            results = execute_query(db, query)
-            vehicle_type_id_list = [r[0] for r in results.fetchall()]       
-            fstring_sub = ','.join(['%s'] * len(vehicle_type_id_list))
-
-            nth_record = (page-1) * row_per_page
 
             query = f"""
                     SELECT 
@@ -2226,12 +2512,27 @@ def vehicle_inventory():
                     on a.dw_vehicle_type_id = b.dw_vehicle_type_id
 
 
-                    where b.dw_vehicle_type_id IN ({fstring_sub})
+                    where a.dw_vehicle_type_id IN (
+                            SELECT dw_vehicle_type_id
+                            from Vehicle_Types 
+                            where vehicle_make like "%%{make}%%"
+                            and vehicle_model like "%%{model}%%"
+                            and vehicle_year like "%%{year}%%"
+                            and vehicle_color like "%%{color}%%"
+                            and vehicle_trim like "%%{trim}%%"
+                            and vehicle_type like "%%{type}%%"
+                    )
+                    and a.used_ind = '{used}'
+                    and a.store_location like '%%{store}%%'
+                    and a.vin like '%%{vin}%%'
                     and a.sold_ind = '0'
                     order by 1
                     limit {nth_record},{row_per_page};
+                    ;
                     """
-            results = execute_query(db, query, vehicle_type_id_list)
+
+
+            results = execute_query(db, query)
             inventory_result = [ list(r) for r in results.fetchall()]
 
             if session["search"]["count"]  > (nth_record + row_per_page):
@@ -2247,54 +2548,7 @@ def vehicle_inventory():
             status_msg = "Record Deleted."
             
             return render_template("vehicle_inventory.html", content = inventory_result, prev_page = prev_page, current_page = page, next_page = next_page ) 
-
-        elif request.method  == "POST" and request.json["request_type"] == "update_read":
-            db = connect_to_database()
-            vin = request.json["vin"] 
-            page = int(request.json["page"])
-            print(vin)
-
-            query = f"""
-                    SELECT 
-                    a.vin
-                    ,b.vehicle_type
-                    ,b.vehicle_make
-                    ,b.vehicle_model
-                    ,b.vehicle_year
-                    ,b.vehicle_color
-                    ,b.vehicle_trim
-                    ,b.vehicle_price
-                    ,Case when a.used_ind = '1' then 'Used' else 'New' end as used_ind
-                    ,a.store_location
-                    ,a.parking_location
-                    from Vehicle_Inventories as a
-
-                    inner join Vehicle_Types as b
-                    on a.dw_vehicle_type_id = b.dw_vehicle_type_id
-
-
-                    where a.vin = "{vin}";
-                    """
-
-            results = execute_query(db, query)
-            inventory_result = [ list(r) for r in results.fetchall()][0]
-
-            update_record = {}
-
-            update_record["vin"] = inventory_result[0]
-            update_record["type"]  = inventory_result[1]
-            update_record["make"] = inventory_result[2]
-            update_record["model"] = inventory_result[3]
-            update_record["year"] = inventory_result[4]
-            update_record["color"] = inventory_result[5]
-            update_record["trim"] = inventory_result[6]
-            update_record["used"] = inventory_result[8]
-            update_record["store_location"] = inventory_result[9]
-            update_record["parking_location"] = inventory_result[10]
-             
-
-            print(update_record)
-            return jsonify(update_record)
+      
 
     else:
         if request.method  == "GET":
@@ -2306,8 +2560,10 @@ def vehicle_inventory():
         
         elif request.method  == "POST" and request.form["request_type"] == "new_search":
 
+
             if "search" in session:
                 session.pop("search")
+
 
             db = connect_to_database()
             make = request.form["make"] 
@@ -2315,24 +2571,11 @@ def vehicle_inventory():
             year = request.form["year"]
             color = request.form["color"]
             trim = request.form["trim"]
+            used = request.form["used"]
+            store = request.form["store"]
+            type = request.form["type"]
+            vin = request.form["vin"] 
 
-
-            query = f"""
-                    SELECT dw_vehicle_type_id
-                    from Vehicle_Types 
-                    where vehicle_make like "%%{make}%%"
-                    and vehicle_model like "%%{model}%%"
-                    and vehicle_year like "%%{year}%%"
-                    and vehicle_color like "%%{color}%%"
-                    and vehicle_trim like "%%{trim}%%";
-                    """
-            results = execute_query(db, query)
-            vehicle_type_id_list = [r[0] for r in results.fetchall()]
-
-            
-
-            
-            fstring_sub = ','.join(['%s'] * len(vehicle_type_id_list))
 
             query = f"""
                     SELECT 
@@ -2353,28 +2596,50 @@ def vehicle_inventory():
                     on a.dw_vehicle_type_id = b.dw_vehicle_type_id
 
 
-                    where b.dw_vehicle_type_id IN ({fstring_sub})
+                    where a.dw_vehicle_type_id IN (
+                            SELECT dw_vehicle_type_id
+                            from Vehicle_Types 
+                            where vehicle_make like "%%{make}%%"
+                            and vehicle_model like "%%{model}%%"
+                            and vehicle_year like "%%{year}%%"
+                            and vehicle_color like "%%{color}%%"
+                            and vehicle_trim like "%%{trim}%%"
+                            and vehicle_type like "%%{type}%%"
+                    )
+                    and a.used_ind = '{used}'
+                    and a.store_location like '%%{store}%%'
+                    and a.vin like '%%{vin}%%'
                     and a.sold_ind = '0'
                     order by 1
                     limit {row_per_page}
                     ;
                     """
 
-            results = execute_query(db, query, vehicle_type_id_list)
+            results = execute_query(db, query)
             inventory_result = [ list(r) for r in results.fetchall()]
 
-            print(vehicle_type_id_list)
+            print(inventory_result)
 
             query = f"""
                     SELECT count(distinct vin) as count
                     from Vehicle_Inventories as a
-
-
-                    where a.dw_vehicle_type_id IN ({fstring_sub})
-                    and a.sold_ind = '0';
+                    where a.dw_vehicle_type_id IN (
+                            SELECT dw_vehicle_type_id
+                            from Vehicle_Types 
+                            where vehicle_make like "%%{make}%%"
+                            and vehicle_model like "%%{model}%%"
+                            and vehicle_year like "%%{year}%%"
+                            and vehicle_color like "%%{color}%%"
+                            and vehicle_trim like "%%{trim}%%"
+                            and vehicle_type like "%%{type}%%"
+                    )
+                    and a.used_ind = '{used}'
+                    and a.store_location like '%%{store}%%'
+                    and a.vin like '%%{vin}%%'
+                    and a.sold_ind = '0'
                     """
                     
-            results = execute_query(db, query, vehicle_type_id_list)
+            results = execute_query(db, query)
             inventory_count = [ r for r in results.fetchall()]
   
             session["search"] = {}
@@ -2385,6 +2650,10 @@ def vehicle_inventory():
             session["search"]["key"]["year"] = year
             session["search"]["key"]["color"] = color
             session["search"]["key"]["trim"] = trim
+            session["search"]["key"]["store"] = store
+            session["search"]["key"]["used"] = used
+            session["search"]["key"]["type"] = type
+            session["search"]["key"]["vin"] = vin
 
             if inventory_count[0][0] > row_per_page:
                 #next_url = url_for('vehicle_inventory', page=2)
@@ -2408,27 +2677,17 @@ def vehicle_inventory():
             year = session["search"]["key"]["year"]
             color = session["search"]["key"]["color"]
             trim = session["search"]["key"]["trim"]
+            used = session["search"]["key"]["used"]
+            store = session["search"]["key"]["store"]
+            type = session["search"]["key"]["type"]
+            vin = session["search"]["key"]["vin"]
 
-
-
-            query = f"""
-                    SELECT dw_vehicle_type_id
-                    from Vehicle_Types 
-                    where vehicle_make like "%%{make}%%"
-                    and vehicle_model like "%%{model}%%"
-                    and vehicle_year like "%%{year}%%"
-                    and vehicle_color like "%%{color}%%"
-                    and vehicle_trim like "%%{trim}%%"
-
-                    """
-            results = execute_query(db, query)
-            vehicle_type_id_list = [r[0] for r in results.fetchall()]       
-            fstring_sub = ','.join(['%s'] * len(vehicle_type_id_list))
 
 
             page = int(request.form["page"])
             print(page)
             nth_record = (page-1) * row_per_page 
+
 
             query = f"""
                     SELECT 
@@ -2449,12 +2708,27 @@ def vehicle_inventory():
                     on a.dw_vehicle_type_id = b.dw_vehicle_type_id
 
 
-                    where b.dw_vehicle_type_id IN ({fstring_sub})
+                    where a.dw_vehicle_type_id IN (
+                            SELECT dw_vehicle_type_id
+                            from Vehicle_Types 
+                            where vehicle_make like "%%{make}%%"
+                            and vehicle_model like "%%{model}%%"
+                            and vehicle_year like "%%{year}%%"
+                            and vehicle_color like "%%{color}%%"
+                            and vehicle_trim like "%%{trim}%%"
+                            and vehicle_type like "%%{type}%%"
+                    )
+                    and a.used_ind = '{used}'
+                    and a.store_location like '%%{store}%%'
+                    and a.vin like '%%{vin}%%'
                     and a.sold_ind = '0'
                     order by 1
                     limit {nth_record},{row_per_page};
+                    ;
                     """
-            results = execute_query(db, query, vehicle_type_id_list)
+
+
+            results = execute_query(db, query)
             inventory_result = [ list(r) for r in results.fetchall()]
 
 
@@ -2529,27 +2803,17 @@ def vehicle_inventory():
             year = session["search"]["key"]["year"]
             color = session["search"]["key"]["color"]
             trim = session["search"]["key"]["trim"]
+            used = session["search"]["key"]["used"]
+            store = session["search"]["key"]["store"]
+            type = session["search"]["key"]["type"]
+            vin = session["search"]["key"]["vin"]
 
-
-
-            query = f"""
-                    SELECT dw_vehicle_type_id
-                    from Vehicle_Types 
-                    where vehicle_make like "%%{make}%%"
-                    and vehicle_model like "%%{model}%%"
-                    and vehicle_year like "%%{year}%%"
-                    and vehicle_color like "%%{color}%%"
-                    and vehicle_trim like "%%{trim}%%"
-
-                    """
-            results = execute_query(db, query)
-            vehicle_type_id_list = [r[0] for r in results.fetchall()]       
-            fstring_sub = ','.join(['%s'] * len(vehicle_type_id_list))
 
 
             page = int(request.form["page"])
             print(page)
-            nth_record = (page-1) * row_per_page
+            nth_record = (page-1) * row_per_page 
+
 
             query = f"""
                     SELECT 
@@ -2570,12 +2834,27 @@ def vehicle_inventory():
                     on a.dw_vehicle_type_id = b.dw_vehicle_type_id
 
 
-                    where b.dw_vehicle_type_id IN ({fstring_sub})
+                    where a.dw_vehicle_type_id IN (
+                            SELECT dw_vehicle_type_id
+                            from Vehicle_Types 
+                            where vehicle_make like "%%{make}%%"
+                            and vehicle_model like "%%{model}%%"
+                            and vehicle_year like "%%{year}%%"
+                            and vehicle_color like "%%{color}%%"
+                            and vehicle_trim like "%%{trim}%%"
+                            and vehicle_type like "%%{type}%%"
+                    )
+                    and a.used_ind = '{used}'
+                    and a.store_location like '%%{store}%%'
+                    and a.vin like '%%{vin}%%'
                     and a.sold_ind = '0'
                     order by 1
                     limit {nth_record},{row_per_page};
+                    ;
                     """
-            results = execute_query(db, query, vehicle_type_id_list)
+
+
+            results = execute_query(db, query)
             inventory_result = [ list(r) for r in results.fetchall()]
 
 
@@ -2723,32 +3002,23 @@ def vehicle_inventory():
 
             if "search" in session:
 
+                db = connect_to_database()
                 make = session["search"]["key"]["make"]
                 model = session["search"]["key"]["model"]
                 year = session["search"]["key"]["year"]
                 color = session["search"]["key"]["color"]
                 trim = session["search"]["key"]["trim"]
+                used = session["search"]["key"]["used"]
+                store = session["search"]["key"]["store"]
+                type = session["search"]["key"]["type"]
+                vin = session["search"]["key"]["vin"]
 
-
-
-                query = f"""
-                        SELECT dw_vehicle_type_id
-                        from Vehicle_Types 
-                        where vehicle_make like "%%{make}%%"
-                        and vehicle_model like "%%{model}%%"
-                        and vehicle_year like "%%{year}%%"
-                        and vehicle_color like "%%{color}%%"
-                        and vehicle_trim like "%%{trim}%%"
-
-                        """
-                results = execute_query(db, query)
-                vehicle_type_id_list = [r[0] for r in results.fetchall()]       
-                fstring_sub = ','.join(['%s'] * len(vehicle_type_id_list))
 
 
                 page = int(request.form["page"])
                 print(page)
-                nth_record = (page-1) * row_per_page
+                nth_record = (page-1) * row_per_page 
+
 
                 query = f"""
                         SELECT 
@@ -2769,12 +3039,27 @@ def vehicle_inventory():
                         on a.dw_vehicle_type_id = b.dw_vehicle_type_id
 
 
-                        where b.dw_vehicle_type_id IN ({fstring_sub})
+                        where a.dw_vehicle_type_id IN (
+                                SELECT dw_vehicle_type_id
+                                from Vehicle_Types 
+                                where vehicle_make like "%%{make}%%"
+                                and vehicle_model like "%%{model}%%"
+                                and vehicle_year like "%%{year}%%"
+                                and vehicle_color like "%%{color}%%"
+                                and vehicle_trim like "%%{trim}%%"
+                                and vehicle_type like "%%{type}%%"
+                        )
+                        and a.used_ind = '{used}'
+                        and a.store_location like '%%{store}%%'
+                        and a.vin like '%%{vin}%%'
                         and a.sold_ind = '0'
                         order by 1
                         limit {nth_record},{row_per_page};
+                        ;
                         """
-                results = execute_query(db, query, vehicle_type_id_list)
+
+
+                results = execute_query(db, query)
                 inventory_result = [ list(r) for r in results.fetchall()]
 
 
@@ -2795,178 +3080,23 @@ def vehicle_inventory():
 
 
 
-
 @app.route("/modsales", methods = ["POST","GET"])
 def modify_sales():
 
     row_per_page = 15
     if request.is_json:
-        if request.method  == "POST" and request.json["request_type"] == "customer_check":
-            
+
+        if request.method  == "POST" and request.json["request_type"] == "sales_delete":
             db = connect_to_database()
-            dw_customer_id = request.json["dw_customer_id"] 
-            
-            query = f"""
-                    SELECT 
-                    dw_customer_id
-                    ,first_name
-                    ,last_name
-                    ,customer_dob
-                    ,address_1
-                    ,address_2
-                    ,zip_code
-                    ,state
-                    ,city
-                    ,tel_number
-                    ,ssn
-                    from Customers_Info
-                    where dw_customer_id = "{dw_customer_id}"
-                    """
-            results = execute_query(db, query)
-            customer_info_list = [list(r) for r in results.fetchall()]
-
-            if len(customer_info_list) > 0:
-                customer_info_list[0][3] = customer_info_list[0][3].strftime("%Y-%m-%d")
-
-            print(customer_info_list)
-            if len(customer_info_list) > 0:
-                return jsonify(customer_info_list[0])
-            else:
-                return jsonify("-1")
-
-        elif request.method  == "POST" and request.json["request_type"] == "sales_check":
-            
-            db = connect_to_database()
-            dw_sales_rep_id = request.json["dw_sales_rep_id"] 
-            
-            query = f"""
-                    SELECT 
-                    dw_sales_rep_id
-                    ,first_name
-                    ,last_name
-                    ,primary_location
-                    from Sales_Reps
-                    where dw_sales_rep_id = "{dw_sales_rep_id}"
-                    """
-            results = execute_query(db, query)
-            sales_info_list = [list(r) for r in results.fetchall()]
-
-
-            print(sales_info_list)
-            if len(sales_info_list) > 0:
-                return jsonify(sales_info_list[0])
-            else:
-                return jsonify("-1")
-
-        elif request.method  == "POST" and request.json["request_type"] == "vehicle_check":
-            
-            db = connect_to_database()
+            dw_invoice_id = request.json["dw_invoice_id"] 
             vin = request.json["vin"] 
-            
-            query = f"""
-                    select 
-                    dw_vehicle_type_id
-                    ,vehicle_type
-                    ,vehicle_make
-                    ,vehicle_model
-                    ,vehicle_year
-                    ,vehicle_color
-                    ,vehicle_trim
-                    ,vehicle_price
-                    from Vehicle_Types 
-                    where dw_vehicle_type_id in(SELECT dw_vehicle_type_id FROM Vehicle_Inventories where vin = '{vin}' and sold_ind = '0')
-                    
-                    """
-            results = execute_query(db, query)
-            vin_list = [list(r) for r in results.fetchall()]
-
-
-            print(vin_list)
-            if len(vin_list) > 0:
-                return jsonify(vin_list[0])
-            else:
-                return jsonify("-1")
-
-        elif request.method  == "POST" and request.json["request_type"] == "financial_pull":
-            
-            db = connect_to_database()
-            
-            query = f"""
-                    select 
-                    dw_fincl_option_id
-                    ,int_rate
-                    ,num_of_payment
-                    from Financial_Options
-                    """
-            results = execute_query(db, query)
-            financial_list = [list(r) for r in results.fetchall()]
-
-
-            print(financial_list)
-            return jsonify(financial_list)
-
-        elif request.method  == "POST" and request.json["request_type"] == "financial_check":
-            
-            db = connect_to_database()
-            dw_fincl_option_id = request.json["dw_fincl_option_id"] 
-            
-            query = f"""
-                    select 
-                    dw_fincl_option_id
-                    ,int_rate
-                    ,num_of_payment
-                    from Financial_Options
-                    where dw_fincl_option_id = '{dw_fincl_option_id}';
-                    """
-            results = execute_query(db, query)
-            financial_list = [list(r) for r in results.fetchall()]
-
-
-            print(financial_list[0])
-            return jsonify(financial_list[0])
-
-        elif request.method  == "POST" and request.json["request_type"] == "payment_check":
-            
-            db = connect_to_database()
-            dw_invoice_id = request.json["dw_invoice_id"] 
-            
-            query = f"""
-                    SELECT 
-                    dw_payment_id
-                    ,dw_invoice_id
-                    ,cast(payment_date as varchar(10)) as payment_date
-                    ,nth_payment
-                    ,payment_amount
-                    ,current_balance
-                    from Monthly_Payments
-                    where dw_invoice_id = "{dw_invoice_id}"
-                    order by 3
-                    """
-            results = execute_query(db, query)
-            payment_data = [list(r) for r in results.fetchall()]
-
-
-            print(payment_data)
-            payment_json = {}
-            if payment_data[(len(payment_data)-1)][5] <= 0:
-                payment_json["Full"] = "Y"
-            else:
-                payment_json["Full"] = "N"
-            
-            payment_json["Data"] = payment_data
-
-            return jsonify(payment_json)
-
-        elif request.method  == "POST" and request.json["request_type"] == "sales_delete":
-            db = connect_to_database()
-            dw_invoice_id = request.json["dw_invoice_id"] 
             page = int(request.json["page"])
 
 
             query = f"""
             UPDATE  Vehicle_Inventories
             SET sold_ind = '0'
-            where vin in (select vin from Sales_Record where vin = '{vin}')
+            where vin = '{vin}'
             """
             results = execute_query(db, query)
             
@@ -2982,6 +3112,7 @@ def modify_sales():
             year = session["sales_search"]["key"]["year"]
             color = session["sales_search"]["key"]["color"] 
             trim = session["sales_search"]["key"]["trim"]
+            type = session["sales_search"]["key"]["type"]
             vin = session["sales_search"]["key"]["vin"]
             clname = session["sales_search"]["key"]["customer_lname"] 
             cfname = session["sales_search"]["key"]["customer_fname"] 
@@ -3012,6 +3143,7 @@ def modify_sales():
                     ,concat(int_rate, '/', num_of_payment) as payment_arrangement
                     ,dw_customer_id
                     ,dw_sales_rep_id
+                    ,a.dw_fincl_option_id
                     from Sales_Records as a
 
 
@@ -3061,6 +3193,7 @@ def modify_sales():
                     and vehicle_year like "%%{year}%%"
                     and vehicle_color like "%%{color}%%"
                     and vehicle_trim like "%%{trim}%%"
+                    and vehicle_type like "%%{type}%%"
 
                     ) as c
                     on a.dw_vehicle_type_id = c.dw_vehicle_type_id
@@ -3096,6 +3229,10 @@ def modify_sales():
     else:
 
         if request.method  == "GET" and request.args.get('page') is None:
+
+            if "sales_search" in session:
+                session.pop("sales_search")
+
             return render_template("modify_sales.html")
 
         elif request.method  == "POST"  and request.form["request_type"] == "sales_new_search":
@@ -3105,6 +3242,7 @@ def modify_sales():
 
             make = request.form["make"] 
             model = request.form["model"] 
+            type = request.form["type"] 
             year = request.form["year"] 
             color = request.form["color"] 
             trim = request.form["trim"] 
@@ -3136,6 +3274,8 @@ def modify_sales():
                     ,concat(int_rate, '/', num_of_payment) as payment_arrangement
                     ,dw_customer_id
                     ,dw_sales_rep_id
+                    ,a.purchase_date
+                    ,a.dw_fincl_option_id
                     from Sales_Records as a
 
 
@@ -3184,6 +3324,7 @@ def modify_sales():
                     and vehicle_year like "%%{year}%%"
                     and vehicle_color like "%%{color}%%"
                     and vehicle_trim like "%%{trim}%%"
+                    and vehicle_type like "%%{type}%%"
 
                     ) as c
                     on a.dw_vehicle_type_id = c.dw_vehicle_type_id
@@ -3257,6 +3398,7 @@ def modify_sales():
                     and vehicle_year like "%%{year}%%"
                     and vehicle_color like "%%{color}%%"
                     and vehicle_trim like "%%{trim}%%"
+                    and vehicle_type like "%%{type}%%"
 
                     ) as c
                     on a.dw_vehicle_type_id = c.dw_vehicle_type_id
@@ -3277,6 +3419,7 @@ def modify_sales():
             session["sales_search"]["key"]["color"] = color
             session["sales_search"]["key"]["trim"] = trim
             session["sales_search"]["key"]["vin"] = vin
+            session["sales_search"]["key"]["type"] = type
             session["sales_search"]["key"]["customer_lname"] = clname
             session["sales_search"]["key"]["customer_fname"] = cfname
             session["sales_search"]["key"]["sales_lname"] = slname
@@ -3310,6 +3453,7 @@ def modify_sales():
             year = session["sales_search"]["key"]["year"]
             color = session["sales_search"]["key"]["color"] 
             trim = session["sales_search"]["key"]["trim"]
+            type = session["sales_search"]["key"]["type"]
             vin = session["sales_search"]["key"]["vin"]
             clname = session["sales_search"]["key"]["customer_lname"] 
             cfname = session["sales_search"]["key"]["customer_fname"] 
@@ -3340,6 +3484,8 @@ def modify_sales():
                     ,concat(int_rate, '/', num_of_payment) as payment_arrangement
                     ,dw_customer_id
                     ,dw_sales_rep_id
+                    ,a.purchase_date
+                    ,a.dw_fincl_option_id
                     from Sales_Records as a
 
 
@@ -3389,6 +3535,7 @@ def modify_sales():
                     and vehicle_year like "%%{year}%%"
                     and vehicle_color like "%%{color}%%"
                     and vehicle_trim like "%%{trim}%%"
+                    and vehicle_type like "%%{type}%%"
 
                     ) as c
                     on a.dw_vehicle_type_id = c.dw_vehicle_type_id
@@ -3435,8 +3582,26 @@ def modify_sales():
             purchase_date = request.form["date"] 
 
 
+            if float(down_payment) >= float(price):
+                current_balance = 0
+            else:
+                current_balance = float(price) - float(down_payment)
+
+            if monthly_payment == "":
+                monthly_payment = "NULL"
+            
+            if dw_fincl_option_id == "":
+                dw_fincl_option_id = "NULL"
+
             query = f"""
-                    INSERT INTO Sales_Records (purchase_date, dw_vehicle_type_id, vin, vehicle_price, dw_fincl_option_id, monthly_payment_amount, down_payment_amount) VALUES ("{purchase_date}","{dw_vehicle_type_id}","{vin}","{price}","{dw_fincl_option_id}","{monthly_payment}","{down_payment}");
+                    INSERT INTO Sales_Records (purchase_date, dw_vehicle_type_id, vin, vehicle_price, dw_fincl_option_id, monthly_payment_amount, down_payment_amount) VALUES ("{purchase_date}","{dw_vehicle_type_id}","{vin}","{price}",{dw_fincl_option_id},{monthly_payment},"{down_payment}");
+                    """
+            print(query)
+
+            results = execute_query(db, query)    
+
+            query = f"""
+                    INSERT INTO Monthly_Payments (dw_invoice_id, payment_date, nth_payment, current_balance, vin, payment_amount, dw_customer_id) VALUES ((select dw_invoice_id from Sales_Records where vin = '{vin}' limit 1),"{purchase_date}","0","{current_balance}","{vin}","{down_payment}","{dw_customer_id}");
                     """
             print(query)
 
@@ -3461,12 +3626,14 @@ def modify_sales():
 
 
             if "sales_search" in session:
+                print("Hello")
                 make = session["sales_search"]["key"]["make"] 
                 model = session["sales_search"]["key"]["model"]
                 year = session["sales_search"]["key"]["year"]
                 color = session["sales_search"]["key"]["color"] 
                 trim = session["sales_search"]["key"]["trim"]
                 vin = session["sales_search"]["key"]["vin"]
+                type = session["sales_search"]["key"]["type"]
                 clname = session["sales_search"]["key"]["customer_lname"] 
                 cfname = session["sales_search"]["key"]["customer_fname"] 
                 slname = session["sales_search"]["key"]["sales_lname"] 
@@ -3477,164 +3644,6 @@ def modify_sales():
                 nth_record = (page-1) * row_per_page 
 
                 query = f"""
-                        select 
-                        a.dw_invoice_id
-                        ,a.vin
-                        ,b.customer_first_name
-                        ,b.customer_last_name
-                        ,b.sales_first_name
-                        ,b.sales_last_name
-                        ,c.vehicle_type
-                        ,c.vehicle_make
-                        ,c.vehicle_model
-                        ,c.vehicle_year
-                        ,c.vehicle_color
-                        ,c.vehicle_trim
-                        ,c.vehicle_price
-                        ,down_payment_amount
-                        ,Monthly_Payment_amount
-                        ,concat(int_rate, '/', num_of_payment) as payment_arrangement
-                        ,dw_customer_id
-                        ,dw_sales_rep_id
-                        from Sales_Records as a
-
-
-                        inner join (
-                        SELECT 
-                        a.dw_invoice_id
-                        ,a.dw_customer_id
-                        ,a.dw_sales_rep_id
-                        ,b.first_name as Customer_First_Name
-                        ,b.last_name as Customer_Last_Name
-                        ,c.first_name as Sales_First_Name
-                        ,c.last_name as Sales_Last_Name
-
-
-                        FROM Customers_Salesreps as a
-
-                        inner join Customers_Info as b
-                        on a.dw_customer_id = b.dw_customer_id
-
-                        inner join Sales_Reps as c
-                        on a.dw_sales_rep_id = c.dw_sales_rep_id
-
-
-                        where c.first_name like "%%{sfname}%%"
-                        and c.last_name like "%%{slname}%%"
-                        and b.first_name like "%%{cfname}%%"
-                        and b.last_name like "%%{clname}%%"
-        
-
-                        ) as b
-                        on a.dw_invoice_id = b.dw_invoice_id
-
-
-                        inner join (
-                        SELECT 
-                        dw_vehicle_type_id
-                        ,vehicle_type
-                        ,vehicle_make
-                        ,vehicle_model
-                        ,vehicle_year
-                        ,vehicle_color
-                        ,vehicle_trim
-                        ,vehicle_price
-                        from Vehicle_Types 
-                        where vehicle_make like "%%{make}%%"
-                        and vehicle_model like "%%{model}%%"
-                        and vehicle_year like "%%{year}%%"
-                        and vehicle_color like "%%{color}%%"
-                        and vehicle_trim like "%%{trim}%%"
-
-                        ) as c
-                        on a.dw_vehicle_type_id = c.dw_vehicle_type_id
-
-                        left join Financial_Options as d
-                        on a.dw_fincl_option_id = d.dw_fincl_option_id
-
-                        where a.vin like "%%{vin}%%"
-
-
-                        order by dw_invoice_id
-                        limit {nth_record}, {row_per_page}
-                        """
-
-                results = execute_query(db, query)
-                sales_list = [list(r) for r in results.fetchall()]
-                print(sales_list)
-
-
-                if session["sales_search"]["count"] > (nth_record + row_per_page):
-                    next_page = page + 1
-                else:
-                    next_page = page
-
-                if (nth_record - row_per_page) > 0:
-                    prev_page = page - 1
-                else:
-                    prev_page = 1
-                
-                return render_template("modify_sales.html", content = sales_list, prev_page = prev_page, current_page = page, next_page = next_page, status_msg = "" ) 
-            else:
-                return render_template("modify_sales.html") 
-        
-        elif request.method  == "POST" and request.form["request_type"] == "sales_edit":
-            db = connect_to_database()
-            dw_invoice_id = request.form["dw_invoice_id"] 
-            dw_customer_id = request.form["dw_customer_id"] 
-            dw_sales_rep_id = request.form["dw_sales_rep_id"] 
-            page = int(request.form["page"])
-
-            print(dw_invoice_id, dw_customer_id, dw_sales_rep_id)
-
-
-            query = f"""
-            select dw_customer_id
-            from Customers_Info
-            where dw_customer_id = '{dw_customer_id}'
-            """
-            results = execute_query(db, query)
-
-            customer_list = [list(r) for r in results.fetchall()]
-
-
-            query = f"""
-            select dw_sales_rep_id
-            from Sales_Reps
-            where dw_sales_rep_id = '{dw_sales_rep_id}'
-            """
-            results = execute_query(db, query)
-
-            sales_list = [list(r) for r in results.fetchall()]
-
-            if len(customer_list) > 0 and len(sales_list) > 0:
-                query = f"""
-                UPDATE  Customers_Salesreps
-                SET dw_customer_id = '{dw_customer_id}', dw_sales_rep_id = '{dw_sales_rep_id}'
-                where dw_invoice_id = '{dw_invoice_id}'
-                """
-                results = execute_query(db, query)
-                status_msg = 'Update Successful'
-            else:
-                status_msg = 'Invalid Information'
-
-            
-
-
-            make = session["sales_search"]["key"]["make"] 
-            model = session["sales_search"]["key"]["model"]
-            year = session["sales_search"]["key"]["year"]
-            color = session["sales_search"]["key"]["color"] 
-            trim = session["sales_search"]["key"]["trim"]
-            vin = session["sales_search"]["key"]["vin"]
-            clname = session["sales_search"]["key"]["customer_lname"] 
-            cfname = session["sales_search"]["key"]["customer_fname"] 
-            slname = session["sales_search"]["key"]["sales_lname"] 
-            sfname = session["sales_search"]["key"]["sales_fname"] 
-
-            nth_record = (page-1) * row_per_page 
-
-            query = f"""
                     select 
                     a.dw_invoice_id
                     ,a.vin
@@ -3654,6 +3663,8 @@ def modify_sales():
                     ,concat(int_rate, '/', num_of_payment) as payment_arrangement
                     ,dw_customer_id
                     ,dw_sales_rep_id
+                    ,a.purchase_date
+                    ,a.dw_fincl_option_id
                     from Sales_Records as a
 
 
@@ -3703,6 +3714,190 @@ def modify_sales():
                     and vehicle_year like "%%{year}%%"
                     and vehicle_color like "%%{color}%%"
                     and vehicle_trim like "%%{trim}%%"
+                    and vehicle_type like "%%{type}%%"
+
+                    ) as c
+                    on a.dw_vehicle_type_id = c.dw_vehicle_type_id
+
+                    left join Financial_Options as d
+                    on a.dw_fincl_option_id = d.dw_fincl_option_id
+
+                    where a.vin like "%%{vin}%%"
+
+
+                    order by dw_invoice_id
+                    limit {nth_record}, {row_per_page}
+                        """
+
+                results = execute_query(db, query)
+                sales_list = [list(r) for r in results.fetchall()]
+                print(sales_list)
+
+
+                if session["sales_search"]["count"] > (nth_record + row_per_page):
+                    next_page = page + 1
+                else:
+                    next_page = page
+
+                if (nth_record - row_per_page) > 0:
+                    prev_page = page - 1
+                else:
+                    prev_page = 1
+                
+                return render_template("modify_sales.html", content = sales_list, prev_page = prev_page, current_page = page, next_page = next_page, status_msg = "" ) 
+            else:
+                return render_template("modify_sales.html") 
+        
+        elif request.method  == "POST" and request.form["request_type"] == "sales_edit":
+            db = connect_to_database()
+            dw_invoice_id = request.form["dw_invoice_id"] 
+            dw_customer_id = request.form["dw_customer_id"] 
+            dw_sales_rep_id = request.form["dw_sales_rep_id"] 
+            purchase_date = request.form["purchase_date"] 
+            dw_fincl_option_id = request.form["financial_option"] 
+            monthly_payment = request.form["monthly_payment"]
+            down_payment = request.form["down_payment"] 
+            page = int(request.form["page"])
+
+            if dw_fincl_option_id == "" or dw_fincl_option_id == "None":
+                dw_fincl_option_id = "NULL"
+
+            if monthly_payment == "" or monthly_payment == "None":
+                monthly_payment = "NULL"
+            
+
+
+            print(dw_invoice_id, dw_customer_id, dw_sales_rep_id)
+
+
+            query = f"""
+            select dw_customer_id
+            from Customers_Info
+            where dw_customer_id = '{dw_customer_id}'
+            """
+            results = execute_query(db, query)
+
+            customer_list = [list(r) for r in results.fetchall()]
+
+
+            query = f"""
+            select dw_sales_rep_id
+            from Sales_Reps
+            where dw_sales_rep_id = '{dw_sales_rep_id}'
+            """
+            results = execute_query(db, query)
+
+            sales_list = [list(r) for r in results.fetchall()]
+
+            if len(customer_list) > 0 and len(sales_list) > 0:
+                query = f"""
+                UPDATE  Customers_Salesreps
+                SET dw_customer_id = '{dw_customer_id}', dw_sales_rep_id = '{dw_sales_rep_id}'
+                where dw_invoice_id = '{dw_invoice_id}'
+                """
+                results = execute_query(db, query)
+
+                query = f"""
+                UPDATE  Sales_Records
+                SET purchase_date = '{purchase_date}', dw_fincl_option_id = {dw_fincl_option_id}, monthly_payment_amount = {monthly_payment}, down_payment_amount = {down_payment}
+                where dw_invoice_id = '{dw_invoice_id}'
+                """
+                results = execute_query(db, query)
+
+
+                status_msg = 'Update Successful'
+            else:
+                status_msg = 'Invalid Information'
+
+            
+
+
+            make = session["sales_search"]["key"]["make"] 
+            model = session["sales_search"]["key"]["model"]
+            year = session["sales_search"]["key"]["year"]
+            color = session["sales_search"]["key"]["color"] 
+            trim = session["sales_search"]["key"]["trim"]
+            type = session["sales_search"]["key"]["type"]
+            vin = session["sales_search"]["key"]["vin"]
+            clname = session["sales_search"]["key"]["customer_lname"] 
+            cfname = session["sales_search"]["key"]["customer_fname"] 
+            slname = session["sales_search"]["key"]["sales_lname"] 
+            sfname = session["sales_search"]["key"]["sales_fname"] 
+
+            nth_record = (page-1) * row_per_page 
+
+            query = f"""
+                    select 
+                    a.dw_invoice_id
+                    ,a.vin
+                    ,b.customer_first_name
+                    ,b.customer_last_name
+                    ,b.sales_first_name
+                    ,b.sales_last_name
+                    ,c.vehicle_type
+                    ,c.vehicle_make
+                    ,c.vehicle_model
+                    ,c.vehicle_year
+                    ,c.vehicle_color
+                    ,c.vehicle_trim
+                    ,c.vehicle_price
+                    ,down_payment_amount
+                    ,Monthly_Payment_amount
+                    ,concat(int_rate, '/', num_of_payment) as payment_arrangement
+                    ,dw_customer_id
+                    ,dw_sales_rep_id
+                    ,a.purchase_date
+                    ,a.dw_fincl_option_id
+                    from Sales_Records as a
+
+
+                    inner join (
+                    SELECT 
+                    a.dw_invoice_id
+                    ,a.dw_customer_id
+                    ,a.dw_sales_rep_id
+                    ,b.first_name as Customer_First_Name
+                    ,b.last_name as Customer_Last_Name
+                    ,c.first_name as Sales_First_Name
+                    ,c.last_name as Sales_Last_Name
+
+
+                    FROM Customers_Salesreps as a
+
+                    inner join Customers_Info as b
+                    on a.dw_customer_id = b.dw_customer_id
+
+                    inner join Sales_Reps as c
+                    on a.dw_sales_rep_id = c.dw_sales_rep_id
+
+
+                    where c.first_name like "%%{sfname}%%"
+                    and c.last_name like "%%{slname}%%"
+                    and b.first_name like "%%{cfname}%%"
+                    and b.last_name like "%%{clname}%%"
+    
+
+                    ) as b
+                    on a.dw_invoice_id = b.dw_invoice_id
+
+
+                    inner join (
+                    SELECT 
+                    dw_vehicle_type_id
+                    ,vehicle_type
+                    ,vehicle_make
+                    ,vehicle_model
+                    ,vehicle_year
+                    ,vehicle_color
+                    ,vehicle_trim
+                    ,vehicle_price
+                    from Vehicle_Types 
+                    where vehicle_make like "%%{make}%%"
+                    and vehicle_model like "%%{model}%%"
+                    and vehicle_year like "%%{year}%%"
+                    and vehicle_color like "%%{color}%%"
+                    and vehicle_trim like "%%{trim}%%"
+                    and vehicle_type like "%%{type}%%"
 
                     ) as c
                     on a.dw_vehicle_type_id = c.dw_vehicle_type_id
@@ -3762,9 +3957,12 @@ def test_drive():
             year = session["test_drive_search"]["key"]["year"] 
             color = session["test_drive_search"]["key"]["color"]
             trim = session["test_drive_search"]["key"]["trim"] 
+            type = session["test_drive_search"]["key"]["type"] 
             vin = session["test_drive_search"]["key"]["vin"] 
             cfname = session["test_drive_search"]["key"]["customer_fname"]
             clname = session["test_drive_search"]["key"]["customer_lname"]
+            test_drive_date_lower = session["test_drive_search"]["key"]["test_drive_date_lower"]
+            test_drive_date_upper = session["test_drive_search"]["key"]["test_drive_date_upper"]
 
             query = f"""
                     SELECT 
@@ -3783,10 +3981,12 @@ def test_drive():
                     AND vehicle_model like "%%{model}%%"
                     AND vehicle_year like "%%{year}%%"
                     AND vehicle_color like "%%{color}%%"
+                    AND vehicle_type like "%%{type}%%"
                     AND vehicle_trim like "%%{trim}%%"
                     AND first_name like "%%{cfname}%%"
                     AND last_name like "%%{clname}%%"
                     AND Test_Drives.vin like "%%{vin}%%"
+                    AND test_drive_date between '{test_drive_date_lower}' and '{test_drive_date_upper}'
                     order by Test_Drives.vin
                     limit {nth_record}, {row_per_page}
                     """
@@ -3810,16 +4010,14 @@ def test_drive():
 
 
     else:
-        '''
+
         if request.method  == "GET" and request.args.get('page') is None:
 
             if "test_drive_search" in session:
                 session.pop("test_drive_search")
 
             return render_template("test_drive.html")
-        '''
-        if request.method == "GET":
-            return render_template("test_drive.html")
+    
 
         elif request.method  == "POST"  and request.form["request_type"] == "test_drive_new_search":
 
@@ -3832,8 +4030,11 @@ def test_drive():
             color = request.form["color"] 
             trim = request.form["trim"] 
             vin = request.form["vin"] 
+            type = request.form["type"]
             cfname = request.form["customer_fname"] 
             clname = request.form["customer_lname"] 
+            test_drive_date_lower = request.form["test_drive_date_lower"] 
+            test_drive_date_upper = request.form["test_drive_date_upper"] 
 
 
             print(request.form)
@@ -3854,11 +4055,13 @@ def test_drive():
                     AND vehicle_make like "%%{make}%%"
                     AND vehicle_model like "%%{model}%%"
                     AND vehicle_year like "%%{year}%%"
+                    AND vehicle_type like "%%{type}%%"
                     AND vehicle_color like "%%{color}%%"
                     AND vehicle_trim like "%%{trim}%%"
                     AND first_name like "%%{cfname}%%"
                     AND last_name like "%%{clname}%%"
                     AND Test_Drives.vin like "%%{vin}%%"
+                    AND test_drive_date between '{test_drive_date_lower}' and '{test_drive_date_upper}'
 
                     order by Test_Drives.vin
                     limit {row_per_page}
@@ -3881,11 +4084,13 @@ def test_drive():
                     AND vehicle_make like "%%{make}%%"
                     AND vehicle_model like "%%{model}%%"
                     AND vehicle_year like "%%{year}%%"
+                    AND vehicle_type like "%%{type}%%"
                     AND vehicle_color like "%%{color}%%"
                     AND vehicle_trim like "%%{trim}%%"
                     AND first_name like "%%{cfname}%%"
                     AND last_name like "%%{clname}%%"
                     AND Test_Drives.vin like "%%{vin}%%"
+                    AND test_drive_date between '{test_drive_date_lower}' and '{test_drive_date_upper}'
                     order by Test_Drives.vin
                     
                     """
@@ -3904,8 +4109,11 @@ def test_drive():
             session["test_drive_search"]["key"]["color"] = color
             session["test_drive_search"]["key"]["trim"] = trim
             session["test_drive_search"]["key"]["vin"] = vin
+            session["test_drive_search"]["key"]["type"] = type
             session["test_drive_search"]["key"]["customer_fname"] = cfname
             session["test_drive_search"]["key"]["customer_lname"] = clname
+            session["test_drive_search"]["key"]["test_drive_date_lower"] = test_drive_date_lower
+            session["test_drive_search"]["key"]["test_drive_date_upper"] = test_drive_date_upper
 
 
             if test_drive_count[0][0] > row_per_page:
@@ -3937,8 +4145,11 @@ def test_drive():
             color = session["test_drive_search"]["key"]["color"] 
             trim = session["test_drive_search"]["key"]["trim"] 
             vin = session["test_drive_search"]["key"]["vin"] 
+            type = session["test_drive_search"]["key"]["type"] 
             cfname = session["test_drive_search"]["key"]["customer_fname"] 
             clname = session["test_drive_search"]["key"]["customer_lname"] 
+            test_drive_date_lower = session["test_drive_search"]["key"]["test_drive_date_lower"]
+            test_drive_date_upper = session["test_drive_search"]["key"]["test_drive_date_upper"]
             page = int(request.form["page"])
             print(page)
             nth_record = (page-1) * row_per_page 
@@ -3959,12 +4170,14 @@ def test_drive():
                     AND Vehicle_Inventories.dw_vehicle_type_id = Vehicle_Types.dw_vehicle_type_id 
                     AND vehicle_make like "%%{make}%%"
                     AND vehicle_model like "%%{model}%%"
+                    AND vehicle_type like "%%{type}%%"
                     AND vehicle_year like "%%{year}%%"
                     AND vehicle_color like "%%{color}%%"
                     AND vehicle_trim like "%%{trim}%%"
                     AND first_name like "%%{cfname}%%"
                     AND last_name like "%%{clname}%%"
                     AND Test_Drives.vin like "%%{vin}%%"
+                    AND test_drive_date between '{test_drive_date_lower}' and '{test_drive_date_upper}'
                     order by Test_Drives.vin
                     limit {nth_record}, {row_per_page}
                     """
@@ -3985,12 +4198,14 @@ def test_drive():
                     AND Vehicle_Inventories.dw_vehicle_type_id = Vehicle_Types.dw_vehicle_type_id 
                     AND vehicle_make like "%%{make}%%"
                     AND vehicle_model like "%%{model}%%"
+                    AND vehicle_type like "%%{type}%%"
                     AND vehicle_year like "%%{year}%%"
                     AND vehicle_color like "%%{color}%%"
                     AND vehicle_trim like "%%{trim}%%"
                     AND first_name like "%%{cfname}%%"
                     AND last_name like "%%{clname}%%"
                     AND Test_Drives.vin like "%%{vin}%%"
+                    AND test_drive_date between '{test_drive_date_lower}' and '{test_drive_date_upper}'
                     order by Test_Drives.vin
                     
                     """
@@ -4020,33 +4235,43 @@ def test_drive():
                 row_per_page = 15
 
                 #dw_test_drive_id = request.form["testdriveid"] 
-                dw_customer_id = request.form["customerid"]
+                dw_customer_id = request.form["dw_customer_id"]
                 vin = request.form["vin"].upper()
-                test_drive_date = request.form["testdrivedate"] 
-                check_out_time = request.form["checkoutitme"] 
-                return_time = request.form["returntime"] 
-
-                page = int(request.form["page"])
-                print(page)
+                test_drive_date = request.form["test_drive_date"] 
+                check_out_time = request.form["checkout_time"] 
+                return_time = request.form["return_time"]
 
                 query = f"""
-                    select *
+                    select vin
+                    from Vehicle_Inventories
+                    where vin = "{vin}"
+                    and sold_ind = '0'
+                    """
+
+                results = execute_query(db, query)
+                vin_exist_list = [list(r) for r in results.fetchall()]
+
+
+                query = f"""
+                    select dw_customer_id
                     from Customers_Info
                     where dw_customer_id = "{dw_customer_id}"
                     """
 
                 results = execute_query(db, query)
-                cutomers_type_id_exist_list = [list(r) for r in results.fetchall()]
+                cid_exist_list = [list(r) for r in results.fetchall()]
 
-                if len(cutomers_type_id_exist_list) > 0:
-                    status_msg = 'Insert Failed. Customer ID exists.'
-                else:
+                if len(vin_exist_list) > 0 and len(cid_exist_list) > 0:
                     query = f"""
                             INSERT INTO Test_Drives (dw_customer_id, test_drive_date, check_out_time, return_time, vin) VALUES ("{dw_customer_id}","{test_drive_date}","{check_out_time}","{return_time}","{vin}");
                             """
 
                     results = execute_query(db, query)    
                     status_msg = 'Insert Successful'
+
+                else:
+                    status_msg = 'Insert Failed. Vehicle not exists or sold / Customer Not Exists.'
+
 
                 if "test_drive_search" in session:
                     page = int(request.form["page"])
@@ -4060,9 +4285,13 @@ def test_drive():
                     year = session["test_drive_search"]["key"]["year"]
                     color = session["test_drive_search"]["key"]["color"]
                     trim = session["test_drive_search"]["key"]["trim"]
+                    type = session["test_drive_search"]["key"]["type"] 
                     vin = session["test_drive_search"]["key"]["vin"]
                     cfname = session["test_drive_search"]["key"]["customer_fname"]
                     clname = session["test_drive_search"]["key"]["customer_lname"]
+                    test_drive_date_lower = session["test_drive_search"]["key"]["test_drive_date_lower"]
+                    test_drive_date_upper = session["test_drive_search"]["key"]["test_drive_date_upper"]
+
 
                     
 
@@ -4083,10 +4312,12 @@ def test_drive():
                             AND vehicle_model like "%%{model}%%"
                             AND vehicle_year like "%%{year}%%"
                             AND vehicle_color like "%%{color}%%"
+                            AND vehicle_type like "%%{type}%%"
                             AND vehicle_trim like "%%{trim}%%"
                             AND first_name like "%%{cfname}%%"
                             AND last_name like "%%{clname}%%"
                             AND Test_Drives.vin like "%%{vin}%%"
+                            AND test_drive_date between '{test_drive_date_lower}' and '{test_drive_date_upper}'
                             order by Test_Drives.vin
                             limit {nth_record}, {row_per_page}
                             """
@@ -4149,9 +4380,13 @@ def test_drive():
             year = session["test_drive_search"]["key"]["year"]
             color = session["test_drive_search"]["key"]["color"]
             trim = session["test_drive_search"]["key"]["trim"]
+            type = session["test_drive_search"]["key"]["type"] 
+
             vin = session["test_drive_search"]["key"]["vin"]
             cfname = session["test_drive_search"]["key"]["customer_fname"]
             clname = session["test_drive_search"]["key"]["customer_lname"]
+            test_drive_date_lower = session["test_drive_search"]["key"]["test_drive_date_lower"]
+            test_drive_date_upper = session["test_drive_search"]["key"]["test_drive_date_upper"]
 
             query = f"""
                     SELECT 
@@ -4171,9 +4406,11 @@ def test_drive():
                     AND vehicle_year like "%%{year}%%"
                     AND vehicle_color like "%%{color}%%"
                     AND vehicle_trim like "%%{trim}%%"
+                    AND vehicle_type like "%%{type}%%"
                     AND first_name like "%%{cfname}%%"
                     AND last_name like "%%{clname}%%"
                     AND Test_Drives.vin like "%%{vin}%%"
+                    AND test_drive_date between '{test_drive_date_lower}' and '{test_drive_date_upper}'
                     order by Test_Drives.vin
                     limit {nth_record}, {row_per_page}
                     """
@@ -4203,22 +4440,27 @@ def cf_projection():
 
 
     if request.is_json:
-        if request.method  == "POST" and request.json["request_type"] == "store_pull":
+        if request.method  == "POST" and request.json["request_type"] == "add_month":
             
             db = connect_to_database()
+            add = request.json["add"]
+            print(add)
             
-            query = f"""
-                    SELECT 
-                    store_location
-                    from Vehicle_Inventories
-                    group by 1
-                    """
+
+            if add == -1:
+                query = f"""
+                        INSERT INTO Projection_Months (  (select last_day(date_add(min(eom_dt), interval -1 month)) as eom_dt from Projection_Months)        );
+                        """
+            else:
+                query = f"""
+                        INSERT INTO Projection_Months (  (select last_day(date_add(max(eom_dt), interval +1 month)) as eom_dt from Projection_Months)        );
+                        """
+
+
             results = execute_query(db, query)
-            store_list = [r[0] for r in results.fetchall()]
 
-            print(store_list)
 
-            return jsonify(store_list)
+            return jsonify(-1)
 
     else:
         if request.method == "GET":
@@ -4230,6 +4472,10 @@ def cf_projection():
             report_start_date = request.form["report_start_date"] 
             report_end_date = request.form["report_end_date"] 
             store_location = request.form["store_location"] 
+
+
+
+
 
 
             query = f"""

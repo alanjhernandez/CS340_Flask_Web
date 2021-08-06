@@ -38,7 +38,9 @@ Cashflow Projection
                     Report Start Date
                 </td>
                 <td>
-                    <input type="date" name="report_start_date" id="report-start-date" required>
+                    <input list="date-start-list" id="report-start-date" name="report_start_date" required></input>
+                    <datalist id="date-start-list">
+                    </datalist>
                 </td>
 
             </tr>
@@ -47,14 +49,18 @@ Cashflow Projection
                     Report End Date
                 </td>
                 <td>
-                    <input type="date" name="report_end_date" id="report-start-date" required>
+                    <input list="date-end-list" id="report-end-date" name="report_end_date" required></input>
+                    <datalist id="date-end-list">
+                    </datalist>
                 </td>
-
             </tr>
         </table>
         <input type="submit">
         <input type="hidden" name="request_type" value="report_pull">
     </fieldset>
+    <br>
+    <button onclick="add_month(-1);">Add Report Month Lower Range</button>
+    <button onclick="add_month(1);">Add Report Month Upper Range</button>
 
 
     {% if report is defined%}
@@ -64,7 +70,9 @@ Cashflow Projection
     <div class="row">
         <div class="column">
             <div id="cf_report">
+
                 <table>
+                    <h1>CashFlow Projection</h1>
                     <thead>
                         <tr>
                             <td>Store</td>
@@ -84,11 +92,13 @@ Cashflow Projection
 
                     </tbody>
                 </table>
+
             </div>
         </div>
         <div class="column">
             <div id="cf_report">
                 <table>
+                    <h1>Inventory</h1>
                     <thead>
                         <tr>
                             <td>Store</td>
@@ -131,6 +141,7 @@ Cashflow Projection
 
     window.addEventListener('load', (event) => {
         pull_store()
+        pull_date()
 
     });
 
@@ -142,10 +153,10 @@ Cashflow Projection
 
         var req = new XMLHttpRequest();
         var store_request = {}
-        store_request.request_type = "store_pull"
+        store_request.request_type = "inventory_store_pull"
         console.log(store_request)
 
-        req.open('POST', '/cfproject', true);
+        req.open('POST', '/info_check', true);
         req.setRequestHeader('Content-Type', 'application/json');
         req.addEventListener('load', function () {
             if (req.status >= 200 && req.status < 400) {
@@ -172,8 +183,82 @@ Cashflow Projection
         req.send(JSON.stringify(store_request));
         event.preventDefault();
 
+    }
+
+
+
+    function pull_date() {
+        var date_start_list = document.getElementById("date-start-list");
+        var date_end_list = document.getElementById("date-end-list");
+
+
+        var req = new XMLHttpRequest();
+        var date_request = {}
+        date_request.request_type = "date_pull"
+        console.log(date_request)
+
+        req.open('POST', '/info_check', true);
+        req.setRequestHeader('Content-Type', 'application/json');
+        req.addEventListener('load', function () {
+            if (req.status >= 200 && req.status < 400) {
+                var response = JSON.parse(req.responseText);
+                console.log(response)
+                console.log("Store Request Success!")
+                date_start_list.innerHTML = ''
+                date_end_list.innerHTML = ''
+
+
+                for (i = 0; i < response.length; i++) {
+                    console.log(i)
+                    var option_tag = document.createElement("option")
+                    option_tag.innerHTML = response[i]
+                    option_tag.value = response[i]
+                    date_start_list.appendChild(option_tag)
+
+                    var option_tag = document.createElement("option")
+                    option_tag.innerHTML = response[i]
+                    option_tag.value = response[i]
+                    date_end_list.appendChild(option_tag)
+                }
+
+
+
+            } else {
+                console.log("Error in network request: " + req.statusText);
+            }
+        });
+        req.send(JSON.stringify(date_request));
+        event.preventDefault();
 
     }
+
+    function add_month(month) {
+        console.log(month)
+
+        var req = new XMLHttpRequest();
+        var date_request = {}
+        date_request.request_type = "add_month"
+        date_request.add = month
+        console.log(date_request)
+
+        req.open('POST', '/cfproject', true);
+        req.setRequestHeader('Content-Type', 'application/json');
+        req.addEventListener('load', function () {
+            if (req.status >= 200 && req.status < 400) {
+                var response = JSON.parse(req.responseText);
+                console.log(response)
+                console.log("Month Request Success!")
+                pull_date()
+            } else {
+                console.log("Error in network request: " + req.statusText);
+            }
+        });
+        req.send(JSON.stringify(date_request));
+        event.preventDefault();
+
+    }
+
+
 
 </script>
 

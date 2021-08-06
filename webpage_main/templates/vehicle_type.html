@@ -16,41 +16,67 @@ Vehicle Type
         <table>
 
             <tr>
-                <td>Vehicle Type ID: </td>
+                <td>Vehicle Type ID </td>
                 <td id="vehicle-type-id"><input type="text" name="dw_vehicle_type_id"></td>
             </tr>
 
             <tr>
-                <td>Vehicle Make </td>
-                <td id="vehicle-make"><input type="text" name="vehicle_make"></td>
+                <td><label for="make">Vehicle Make</label></td>
+
+                <td colspan="3">
+                    <input list="make-list" id="make-list-input" name="vehicle_make"></input>
+                    <datalist id="make-list">
+                    </datalist>
+                </td>
+
+            </tr>
+
+            <tr>
+                <td><label for="type">Vehicle Type</label></td>
+
+                <td colspan="3">
+                    <input list="type-list" id="type-list-input" name="vehicle_type"></input>
+                    <datalist id="type-list">
+                    </datalist>
+                </td>
+
+            </tr>
+
+            <tr>
+                <td><label for="model">Vehicle Model</label></td>
+                <td colspan="3">
+                    <input list="model-list" id="model-list-input" name="vehicle_model"></input>
+                    <datalist id="model-list">
+                    </datalist>
+                </td>
+            </tr>
+
+            <tr>
+                <td><label for="year">Vehicle Year</label></td>
+                <td colspan="3">
+                    <input list="year-list" id="year-list-input" name="vehicle_year"></input>
+                    <datalist id="year-list">
+                    </datalist>
+                </td>
+            </tr>
+
+            <tr>
+                <td><label for="color">Vehicle Colour</label></td>
+                <td colspan="3">
+                    <input list="color-list" id="color-list-input" name="vehicle_color"></input>
+                    <datalist id="color-list">
+                    </datalist>
+                </td>
             </tr>
 
 
             <tr>
-                <td>Vehicle Type </td>
-                <td id="vehicle-type"><input type="text" name="vehicle_type"></td>
-            </tr>
-
-
-            <tr>
-                <td>Vehicle Model </td>
-                <td id="vehicle-model"><input type="text" name="vehicle_model"></td>
-            </tr>
-
-            <tr>
-                <td>Vehicle Year </td>
-                <td id="vehicle-year"><input type="number" name="vehicle_year" min="1000" max="9999"></td>
-            </tr>
-
-
-            <tr>
-                <td>Vehicle Color </td>
-                <td id="vehicle-color"><input type="text" name="vehicle_color"></td>
-            </tr>
-
-            <tr>
-                <td>Vehicle Trim </td>
-                <td id="vehicle-trim"><input type="text" name="vehicle_trim"></td>
+                <td><label for="trim">Vehicle Trim</label></td>
+                <td colspan="3">
+                    <input list="trim-list" id="trim-list-input" name="vehicle_trim"></input>
+                    <datalist id="trim-list">
+                    </datalist>
+                </td>
             </tr>
 
 
@@ -224,11 +250,14 @@ Vehicle Type
                         </td>
                     </tr>
 
+
+
                     <tr>
                         <td>Vehicle Make </td>
                         <td><input type="text" name="vehicle_make" required id="vehicle-make-add"
                                 onfocusout="generate_vehicle_type_id();"></td>
                     </tr>
+
 
 
                     <tr>
@@ -238,11 +267,16 @@ Vehicle Type
                     </tr>
 
 
+
+
+
                     <tr>
                         <td>Vehicle Model </td>
                         <td><input type="text" name="vehicle_model" required id="vehicle-model-add"
                                 onfocusout="generate_vehicle_type_id();"> </td>
                     </tr>
+
+
 
                     <tr>
                         <td>Vehicle Year </td>
@@ -257,6 +291,8 @@ Vehicle Type
                         <td><input type="text" name="vehicle_color" required id="vehicle-color-add"
                                 onfocusout="generate_vehicle_type_id();"></td>
                     </tr>
+
+
 
                     <tr>
                         <td>Vehicle Trim </td>
@@ -301,6 +337,203 @@ Vehicle Type
 
 
 <script>
+
+
+
+
+    window.addEventListener('load', (event) => {
+        pull_make()
+
+    });
+
+
+
+    function pull_make() {
+        var make_list = document.getElementById("make-list");
+        var make_list_add = document.getElementById("make-list-add");
+        var make_list_update = document.getElementById("make-list-update");
+
+        var req = new XMLHttpRequest();
+        var make_request = {}
+        make_request.request_type = "inventory_make_pull"
+        console.log(make_request)
+
+        req.open('POST', '/info_check', true);
+        req.setRequestHeader('Content-Type', 'application/json');
+        req.addEventListener('load', function () {
+            if (req.status >= 200 && req.status < 400) {
+                var response = JSON.parse(req.responseText);
+                console.log(response)
+
+                for (i = 0; i < response.length; i++) {
+                    console.log(i)
+                    var option_tag = document.createElement("option")
+                    option_tag.innerHTML = response[i]
+                    option_tag.value = response[i]
+                    make_list.appendChild(option_tag)
+
+
+                }
+
+
+
+
+            } else {
+                console.log("Error in network request: " + req.statusText);
+            }
+        });
+        req.send(JSON.stringify(make_request));
+        event.preventDefault();
+
+
+    }
+
+
+
+    document.getElementById("make-list-input").addEventListener("change", function () {
+
+
+        var model_list = document.getElementById("model-list");
+        document.getElementById("model-list-input").value = ''
+
+        var year_list = document.getElementById("year-list");
+        document.getElementById("year-list-input").value = ''
+
+        var color_list = document.getElementById("color-list");
+        document.getElementById("color-list-input").value = ''
+
+        var type_list = document.getElementById("type-list");
+        document.getElementById("type-list-input").value = ''
+
+        document.getElementById("trim-list-input").value = ''
+
+        var req = new XMLHttpRequest();
+        var info_request = {}
+        info_request.request_type = "inventory_info_pull"
+        info_request.make = document.getElementById("make-list-input").value
+        console.log(info_request)
+
+        req.open('POST', '/info_check', true);
+        req.setRequestHeader('Content-Type', 'application/json');
+        req.addEventListener('load', function () {
+            if (req.status >= 200 && req.status < 400) {
+                var response = JSON.parse(req.responseText);
+                console.log(response)
+                console.log("Make Request Success!")
+
+                model_list.innerHTML = ''
+                for (i = 0; i < response[0].length; i++) {
+                    var option_tag = document.createElement("option")
+                    option_tag.innerHTML = response[0][i][0]
+                    option_tag.value = response[0][i][0]
+                    model_list.appendChild(option_tag)
+
+                }
+
+
+                year_list.innerHTML = ''
+                for (i = 0; i < response[1].length; i++) {
+                    var option_tag = document.createElement("option")
+                    option_tag.innerHTML = response[1][i][0]
+                    option_tag.value = response[1][i][0]
+                    year_list.appendChild(option_tag)
+                }
+
+
+
+                color_list.innerHTML = ''
+                for (i = 0; i < response[2].length; i++) {
+                    var option_tag = document.createElement("option")
+                    option_tag.innerHTML = response[2][i][0]
+                    option_tag.value = response[2][i][0]
+                    color_list.appendChild(option_tag)
+                }
+
+
+
+                type_list.innerHTML = ''
+                for (i = 0; i < response[2].length; i++) {
+                    var option_tag = document.createElement("option")
+                    option_tag.innerHTML = response[3][i][0]
+                    option_tag.value = response[3][i][0]
+                    type_list.appendChild(option_tag)
+                }
+
+
+
+
+
+            } else {
+                console.log("Error in network request: " + req.statusText);
+            }
+        });
+        req.send(JSON.stringify(info_request));
+        event.preventDefault();
+
+
+
+
+    });
+
+    document.getElementById("model-list-input").addEventListener("change", function () {
+
+        var trim_list = document.getElementById("trim-list");
+        document.getElementById("trim-list-input").value = ''
+
+        var req = new XMLHttpRequest();
+        var info_request = {}
+        info_request.request_type = "inventory_trim_pull"
+        info_request.make = document.getElementById("make-list-input").value
+        info_request.model = document.getElementById("model-list-input").value
+        console.log(info_request)
+
+        req.open('POST', '/info_check', true);
+        req.setRequestHeader('Content-Type', 'application/json');
+        req.addEventListener('load', function () {
+            if (req.status >= 200 && req.status < 400) {
+                var response = JSON.parse(req.responseText);
+                console.log(response)
+                console.log("Trim Request Success!")
+
+
+                trim_list.innerHTML = ''
+                for (i = 0; i < response.length; i++) {
+                    var option_tag = document.createElement("option")
+                    option_tag.innerHTML = response[i]
+                    option_tag.value = response[i]
+                    trim_list.appendChild(option_tag)
+                }
+
+
+
+            } else {
+                console.log("Error in network request: " + req.statusText);
+            }
+        });
+        req.send(JSON.stringify(info_request));
+        event.preventDefault();
+
+
+
+
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

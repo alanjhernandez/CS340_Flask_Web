@@ -1,13 +1,13 @@
 
-drop table cs340_cheungke.Test_Drives;
-drop table cs340_cheungke.Monthly_Payments;
-drop table cs340_cheungke.Customers_Salesreps;
-drop table cs340_cheungke.Sales_Records;
-drop table cs340_cheungke.Vehicle_Inventories;
-drop table cs340_cheungke.Vehicle_Types;
-drop table cs340_cheungke.Sales_Reps;
-drop table cs340_cheungke.Financial_Options;
-drop table cs340_cheungke.Customers_Info;
+drop table if exists cs340_cheungke.Test_Drives ;
+drop table if exists cs340_cheungke.Monthly_Payments;
+drop table if exists cs340_cheungke.Customers_Salesreps;
+drop table if exists cs340_cheungke.Sales_Records;
+drop table if exists cs340_cheungke.Vehicle_Inventories;
+drop table if exists cs340_cheungke.Vehicle_Types;
+drop table if exists cs340_cheungke.Sales_Reps;
+drop table if exists cs340_cheungke.Financial_Options;
+drop table if exists cs340_cheungke.Customers_Info;
 
 
 
@@ -102,9 +102,9 @@ create table cs340_cheungke.Sales_Records(
    dw_vehicle_type_id VARCHAR(15) NOT NULL,
    vin VARCHAR(17) NOT NULL,
    vehicle_price float NOT NULL,
-   dw_fincl_option_id integer NOT NULL,
-   monthly_payment_amount float NOT NULL,
-   down_payment_amount float NOT NULL,
+   dw_fincl_option_id integer NULL,
+   monthly_payment_amount float NULL,
+   down_payment_amount float NULL,
    PRIMARY KEY ( dw_invoice_id ),
     FOREIGN KEY (dw_vehicle_type_id)
         REFERENCES Vehicle_Types(dw_vehicle_type_id)
@@ -114,7 +114,7 @@ create table cs340_cheungke.Sales_Records(
         ON DELETE CASCADE ON UPDATE CASCADE ,
     FOREIGN KEY (dw_fincl_option_id)
         REFERENCES Financial_Options(dw_fincl_option_id)
-        ON DELETE CASCADE ON UPDATE CASCADE 
+         ON DELETE CASCADE ON UPDATE CASCADE 
 );
 
 insert into Sales_Records
@@ -200,8 +200,73 @@ select * from Test_Drives_Backup;
 
 
 
+drop table Projection_Months;
+create table Projection_Months(
+   eom_dt date NOT NULL,
+   PRIMARY KEY ( eom_dt )
+);
 
 
+insert into Projection_Months(eom_dt) VALUES('2018-1-31');
+insert into Projection_Months(eom_dt) VALUES('2018-2-28');
+insert into Projection_Months(eom_dt) VALUES('2018-3-31');
+insert into Projection_Months(eom_dt) VALUES('2018-4-30');
+insert into Projection_Months(eom_dt) VALUES('2018-5-31');
+insert into Projection_Months(eom_dt) VALUES('2018-6-30');
+insert into Projection_Months(eom_dt) VALUES('2018-7-31');
+insert into Projection_Months(eom_dt) VALUES('2018-8-31');
+insert into Projection_Months(eom_dt) VALUES('2018-9-30');
+insert into Projection_Months(eom_dt) VALUES('2018-10-31');
+insert into Projection_Months(eom_dt) VALUES('2018-11-30');
+insert into Projection_Months(eom_dt) VALUES('2018-12-31');
+insert into Projection_Months(eom_dt) VALUES('2019-1-31');
+insert into Projection_Months(eom_dt) VALUES('2019-2-28');
+insert into Projection_Months(eom_dt) VALUES('2019-3-31');
+insert into Projection_Months(eom_dt) VALUES('2019-4-30');
+insert into Projection_Months(eom_dt) VALUES('2019-5-31');
+insert into Projection_Months(eom_dt) VALUES('2019-6-30');
+insert into Projection_Months(eom_dt) VALUES('2019-7-31');
+insert into Projection_Months(eom_dt) VALUES('2019-8-31');
+insert into Projection_Months(eom_dt) VALUES('2019-9-30');
+insert into Projection_Months(eom_dt) VALUES('2019-10-31');
+insert into Projection_Months(eom_dt) VALUES('2019-11-30');
+insert into Projection_Months(eom_dt) VALUES('2019-12-31');
+insert into Projection_Months(eom_dt) VALUES('2020-1-31');
+insert into Projection_Months(eom_dt) VALUES('2020-2-29');
+insert into Projection_Months(eom_dt) VALUES('2020-3-31');
+insert into Projection_Months(eom_dt) VALUES('2020-4-30');
+insert into Projection_Months(eom_dt) VALUES('2020-5-31');
+insert into Projection_Months(eom_dt) VALUES('2020-6-30');
+insert into Projection_Months(eom_dt) VALUES('2020-7-31');
+insert into Projection_Months(eom_dt) VALUES('2020-8-31');
+insert into Projection_Months(eom_dt) VALUES('2020-9-30');
+insert into Projection_Months(eom_dt) VALUES('2020-10-31');
+insert into Projection_Months(eom_dt) VALUES('2020-11-30');
+insert into Projection_Months(eom_dt) VALUES('2020-12-31');
+insert into Projection_Months(eom_dt) VALUES('2021-1-31');
+insert into Projection_Months(eom_dt) VALUES('2021-2-28');
+insert into Projection_Months(eom_dt) VALUES('2021-3-31');
+insert into Projection_Months(eom_dt) VALUES('2021-4-30');
+insert into Projection_Months(eom_dt) VALUES('2021-5-31');
+insert into Projection_Months(eom_dt) VALUES('2021-6-30');
+insert into Projection_Months(eom_dt) VALUES('2021-7-31');
+insert into Projection_Months(eom_dt) VALUES('2021-8-31');
+insert into Projection_Months(eom_dt) VALUES('2021-9-30');
+insert into Projection_Months(eom_dt) VALUES('2021-10-31');
+insert into Projection_Months(eom_dt) VALUES('2021-11-30');
+insert into Projection_Months(eom_dt) VALUES('2021-12-31');
+insert into Projection_Months(eom_dt) VALUES('2022-1-31');
+insert into Projection_Months(eom_dt) VALUES('2022-2-28');
+insert into Projection_Months(eom_dt) VALUES('2022-3-31');
+insert into Projection_Months(eom_dt) VALUES('2022-4-30');
+insert into Projection_Months(eom_dt) VALUES('2022-5-31');
+insert into Projection_Months(eom_dt) VALUES('2022-6-30');
+insert into Projection_Months(eom_dt) VALUES('2022-7-31');
+insert into Projection_Months(eom_dt) VALUES('2022-8-31');
+insert into Projection_Months(eom_dt) VALUES('2022-9-30');
+insert into Projection_Months(eom_dt) VALUES('2022-10-31');
+insert into Projection_Months(eom_dt) VALUES('2022-11-30');
+insert into Projection_Months(eom_dt) VALUES('2022-12-31');
 
 
 

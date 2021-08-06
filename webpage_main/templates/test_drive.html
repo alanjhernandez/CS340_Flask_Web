@@ -14,40 +14,72 @@ Test Drive Record
         <legend>Test Drive Record Search</legend>
 
         <table>
+
+            <tr>
+                <td><label for="vin">VIN</label></td>
+                <td colspan="3"><input type="text" name="vin"></td>
+            </tr>
+
             <tr>
                 <td><label for="make">Vehicle Make</label></td>
-                <td><input type="radio" name="make" value="Honda" checked>Honda</input></td>
-                <td><input type="radio" name="make" value="Toyota">Toyota</input></td>
+
+                <td colspan="3">
+                    <input list="make-list" id="make-list-input" name="make"></input>
+                    <datalist id="make-list">
+                    </datalist>
+                </td>
+
             </tr>
+
+
+            <tr>
+                <td><label for="type">Vehicle Type</label></td>
+
+                <td colspan="3">
+                    <input list="type-list" id="type-list-input" name="type"></input>
+                    <datalist id="type-list">
+                    </datalist>
+                </td>
+
+            </tr>
+
 
             <tr>
                 <td><label for="model">Vehicle Model</label></td>
-                <td colspan="3"><input type="text" name="model"></td>
+                <td colspan="3">
+                    <input list="model-list" id="model-list-input" name="model"></input>
+                    <datalist id="model-list">
+                    </datalist>
+                </td>
             </tr>
-
 
             <tr>
                 <td><label for="year">Vehicle Year</label></td>
-                <td><input type="radio" name="year" value="2016">2016</input></td>
-                <td><input type="radio" name="year" value="2017">2017</input></td>
-                <td><input type="radio" name="year" value="2018">2018</input></td>
-                <td><input type="radio" name="year" value="2019">2019</input></td>
-                <td><input type="radio" name="year" value="2020">2020</input></td>
-                <input type="hidden" name="year" value=""></input>
+                <td colspan="3">
+                    <input list="year-list" id="year-list-input" name="year"></input>
+                    <datalist id="year-list">
+                    </datalist>
+                </td>
             </tr>
 
             <tr>
                 <td><label for="color">Vehicle Colour</label></td>
-                <td><input type="radio" name="color" value="Black">Black</input></td>
-                <td><input type="radio" name="color" value="Blue">Blue</input></td>
-                <td><input type="radio" name="color" value="Silver">Silver</input></td>
-                <input type="hidden" name="color" value=""></input>
+                <td colspan="3">
+                    <input list="color-list" id="color-list-input" name="color"></input>
+                    <datalist id="color-list">
+                    </datalist>
+                </td>
             </tr>
 
             <tr>
                 <td><label for="trim">Vehicle Trim</label></td>
-                <td colspan="3"><input type="text" name="trim"></td>
+                <td colspan="3">
+                    <input list="trim-list" id="trim-list-input" name="trim"></input>
+                    <datalist id="trim-list">
+                    </datalist>
+                </td>
             </tr>
+
 
             <tr>
                 <td><label for="customer_fname">Customer First Name</label></td>
@@ -59,9 +91,15 @@ Test Drive Record
             </tr>
 
             <tr>
-                <td><label for="vin">VIN</label></td>
-                <td colspan="3"><input type="text" name="vin"></td>
+                <td><label>Test Drive Date Range (Lower)</label></td>
+                <td colspan="3"><input type="date" name="test_drive_date_lower" value="2014-01-01" required></td>
             </tr>
+            <tr>
+                <td><label>Test Drive Date Range (Upper)</label></td>
+                <td colspan="3"><input type="date" name="test_drive_date_upper" value="2030-12-31" required></td>
+            </tr>
+
+
 
 
         </table>
@@ -174,19 +212,23 @@ Test Drive Record
                         <td colspan="2"><input type="number" name="dw_test_drive_id" readonly
                                 id="edit-test_drive-test_drive_id"></input></td>
 
+
                     </tr>
 
                     <tr>
                         <td>Customer ID </td>
                         <td colspan="2"><input type="number" id="edit-test_drive-customerid" name="dw_customer_id"
-                                required></input></td>
+                                onfocusout="edit_check_customer_id()" required></input></td>
+                        <td colspan="3" id="edit-test_drive-customer-name"></td>
                     </tr>
 
 
                     <tr>
                         <td>VIN</td>
-                        <td colspan="2"><input type="text" id="edit-test_drive-vin" name="vin" required></input>
+                        <td colspan="2"><input type="text" id="edit-test_drive-vin" name="vin"
+                                onfocusout="edit_check_vin()" required></input>
                         </td>
+                        <td colspan="3" id="edit-test_drive-veh-description"></td>
                     </tr>
 
                     <tr>
@@ -306,6 +348,394 @@ Test Drive Record
 {% endif %}
 
 <script>
+
+
+
+    window.addEventListener('load', (event) => {
+        pull_make()
+
+    });
+
+
+
+    function pull_make() {
+        var make_list = document.getElementById("make-list");
+        var make_list_add = document.getElementById("make-list-add");
+        var make_list_update = document.getElementById("make-list-update");
+
+        var req = new XMLHttpRequest();
+        var make_request = {}
+        make_request.request_type = "inventory_make_pull"
+        console.log(make_request)
+
+        req.open('POST', '/info_check', true);
+        req.setRequestHeader('Content-Type', 'application/json');
+        req.addEventListener('load', function () {
+            if (req.status >= 200 && req.status < 400) {
+                var response = JSON.parse(req.responseText);
+                console.log(response)
+
+                for (i = 0; i < response.length; i++) {
+                    console.log(i)
+                    var option_tag = document.createElement("option")
+                    option_tag.innerHTML = response[i]
+                    option_tag.value = response[i]
+                    make_list.appendChild(option_tag)
+
+
+                }
+
+
+
+
+            } else {
+                console.log("Error in network request: " + req.statusText);
+            }
+        });
+        req.send(JSON.stringify(make_request));
+        event.preventDefault();
+
+
+    }
+
+
+
+    document.getElementById("make-list-input").addEventListener("change", function () {
+
+
+        var model_list = document.getElementById("model-list");
+        document.getElementById("model-list-input").value = ''
+
+        var year_list = document.getElementById("year-list");
+        document.getElementById("year-list-input").value = ''
+
+        var color_list = document.getElementById("color-list");
+        document.getElementById("color-list-input").value = ''
+
+        var type_list = document.getElementById("type-list");
+        document.getElementById("type-list-input").value = ''
+
+        document.getElementById("trim-list-input").value = ''
+
+        var req = new XMLHttpRequest();
+        var info_request = {}
+        info_request.request_type = "inventory_info_pull"
+        info_request.make = document.getElementById("make-list-input").value
+        console.log(info_request)
+
+        req.open('POST', '/info_check', true);
+        req.setRequestHeader('Content-Type', 'application/json');
+        req.addEventListener('load', function () {
+            if (req.status >= 200 && req.status < 400) {
+                var response = JSON.parse(req.responseText);
+                console.log(response)
+                console.log("Make Request Success!")
+
+                model_list.innerHTML = ''
+                for (i = 0; i < response[0].length; i++) {
+                    var option_tag = document.createElement("option")
+                    option_tag.innerHTML = response[0][i][0]
+                    option_tag.value = response[0][i][0]
+                    model_list.appendChild(option_tag)
+
+                }
+
+
+                year_list.innerHTML = ''
+                for (i = 0; i < response[1].length; i++) {
+                    var option_tag = document.createElement("option")
+                    option_tag.innerHTML = response[1][i][0]
+                    option_tag.value = response[1][i][0]
+                    year_list.appendChild(option_tag)
+                }
+
+
+
+                color_list.innerHTML = ''
+                for (i = 0; i < response[2].length; i++) {
+                    var option_tag = document.createElement("option")
+                    option_tag.innerHTML = response[2][i][0]
+                    option_tag.value = response[2][i][0]
+                    color_list.appendChild(option_tag)
+                }
+
+
+
+                type_list.innerHTML = ''
+                for (i = 0; i < response[2].length; i++) {
+                    var option_tag = document.createElement("option")
+                    option_tag.innerHTML = response[3][i][0]
+                    option_tag.value = response[3][i][0]
+                    type_list.appendChild(option_tag)
+                }
+
+
+
+
+
+            } else {
+                console.log("Error in network request: " + req.statusText);
+            }
+        });
+        req.send(JSON.stringify(info_request));
+        event.preventDefault();
+
+
+
+
+    });
+
+    document.getElementById("model-list-input").addEventListener("change", function () {
+
+        var trim_list = document.getElementById("trim-list");
+        document.getElementById("trim-list-input").value = ''
+
+        var req = new XMLHttpRequest();
+        var info_request = {}
+        info_request.request_type = "inventory_trim_pull"
+        info_request.make = document.getElementById("make-list-input").value
+        info_request.model = document.getElementById("model-list-input").value
+        console.log(info_request)
+
+        req.open('POST', '/info_check', true);
+        req.setRequestHeader('Content-Type', 'application/json');
+        req.addEventListener('load', function () {
+            if (req.status >= 200 && req.status < 400) {
+                var response = JSON.parse(req.responseText);
+                console.log(response)
+                console.log("Trim Request Success!")
+
+
+                trim_list.innerHTML = ''
+                for (i = 0; i < response.length; i++) {
+                    var option_tag = document.createElement("option")
+                    option_tag.innerHTML = response[i]
+                    option_tag.value = response[i]
+                    trim_list.appendChild(option_tag)
+                }
+
+
+
+            } else {
+                console.log("Error in network request: " + req.statusText);
+            }
+        });
+        req.send(JSON.stringify(info_request));
+        event.preventDefault();
+
+
+
+
+    });
+
+
+
+
+    function check_customer_id() {
+        var customerid = document.getElementById("add-test_drive-customerid").value;
+        var customer_name = document.getElementById("add-test_drive-customer-name");
+
+        if (customerid != "") {
+            console.log(customerid)
+
+
+            var req = new XMLHttpRequest();
+            var customer_request = {}
+            customer_request.request_type = "customer_check"
+            customer_request.dw_customer_id = customerid
+            console.log(customer_request)
+
+            req.open('POST', '/info_check', true);
+            req.setRequestHeader('Content-Type', 'application/json');
+            req.addEventListener('load', function () {
+                if (req.status >= 200 && req.status < 400) {
+                    var response = JSON.parse(req.responseText);
+                    console.log(response)
+                    console.log("Customer Info Request Success!")
+
+                    if (response == "-1") {
+                        customer_name.textContent = "No customer Information."
+                    } else {
+                        customer_name.textContent = "Customer ID exists - Customer Name:" + response[2] + ", " + response[1] + "(SSN: " + response[10] + ")"
+                    }
+
+
+
+                } else {
+                    console.log("Error in network request: " + req.statusText);
+                }
+            });
+            req.send(JSON.stringify(customer_request));
+            event.preventDefault();
+
+
+
+        }
+
+    }
+
+
+
+    function check_vin() {
+        var vin = document.getElementById("add-test_drive-vin").value;
+        var vin_description = document.getElementById("add-test_drive-veh-description");
+
+
+        if (vin != "") {
+            console.log(vin)
+
+
+            var req = new XMLHttpRequest();
+            var sales_request = {}
+            sales_request.request_type = "vehicle_check"
+            sales_request.vin = vin
+            console.log(sales_request)
+
+            req.open('POST', '/info_check', true);
+            req.setRequestHeader('Content-Type', 'application/json');
+            req.addEventListener('load', function () {
+                if (req.status >= 200 && req.status < 400) {
+                    var response = JSON.parse(req.responseText);
+                    console.log(response)
+                    console.log("Vehicle Info Request Success!")
+                    if (response == "-1") {
+                        vin_description.textContent = "No vehicle information"
+                    } else {
+                        vin_description.textContent = response[1] + "-" + response[2] + "-" + response[3] + "-" + response[4] + "-" + response[5] + "-" + response[6]
+                    }
+
+                } else {
+                    console.log("Error in network request: " + req.statusText);
+                }
+            });
+            req.send(JSON.stringify(sales_request));
+            event.preventDefault();
+
+
+
+        }
+
+    }
+
+
+
+
+
+
+
+    function edit_check_customer_id() {
+        var customerid = document.getElementById("edit-test_drive-customerid").value;
+        var customer_name = document.getElementById("edit-test_drive-customer-name");
+
+        if (customerid != "") {
+            console.log(customerid)
+
+
+            var req = new XMLHttpRequest();
+            var customer_request = {}
+            customer_request.request_type = "customer_check"
+            customer_request.dw_customer_id = customerid
+            console.log(customer_request)
+
+            req.open('POST', '/info_check', true);
+            req.setRequestHeader('Content-Type', 'application/json');
+            req.addEventListener('load', function () {
+                if (req.status >= 200 && req.status < 400) {
+                    var response = JSON.parse(req.responseText);
+                    console.log(response)
+                    console.log("Customer Info Request Success!")
+
+                    if (response == "-1") {
+                        customer_name.textContent = "No customer Information."
+                    } else {
+                        customer_name.textContent = "Customer ID exists - Customer Name:" + response[2] + ", " + response[1] + "(SSN: " + response[10] + ")"
+                    }
+
+
+
+                } else {
+                    console.log("Error in network request: " + req.statusText);
+                }
+            });
+            req.send(JSON.stringify(customer_request));
+            event.preventDefault();
+
+
+
+        }
+
+    }
+
+
+
+    function edit_check_vin() {
+        var vin = document.getElementById("edit-test_drive-vin").value;
+        var vin_description = document.getElementById("edit-test_drive-veh-description");
+
+
+        if (vin != "") {
+            console.log(vin)
+
+
+            var req = new XMLHttpRequest();
+            var sales_request = {}
+            sales_request.request_type = "vehicle_check"
+            sales_request.vin = vin
+            console.log(sales_request)
+
+            req.open('POST', '/info_check', true);
+            req.setRequestHeader('Content-Type', 'application/json');
+            req.addEventListener('load', function () {
+                if (req.status >= 200 && req.status < 400) {
+                    var response = JSON.parse(req.responseText);
+                    console.log(response)
+                    console.log("Vehicle Info Request Success!")
+                    if (response == "-1") {
+                        vin_description.textContent = "No vehicle information"
+                    } else {
+                        vin_description.textContent = response[1] + "-" + response[2] + "-" + response[3] + "-" + response[4] + "-" + response[5] + "-" + response[6]
+                    }
+
+                } else {
+                    console.log("Error in network request: " + req.statusText);
+                }
+            });
+            req.send(JSON.stringify(sales_request));
+            event.preventDefault();
+
+
+
+        }
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     var edit_modal = document.getElementById("edit_modal");
     var edit_span = document.getElementById("edit-close");
     var add_modal = document.getElementsByClassName("add_modal")[0];

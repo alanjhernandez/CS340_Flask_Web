@@ -4,7 +4,7 @@ virtualenv venv -p $(which python3)
 source ./venv/bin/activate
 pip3 install --upgrade pip
 pip install -r requirements.txt
-
+gunicorn run:app -b 0.0.0.0:7694 -D 
 
 
 source ./venv/bin/activate

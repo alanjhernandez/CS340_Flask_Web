@@ -17,42 +17,96 @@ Vehicle Inventory
         <legend>Vehicle Information</legend>
 
         <table>
+
+
+
+
             <tr>
-                <td><label for="make">Vehicle Make</label></td>
-                <td><input type="radio" name="make" value="Honda" checked>Honda</input></td>
-                <td><input type="radio" name="make" value="Toyota">Toyota</input></td>
+                <td><label for="vin">VIN</label></td>
+                <td colspan="5"><input type="text" name="vin" id="read-vin"></input>
+                </td>
             </tr>
 
             <tr>
+                <td><label for="make">Vehicle Make</label></td>
+
+                <td colspan="3">
+                    <input list="make-list" id="make-list-input" name="make"></input>
+                    <datalist id="make-list">
+                    </datalist>
+                </td>
+
+            </tr>
+
+
+
+            <tr>
+                <td><label for="type">Vehicle Type</label></td>
+
+                <td colspan="3">
+                    <input list="type-list" id="type-list-input" name="type"></input>
+                    <datalist id="type-list">
+                    </datalist>
+                </td>
+
+            </tr>
+
+
+            <tr>
                 <td><label for="model">Vehicle Model</label></td>
-                <td colspan="3"><input type="text" name="model"></td>
+                <td colspan="3">
+                    <input list="model-list" id="model-list-input" name="model"></input>
+                    <datalist id="model-list">
+                    </datalist>
+                </td>
             </tr>
 
             <tr>
                 <td><label for="year">Vehicle Year</label></td>
-                <td><input type="radio" name="year" value="2016">2016</input></td>
-                <td><input type="radio" name="year" value="2017">2017</input></td>
-                <td><input type="radio" name="year" value="2018">2018</input></td>
-                <td><input type="radio" name="year" value="2019">2019</input></td>
-                <td><input type="radio" name="year" value="2020">2020</input></td>
-                <input type="hidden" name="year" value=""></input>
+                <td colspan="3">
+                    <input list="year-list" id="year-list-input" name="year"></input>
+                    <datalist id="year-list">
+                    </datalist>
+                </td>
             </tr>
 
             <tr>
                 <td><label for="color">Vehicle Colour</label></td>
-                <td><input type="radio" name="color" value="Black">Black</input></td>
-                <td><input type="radio" name="color" value="Blue">Blue</input></td>
-                <td><input type="radio" name="color" value="Silver">Silver</input></td>
-                <input type="hidden" name="color" value=""></input>
+                <td colspan="3">
+                    <input list="color-list" id="color-list-input" name="color"></input>
+                    <datalist id="color-list">
+                    </datalist>
+                </td>
             </tr>
 
             <tr>
                 <td><label for="trim">Vehicle Trim</label></td>
-                <td colspan="3"><input type="text" name="trim"></td>
+                <td colspan="3">
+                    <input list="trim-list" id="trim-list-input" name="trim"></input>
+                    <datalist id="trim-list">
+                    </datalist>
+                </td>
             </tr>
 
 
+            <tr>
+                <td><label for="used">Used/New</label></td>
+                <td><input type="radio" name="used" value="1" checked>Used</input></td>
+                <td><input type="radio" name="used" value="0">New</input></td>
+            </tr>
 
+
+            <tr>
+                <td>
+                    Store Location
+                </td>
+                <td colspan="3">
+                    <input list="store-list" id="store-list-input" name="store"></input>
+                    <datalist id="store-list">
+                    </datalist>
+                </td>
+
+            </tr>
 
         </table>
         <input type="hidden" name="request_type" value="new_search">
@@ -70,7 +124,7 @@ Vehicle Inventory
 
     <!-- Modal content -->
     <div class="modal-content">
-        <span class="close">&times;</span>
+        <span class="close" id="add-close">&times;</span>
         <form action="#" method="post">
             <fieldset>
                 <legend>New Vehicle Information</legend>
@@ -83,77 +137,84 @@ Vehicle Inventory
                     </tr>
 
                     <tr>
-                        <td><label for="type">Vehicle Type</label></td>
-                        <td><input type="radio" name="type" value="SUV" id="add-type-suv" checked>SUV</input></td>
-                        <td><input type="radio" name="type" value="SEDAN" id="add-type-sedan">Sedan</input></td>
-                        <td><input type="radio" name="type" value="Truck" id="add-type-truck">Truck</input></td>
+                        <td><label for="make">Vehicle Make</label></td>
+
+                        <td colspan="3">
+                            <input list="make-list-add" id="make-list-input-add" name="make"></input>
+                            <datalist id="make-list-add">
+                            </datalist>
+                        </td>
+
                     </tr>
 
+
+
                     <tr>
-                        <td><label for="make">Vehicle Make</label></td>
-                        <td><input type="radio" name="make" value="Honda" id="add-make-honda" checked>Honda</input></td>
-                        <td><input type="radio" name="make" value="Toyota" id="add-make-toyota">Toyota</input>
+                        <td><label for="type">Vehicle Type</label></td>
+
+                        <td colspan="3">
+                            <input list="type-list-add" id="type-list-input-add" name="type"></input>
+                            <datalist id="type-list-add">
+                            </datalist>
                         </td>
+
                     </tr>
 
 
                     <tr>
                         <td><label for="model">Vehicle Model</label></td>
-                        <td colspan="5"><input type="text" name="model" id="add-model" required></td>
+                        <td colspan="3">
+                            <input list="model-list-add" id="model-list-input-add" name="model"></input>
+                            <datalist id="model-list-add">
+                            </datalist>
+                        </td>
                     </tr>
 
                     <tr>
                         <td><label for="year">Vehicle Year</label></td>
-                        <td><input type="radio" name="year" value="2016" id="add-year-2016" checked>2016</input></td>
-                        <td><input type="radio" name="year" value="2017" id="add-year-2017">2017</input></td>
-                        <td><input type="radio" name="year" value="2018" id="add-year-2018">2018</input></td>
-                        <td><input type="radio" name="year" value="2019" id="add-year-2019">2019</input></td>
-                        <td><input type="radio" name="year" value="2020" id="add-year-2020">2020</input></td>
+                        <td colspan="3">
+                            <input list="year-list-add" id="year-list-input-add" name="year"></input>
+                            <datalist id="year-list-add">
+                            </datalist>
+                        </td>
                     </tr>
 
                     <tr>
                         <td><label for="color">Vehicle Colour</label></td>
-                        <td><input type="radio" name="color" value="Black" id="add-color-black" checked>Black</input>
-                        </td>
-                        <td><input type="radio" name="color" value="Blue" id="add-color-blue">Blue</input></td>
-                        <td><input type="radio" name="color" value="Silver" id="add-color-silver">Silver</input>
+                        <td colspan="3">
+                            <input list="color-list-add" id="color-list-input-add" name="color"></input>
+                            <datalist id="color-list-add">
+                            </datalist>
                         </td>
                     </tr>
 
                     <tr>
                         <td><label for="trim">Vehicle Trim</label></td>
-                        <td colspan="5"><input type="text" name="trim" id="add-trim" required></td>
-                    </tr>
-
-                    <tr>
-                        <td><label for="used">Used</label></td>
-                        <td><input type="radio" name="used" value="1" id="add-used-1">Used</input></td>
-                        <td><input type="radio" name="used" value="0" id="add-used-0" checked> New</input></td>
-                    </tr>
-
-                    <tr>
-                        <td><label for="store">Store Location</label></td>
-                        <td colspan="5"><input list="add_store_location" name="store" id="add-store" required>
-                            <datalist id="add_store_location">
-                                <option value="Portland">
-                                <option value="Salem">
-                                <option value="Eugene">
-                                <option value="Gresham">
-                                <option value="Hillsboro">
-                                <option value="Beaverton">
-                                <option value="Bend">
-                                <option value="Medford">
-                                <option value="Springfield">
-                                <option value="Corvallis">
-                                <option value="Aloha">
-                                <option value="Albany">
-                                <option value="Tigard">
-                                <option value="Lake Oswego">
-                                <option value="Keizer">
+                        <td colspan="3">
+                            <input list="trim-list-add" id="trim-list-input-add" name="trim"></input>
+                            <datalist id="trim-list-add">
                             </datalist>
-
-
                         </td>
+                    </tr>
+
+
+                    <tr>
+                        <td><label for="used">Used/New</label></td>
+                        <td><input type="radio" name="used" value="1" checked>Used</input></td>
+                        <td><input type="radio" name="used" value="0">New</input></td>
+                    </tr>
+
+
+                    <tr>
+                        <td>
+                            Store Location
+                        </td>
+                        <td colspan="3">
+                            <input list="store-list-add" id="store-list-input-add" name="store"></input>
+                            <datalist id="store-list-add">
+                            </datalist>
+                        </td>
+
                     </tr>
 
 
@@ -168,18 +229,6 @@ Vehicle Inventory
     </div>
 
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -223,7 +272,9 @@ Vehicle Inventory
                 <td>{{i[9]}}</td>
                 <td>{{i[10]}}</td>
                 <td><button onclick="delete_inventory('{{i[0]}}');">Delete</button></td>
-                <td><button onclick="update_inventory('{{i[0]}}');">Edit</button></td>
+                <td><button
+                        onclick="update_inventory('{{i[0]}}', '{{i[1]}}', '{{i[2]}}', '{{i[3]}}', '{{i[4]}}', '{{i[5]}}','{{i[6]}}','{{i[7]}}','{{i[8]}}','{{i[9]}}','{{i[10]}}');">Edit</button>
+                </td>
                 <td><button onclick="test_drive_review('{{i[0]}}');">Record</button></td>
             </tr>
             {% endfor %}
@@ -261,7 +312,7 @@ Vehicle Inventory
 
     <!-- Modal content -->
     <div class="modal-content">
-        <span class="close">&times;</span>
+        <span class="close" id="testdrive-close">&times;</span>
         <h2 id="testdrive_title"></h2>
         <div id="testdrive_record"></div>
     </div>
@@ -273,94 +324,107 @@ Vehicle Inventory
 
     <!-- Modal content -->
     <div class="modal-content">
-        <span class="close">&times;</span>
+        <span class="close" id="update-close">&times;</span>
         <form action="#" method="post">
             <fieldset>
                 <legend>Vehicle Information Update</legend>
 
                 <table>
+
                     <tr>
                         <td><label for="vin">VIN</label></td>
-                        <td colspan="5"><input type="text" name="vin" id="update-vin"></input></td>
+                        <td colspan="5"><input type="text" name="vin" id="update-vin" required minlength=17
+                                maxlength=17></input></td>
                     </tr>
-
-                    <tr>
-                        <td><label for="type">Vehicle Type</label></td>
-                        <td><input type="radio" name="type" value="SUV" id="update-type-suv">SUV</input></td>
-                        <td><input type="radio" name="type" value="SEDAN" id="update-type-sedan">Sedan</input></td>
-                        <td><input type="radio" name="type" value="Truck" id="update-type-truck">Truck</input></td>
-                    </tr>
-
 
                     <tr>
                         <td><label for="make">Vehicle Make</label></td>
-                        <td><input type="radio" name="make" value="Honda" id="update-make-honda">Honda</input></td>
-                        <td><input type="radio" name="make" value="Toyota" id="update-make-toyota">Toyota</input>
+
+                        <td colspan="3">
+                            <input list="make-list-update" id="make-list-input-update" name="make"></input>
+                            <datalist id="make-list-update">
+                            </datalist>
                         </td>
+
                     </tr>
 
+
+
+                    <tr>
+                        <td><label for="type">Vehicle Type</label></td>
+
+                        <td colspan="3">
+                            <input list="type-list-update" id="type-list-input-update" name="type"></input>
+                            <datalist id="type-list-update">
+                            </datalist>
+                        </td>
+
+                    </tr>
 
 
                     <tr>
                         <td><label for="model">Vehicle Model</label></td>
-                        <td colspan="5"><input type="text" name="model" id="update-model"></td>
+                        <td colspan="3">
+                            <input list="model-list-update" id="model-list-input-update" name="model"></input>
+                            <datalist id="model-list-update">
+                            </datalist>
+                        </td>
                     </tr>
 
                     <tr>
                         <td><label for="year">Vehicle Year</label></td>
-                        <td><input type="radio" name="year" value="2016" id="update-year-2016">2016</input></td>
-                        <td><input type="radio" name="year" value="2017" id="update-year-2017">2017</input></td>
-                        <td><input type="radio" name="year" value="2018" id="update-year-2018">2018</input></td>
-                        <td><input type="radio" name="year" value="2019" id="update-year-2019">2019</input></td>
-                        <td><input type="radio" name="year" value="2020" id="update-year-2020">2020</input></td>
+                        <td colspan="3">
+                            <input list="year-list-update" id="year-list-input-update" name="year"></input>
+                            <datalist id="year-list-update">
+                            </datalist>
+                        </td>
                     </tr>
 
                     <tr>
                         <td><label for="color">Vehicle Colour</label></td>
-                        <td><input type="radio" name="color" value="Black" id="update-color-black">Black</input>
-                        </td>
-                        <td><input type="radio" name="color" value="Blue" id="update-color-blue">Blue</input></td>
-                        <td><input type="radio" name="color" value="Silver" id="update-color-silver">Silver</input>
+                        <td colspan="3">
+                            <input list="color-list-update" id="color-list-input-update" name="color"></input>
+                            <datalist id="color-list-update">
+                            </datalist>
                         </td>
                     </tr>
 
                     <tr>
                         <td><label for="trim">Vehicle Trim</label></td>
-                        <td colspan="5"><input type="text" name="trim" id="update-trim"></td>
+                        <td colspan="3">
+                            <input list="trim-list-update" id="trim-list-input-update" name="trim"></input>
+                            <datalist id="trim-list-update">
+                            </datalist>
+                        </td>
                     </tr>
 
-                    <tr>
-                        <td><label for="used">Used</label></td>
-                        <td><input type="radio" name="used" value="1" id="update-used-1">Used</input></td>
-                        <td><input type="radio" name="used" value="0" id="update-used-0">New</input></td>
-                    </tr>
 
                     <tr>
-                        <td><label for="store">Store Location</label></td>
-                        <td colspan="5"><input list="update_store_location" name="store" id="update-store"></td>
-                        <datalist id="update_store_location">
-                            <option value="Portland">
-                            <option value="Salem">
-                            <option value="Eugene">
-                            <option value="Gresham">
-                            <option value="Hillsboro">
-                            <option value="Beaverton">
-                            <option value="Bend">
-                            <option value="Medford">
-                            <option value="Springfield">
-                            <option value="Corvallis">
-                            <option value="Aloha">
-                            <option value="Albany">
-                            <option value="Tigard">
-                            <option value="Lake Oswego">
-                            <option value="Keizer">
-                        </datalist>
+                        <td><label for="used">Used/New</label></td>
+                        <td><input type="radio" name="used" id="update-used-1" value="1" checked>Used</input>
+                        </td>
+                        <td><input type="radio" name="used" id="update-used-0" value="0">New</input></td>
                     </tr>
 
+
                     <tr>
-                        <td><label for="parking">Parking Location</label></td>
-                        <td colspan="5"><input type="text" name="parking" id="update-parking"></td>
+                        <td>
+                            Store Location
+                        </td>
+                        <td colspan="3">
+                            <input list="store-list-update" id="store-list-input-update" name="store"></input>
+                            <datalist id="store-list-update">
+                            </datalist>
+                        </td>
+
                     </tr>
+
+
+                    <tr>
+                        <td>Parking Location</td>
+                        <td colspan="5"><input type="text" name="parking" id="update-parking" required></input></td>
+                    </tr>
+
 
 
 
@@ -386,9 +450,550 @@ Vehicle Inventory
 
 <script>
 
+    window.addEventListener('load', (event) => {
+        pull_make()
+        pull_store()
+
+    });
+
+
+
+
+
+    function pull_store() {
+        var store_list = document.getElementById("store-list");
+        var add_store_list = document.getElementById("store-list-add");
+        var update_store_list = document.getElementById("store-list-update");
+
+
+        var req = new XMLHttpRequest();
+        var store_request = {}
+        store_request.request_type = "inventory_store_pull"
+        console.log(store_request)
+
+        req.open('POST', '/info_check', true);
+        req.setRequestHeader('Content-Type', 'application/json');
+        req.addEventListener('load', function () {
+            if (req.status >= 200 && req.status < 400) {
+                var response = JSON.parse(req.responseText);
+                console.log(response)
+                console.log("Store Request Success!")
+                store_list.innerHTML = ''
+                add_store_list.innerHTML = ''
+                update_store_list.innerHTML = ''
+
+
+                for (i = 0; i < response.length; i++) {
+                    console.log(i)
+                    var option_tag = document.createElement("option")
+                    option_tag.innerHTML = response[i]
+                    option_tag.value = response[i]
+                    store_list.appendChild(option_tag)
+
+                    var option_tag = document.createElement("option")
+                    option_tag.innerHTML = response[i]
+                    option_tag.value = response[i]
+                    add_store_list.appendChild(option_tag)
+
+                    var option_tag = document.createElement("option")
+                    option_tag.innerHTML = response[i]
+                    option_tag.value = response[i]
+                    update_store_list.appendChild(option_tag)
+
+                }
+
+
+
+            } else {
+                console.log("Error in network request: " + req.statusText);
+            }
+        });
+        req.send(JSON.stringify(store_request));
+        event.preventDefault();
+
+
+    }
+
+
+
+
+    function pull_make() {
+        var make_list = document.getElementById("make-list");
+        var make_list_add = document.getElementById("make-list-add");
+        var make_list_update = document.getElementById("make-list-update");
+
+        var req = new XMLHttpRequest();
+        var make_request = {}
+        make_request.request_type = "inventory_make_pull"
+        console.log(make_request)
+
+        req.open('POST', '/info_check', true);
+        req.setRequestHeader('Content-Type', 'application/json');
+        req.addEventListener('load', function () {
+            if (req.status >= 200 && req.status < 400) {
+                var response = JSON.parse(req.responseText);
+                console.log(response)
+
+                for (i = 0; i < response.length; i++) {
+                    console.log(i)
+                    var option_tag = document.createElement("option")
+                    option_tag.innerHTML = response[i]
+                    option_tag.value = response[i]
+                    make_list.appendChild(option_tag)
+
+
+                    var option_tag = document.createElement("option")
+                    option_tag.innerHTML = response[i]
+                    option_tag.value = response[i]
+                    make_list_add.appendChild(option_tag)
+
+
+
+                    var option_tag = document.createElement("option")
+                    option_tag.innerHTML = response[i]
+                    option_tag.value = response[i]
+                    make_list_update.appendChild(option_tag)
+
+                }
+
+
+
+
+            } else {
+                console.log("Error in network request: " + req.statusText);
+            }
+        });
+        req.send(JSON.stringify(make_request));
+        event.preventDefault();
+
+
+    }
+
+
+
+    document.getElementById("make-list-input").addEventListener("change", function () {
+
+
+        var model_list = document.getElementById("model-list");
+        document.getElementById("model-list-input").value = ''
+
+        var year_list = document.getElementById("year-list");
+        document.getElementById("year-list-input").value = ''
+
+        var color_list = document.getElementById("color-list");
+        document.getElementById("color-list-input").value = ''
+
+        var type_list = document.getElementById("type-list");
+        document.getElementById("type-list-input").value = ''
+
+        document.getElementById("trim-list-input").value = ''
+
+        var req = new XMLHttpRequest();
+        var info_request = {}
+        info_request.request_type = "inventory_info_pull"
+        info_request.make = document.getElementById("make-list-input").value
+        console.log(info_request)
+
+        req.open('POST', '/info_check', true);
+        req.setRequestHeader('Content-Type', 'application/json');
+        req.addEventListener('load', function () {
+            if (req.status >= 200 && req.status < 400) {
+                var response = JSON.parse(req.responseText);
+                console.log(response)
+                console.log("Make Request Success!")
+
+                model_list.innerHTML = ''
+                for (i = 0; i < response[0].length; i++) {
+                    var option_tag = document.createElement("option")
+                    option_tag.innerHTML = response[0][i][0]
+                    option_tag.value = response[0][i][0]
+                    model_list.appendChild(option_tag)
+
+                }
+
+
+                year_list.innerHTML = ''
+                for (i = 0; i < response[1].length; i++) {
+                    var option_tag = document.createElement("option")
+                    option_tag.innerHTML = response[1][i][0]
+                    option_tag.value = response[1][i][0]
+                    year_list.appendChild(option_tag)
+                }
+
+
+
+                color_list.innerHTML = ''
+                for (i = 0; i < response[2].length; i++) {
+                    var option_tag = document.createElement("option")
+                    option_tag.innerHTML = response[2][i][0]
+                    option_tag.value = response[2][i][0]
+                    color_list.appendChild(option_tag)
+                }
+
+
+
+                type_list.innerHTML = ''
+                for (i = 0; i < response[2].length; i++) {
+                    var option_tag = document.createElement("option")
+                    option_tag.innerHTML = response[3][i][0]
+                    option_tag.value = response[3][i][0]
+                    type_list.appendChild(option_tag)
+                }
+
+
+
+
+
+            } else {
+                console.log("Error in network request: " + req.statusText);
+            }
+        });
+        req.send(JSON.stringify(info_request));
+        event.preventDefault();
+
+
+
+
+    });
+
+    document.getElementById("model-list-input").addEventListener("change", function () {
+
+        var trim_list = document.getElementById("trim-list");
+        document.getElementById("trim-list-input").value = ''
+
+        var req = new XMLHttpRequest();
+        var info_request = {}
+        info_request.request_type = "inventory_trim_pull"
+        info_request.make = document.getElementById("make-list-input").value
+        info_request.model = document.getElementById("model-list-input").value
+        console.log(info_request)
+
+        req.open('POST', '/info_check', true);
+        req.setRequestHeader('Content-Type', 'application/json');
+        req.addEventListener('load', function () {
+            if (req.status >= 200 && req.status < 400) {
+                var response = JSON.parse(req.responseText);
+                console.log(response)
+                console.log("Trim Request Success!")
+
+
+                trim_list.innerHTML = ''
+                for (i = 0; i < response.length; i++) {
+                    var option_tag = document.createElement("option")
+                    option_tag.innerHTML = response[i]
+                    option_tag.value = response[i]
+                    trim_list.appendChild(option_tag)
+                }
+
+
+
+            } else {
+                console.log("Error in network request: " + req.statusText);
+            }
+        });
+        req.send(JSON.stringify(info_request));
+        event.preventDefault();
+
+
+
+
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    document.getElementById("make-list-input-add").addEventListener("change", function () {
+
+
+        var model_list = document.getElementById("model-list-add");
+        document.getElementById("model-list-input-add").value = ''
+
+        var year_list = document.getElementById("year-list-add");
+        document.getElementById("year-list-input-add").value = ''
+
+        var color_list = document.getElementById("color-list-add");
+        document.getElementById("color-list-input-add").value = ''
+
+        var type_list = document.getElementById("type-list-add");
+        document.getElementById("type-list-input-add").value = ''
+
+        document.getElementById("trim-list-input-add").value = ''
+
+        var req = new XMLHttpRequest();
+        var info_request = {}
+        info_request.request_type = "inventory_info_pull"
+        info_request.make = document.getElementById("make-list-input-add").value
+        console.log(info_request)
+
+        req.open('POST', '/info_check', true);
+        req.setRequestHeader('Content-Type', 'application/json');
+        req.addEventListener('load', function () {
+            if (req.status >= 200 && req.status < 400) {
+                var response = JSON.parse(req.responseText);
+                console.log(response)
+                console.log("Make Request Success!")
+
+                model_list.innerHTML = ''
+                for (i = 0; i < response[0].length; i++) {
+                    var option_tag = document.createElement("option")
+                    option_tag.innerHTML = response[0][i][0]
+                    option_tag.value = response[0][i][0]
+                    model_list.appendChild(option_tag)
+
+                }
+
+
+                year_list.innerHTML = ''
+                for (i = 0; i < response[1].length; i++) {
+                    var option_tag = document.createElement("option")
+                    option_tag.innerHTML = response[1][i][0]
+                    option_tag.value = response[1][i][0]
+                    year_list.appendChild(option_tag)
+                }
+
+
+
+                color_list.innerHTML = ''
+                for (i = 0; i < response[2].length; i++) {
+                    var option_tag = document.createElement("option")
+                    option_tag.innerHTML = response[2][i][0]
+                    option_tag.value = response[2][i][0]
+                    color_list.appendChild(option_tag)
+                }
+
+
+                type_list.innerHTML = ''
+                for (i = 0; i < response[2].length; i++) {
+                    var option_tag = document.createElement("option")
+                    option_tag.innerHTML = response[3][i][0]
+                    option_tag.value = response[3][i][0]
+                    type_list.appendChild(option_tag)
+                }
+
+
+            } else {
+                console.log("Error in network request: " + req.statusText);
+            }
+        });
+        req.send(JSON.stringify(info_request));
+        event.preventDefault();
+
+
+
+
+    });
+
+
+
+
+    document.getElementById("model-list-input-add").addEventListener("change", function () {
+
+        var trim_list = document.getElementById("trim-list-add");
+        document.getElementById("trim-list-input-add").value = ''
+
+        var req = new XMLHttpRequest();
+        var info_request = {}
+        info_request.request_type = "inventory_trim_pull"
+        info_request.make = document.getElementById("make-list-input-add").value
+        info_request.model = document.getElementById("model-list-input-add").value
+        console.log(info_request)
+
+        req.open('POST', '/info_check', true);
+        req.setRequestHeader('Content-Type', 'application/json');
+        req.addEventListener('load', function () {
+            if (req.status >= 200 && req.status < 400) {
+                var response = JSON.parse(req.responseText);
+                console.log(response)
+                console.log("Trim Request Success!")
+
+
+                trim_list.innerHTML = ''
+                for (i = 0; i < response.length; i++) {
+                    var option_tag = document.createElement("option")
+                    option_tag.innerHTML = response[i]
+                    option_tag.value = response[i]
+                    trim_list.appendChild(option_tag)
+                }
+
+
+
+            } else {
+                console.log("Error in network request: " + req.statusText);
+            }
+        });
+        req.send(JSON.stringify(info_request));
+        event.preventDefault();
+
+
+
+
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    document.getElementById("make-list-input-update").addEventListener("change", function () {
+
+
+
+        var model_list = document.getElementById("model-list-update");
+        document.getElementById("model-list-input-update").value = ''
+
+        var year_list = document.getElementById("year-list-update");
+        document.getElementById("year-list-input-update").value = ''
+
+        var color_list = document.getElementById("color-list-update");
+        document.getElementById("color-list-input-update").value = ''
+
+
+        var type_list = document.getElementById("type-list-update");
+        document.getElementById("type-list-input-update").value = ''
+
+        document.getElementById("trim-list-input-update").value = ''
+
+        var req = new XMLHttpRequest();
+        var info_request = {}
+        info_request.request_type = "inventory_info_pull"
+        info_request.make = document.getElementById("make-list-input-update").value
+        console.log(info_request)
+
+        req.open('POST', '/info_check', true);
+        req.setRequestHeader('Content-Type', 'application/json');
+        req.addEventListener('load', function () {
+            if (req.status >= 200 && req.status < 400) {
+                var response = JSON.parse(req.responseText);
+                console.log(response)
+                console.log("Make Request Success!")
+
+                model_list.innerHTML = ''
+                for (i = 0; i < response[0].length; i++) {
+                    var option_tag = document.createElement("option")
+                    option_tag.innerHTML = response[0][i][0]
+                    option_tag.value = response[0][i][0]
+                    model_list.appendChild(option_tag)
+
+                }
+
+
+                year_list.innerHTML = ''
+                for (i = 0; i < response[1].length; i++) {
+                    var option_tag = document.createElement("option")
+                    option_tag.innerHTML = response[1][i][0]
+                    option_tag.value = response[1][i][0]
+                    year_list.appendChild(option_tag)
+                }
+
+
+
+                color_list.innerHTML = ''
+                for (i = 0; i < response[2].length; i++) {
+                    var option_tag = document.createElement("option")
+                    option_tag.innerHTML = response[2][i][0]
+                    option_tag.value = response[2][i][0]
+                    color_list.appendChild(option_tag)
+                }
+
+                type_list.innerHTML = ''
+                for (i = 0; i < response[3].length; i++) {
+                    var option_tag = document.createElement("option")
+                    option_tag.innerHTML = response[3][i][0]
+                    option_tag.value = response[3][i][0]
+                    type_list.appendChild(option_tag)
+                }
+
+
+
+            } else {
+                console.log("Error in network request: " + req.statusText);
+            }
+        });
+        req.send(JSON.stringify(info_request));
+        event.preventDefault();
+
+
+
+
+    });
+
+
+
+
+    document.getElementById("model-list-input-update").addEventListener("change", function () {
+
+        var trim_list = document.getElementById("trim-list-update");
+        document.getElementById("trim-list-input-update").value = ''
+
+        var req = new XMLHttpRequest();
+        var info_request = {}
+        info_request.request_type = "inventory_trim_pull"
+        info_request.make = document.getElementById("make-list-input-update").value
+        info_request.model = document.getElementById("model-list-input-update").value
+        console.log(info_request)
+
+        req.open('POST', '/info_check', true);
+        req.setRequestHeader('Content-Type', 'application/json');
+        req.addEventListener('load', function () {
+            if (req.status >= 200 && req.status < 400) {
+                var response = JSON.parse(req.responseText);
+                console.log(response)
+                console.log("Trim Request Success!")
+
+
+                trim_list.innerHTML = ''
+                for (i = 0; i < response.length; i++) {
+                    var option_tag = document.createElement("option")
+                    option_tag.innerHTML = response[i]
+                    option_tag.value = response[i]
+                    trim_list.appendChild(option_tag)
+                }
+
+
+
+            } else {
+                console.log("Error in network request: " + req.statusText);
+            }
+        });
+        req.send(JSON.stringify(info_request));
+        event.preventDefault();
+
+
+
+
+    });
+
+
+
+
+
+
+
+
+
+
+
+
     var status_msg = document.getElementById("status-msg");
-
-
 
     function delete_inventory(vin) {
 
@@ -420,11 +1025,11 @@ Vehicle Inventory
     }
 
     var add_modal = document.getElementById("add_modal");
-    var add_span = document.getElementsByClassName("close")[0];
+    var add_span = document.getElementById("add-close");
     var testdrive_modal = document.getElementById("testdrive_modal");
-    var testdrive_span = document.getElementsByClassName("close")[1];
+    var testdrive_span = document.getElementById("testdrive-close");
     var update_modal = document.getElementById("update_modal");
-    var update_span = document.getElementsByClassName("close")[2];
+    var update_span = document.getElementById("update-close");
 
     console.log(add_span)
 
@@ -433,106 +1038,74 @@ Vehicle Inventory
 
     }
 
+
+
     add_span.onclick = function () {
         add_modal.style.display = "none";
     }
 
 
+
+    testdrive_span.onclick = function () {
+        testdrive_modal.style.display = "none";
+    }
+
+    update_span.onclick = function () {
+        update_modal.style.display = "none";
+    }
+
+
+
+
     window.onclick = function (event) {
+        if (event.target == testdrive_modal) {
+            testdrive_modal.style.display = "none";
+        }
+
+        if (event.target == update_modal) {
+            update_modal.style.display = "none";
+        }
 
         if (event.target == add_modal) {
             add_modal.style.display = "none";
         }
 
+
+
     }
 
 
 
 
 
-
-
-    function update_inventory(vin) {
+    function update_inventory(vin, type, make, model, year, color, trim, price, used, store, parking) {
 
         update_modal.style.display = "block";
         console.log(vin);
 
-        var req = new XMLHttpRequest();
-        var update_request = {}
-        update_request.request_type = "update_read"
-        update_request.vin = vin
-        update_request.page = "{{ current_page }}"
-        console.log(update_request)
-
-        req.open('POST', '/vehinventory', true);
-        req.setRequestHeader('Content-Type', 'application/json');
-        req.addEventListener('load', function () {
-            if (req.status >= 200 && req.status < 400) {
-                var response = JSON.parse(req.responseText);
-                console.log("Update Read Request Success!")
-
-                document.getElementById("update-vin").value = response.vin
-                document.getElementById("update-orig-vin").value = response.vin
-
-                if (response.type == "SEDAN") {
-                    document.getElementById("update-type-sedan").checked = true
-                } else if (response.type == "Truck") {
-                    document.getElementById("update-type-truck").checked = true
-                } else if (response.type == "SUV") {
-                    document.getElementById("update-type-suv").checked = true
-                }
-
-                if (response.make == "HONDA") {
-                    document.getElementById("update-make-honda").checked = true
-                } else if (response.make == "Toyota") {
-                    document.getElementById("update-make-toyota").checked = true
-                }
-
-                document.getElementById("update-model").value = response.model
-
-                if (response.year == "2016") {
-                    document.getElementById("update-year-2016").checked = true
-                } else if (response.year == "2017") {
-                    document.getElementById("update-year-2017").checked = true
-                } else if (response.year == "2018") {
-                    document.getElementById("update-year-2018").checked = true
-                } else if (response.year == "2019") {
-                    document.getElementById("update-year-2019").checked = true
-                } else if (response.year == "2020") {
-                    document.getElementById("update-year-2020").checked = true
-                }
-
-                if (response.color == "Black") {
-                    document.getElementById("update-color-black").checked = true
-                } else if (response.color == "Blue") {
-                    document.getElementById("update-color-blue").checked = true
-                } else if (response.color == "Silver") {
-                    document.getElementById("update-color-silver").checked = true
-                }
-
-                document.getElementById("update-trim").value = response.trim
+        document.getElementById("update-vin").value = vin
+        document.getElementById("update-orig-vin").value = vin
 
 
-                if (response.used == "New") {
-                    document.getElementById("update-used-0").checked = true
-                } else if (response.used == "Used") {
-                    document.getElementById("update-used-1").checked = true
-                }
+        document.getElementById('make-list-input-update').value = make
+        document.getElementById('type-list-input-update').value = type
+        document.getElementById('model-list-input-update').value = model
+        document.getElementById('year-list-input-update').value = year
+        document.getElementById('color-list-input-update').value = color
+        document.getElementById('trim-list-input-update').value = trim
 
-                document.getElementById("update-store").value = response.store_location
-                document.getElementById("update-parking").value = response.parking_location
+        if (used == "New") {
+            document.getElementById("update-used-0").checked = true
+        } else if (used == "Used") {
+            document.getElementById("update-used-1").checked = true
+        }
 
-                console.log(response.type)
-                console.log(response.make)
-
-            } else {
-                console.log("Error in network request: " + req.statusText);
-            }
-        });
-        req.send(JSON.stringify(update_request));
-        event.preventDefault();
-
+        document.getElementById('store-list-input-update').value = store
+        document.getElementById('update-parking').value = parking
     }
+
+
+
 
 
     function test_drive_review(vin) {
@@ -636,29 +1209,6 @@ Vehicle Inventory
 
     }
 
-    testdrive_span.onclick = function () {
-        testdrive_modal.style.display = "none";
-    }
-
-    update_span.onclick = function () {
-        update_modal.style.display = "none";
-    }
-
-
-
-
-    window.onclick = function (event) {
-        if (event.target == testdrive_modal) {
-            testdrive_modal.style.display = "none";
-        }
-
-        if (event.target == update_modal) {
-            update_modal.style.display = "none";
-        }
-
-
-
-    }
 
 
 
