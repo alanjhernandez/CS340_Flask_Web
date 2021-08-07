@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title%}
-Test Drive Record
+Quality Auto Sales - Test Drive Record
 {% endblock %}
 
 {% block style%}
@@ -113,13 +113,8 @@ Test Drive Record
 <p><button onclick="add_new_test_drive();">New Record</button></p>
 
 {% if content is defined %}
-<style>
-    th {
-        border-bottom: 1px solid black;
-    } 
-</style>
-<div>
-    <table style="border: 1px solid black;">
+<div id="result-table">
+    <table>
         <thead>
             <tr>
                 <th>Test Drive ID</th>
@@ -162,7 +157,15 @@ Test Drive Record
                 <td>{{i[12]}}</td>
                 <td>{{i[13]}}</td>
                 <td>{{i[14]}}</td>
-                <td><button onclick="delete_test_drive('{{i[0]}}');">Delete</button></td>
+                <td>
+                    <form action="#" method="POST" style="margin: 0 auto;display: inline;">
+                        <input type="hidden" name="page" value={{current_page}}>
+                        <input type="hidden" name="request_type" value="test_drive_delete">
+                        <input type="hidden" name="dw_test_drive_id" value='{{i[0]}}'>
+                        <input type="submit" value="Delete">
+                    </form>
+                </td>
+
                 <td><button
                         onclick="edit_test_drive('{{i[0]}}','{{i[5]}}','{{i[1]}}','{{i[2]}}','{{i[3]}}','{{i[4]}}');">Edit</button>
                 </td>
@@ -177,7 +180,7 @@ Test Drive Record
         {% endif %}
     </table>
 
-
+    <br>
     <div class="page_button" style="margin: 0 auto; display:inline;">
         <form action="#" method="POST" style="margin: 0 auto;display: inline;">
             <input type="hidden" name="page" value={{prev_page}}>
@@ -214,7 +217,7 @@ Test Drive Record
 
                     <tr>
                         <td>Test Drive ID </td>
-                        <td colspan="2"><input type="number" name="dw_test_drive_id" readonly
+                        <td colspan="2"><input type="number" name="dw_test_drive_id" readonly required
                                 id="edit-test_drive-test_drive_id"></input></td>
 
 
@@ -238,19 +241,21 @@ Test Drive Record
 
                     <tr>
                         <td>Test Drive Date</td>
-                        <td colspan="2"> <input type="date" id="edit-test_drive-drive_date" name="test_drive_date"></td>
+                        <td colspan="2"> <input type="date" id="edit-test_drive-drive_date" name="test_drive_date"
+                                required></td>
 
                     </tr>
 
                     <tr>
                         <td>Check Out Time</td>
-                        <td colspan="2"> <input type="datetime" id="edit-test_drive-checkout_time"
-                                name="check_out_time"></td>
+                        <td colspan="2"> <input type="datetime" id="edit-test_drive-checkout_time" name="check_out_time"
+                                required></td>
 
                     </tr>
                     <tr>
                         <td>Return Time</td>
-                        <td colspan="2"> <input type="datetime" id="edit-test_drive-return_time" name="return_time">
+                        <td colspan="2"> <input type="datetime" id="edit-test_drive-return_time" name="return_time"
+                                required>
                         </td>
 
                     </tr>
@@ -348,9 +353,13 @@ Test Drive Record
     </div>
 </div>
 
-{% if status_msg is defined%}
-{{status_msg}}
-{% endif %}
+
+<p>
+    {% if status_msg is defined%}
+    {{status_msg}}
+    {% endif %}
+</p>
+
 
 <script>
 
@@ -746,8 +755,6 @@ Test Drive Record
     var add_modal = document.getElementsByClassName("add_modal")[0];
     var add_span = document.getElementById("add-close");
 
-    console.log(add_modal)
-
 
     function add_new_test_drive() {
         add_modal.style.display = "block";
@@ -786,34 +793,7 @@ Test Drive Record
     }
 
 
-    function delete_test_drive(dw_test_drive_id) {
 
-        console.log("{{ current_page }}")
-        var req = new XMLHttpRequest();
-        var test_drive_request = {}
-        test_drive_request.request_type = "test_drive_delete"
-        test_drive_request.dw_test_drive_id = dw_test_drive_id
-        test_drive_request.page = "{{ current_page }}"
-        console.log(test_drive_request)
-
-        req.open('POST', '/testdrive', true);
-        req.setRequestHeader('Content-Type', 'application/json');
-        req.addEventListener('load', function () {
-            if (req.status >= 200 && req.status < 400) {
-                console.log("Delete Request Success!")
-
-                location.reload();
-
-
-            } else {
-                console.log("Error in network request: " + req.statusText);
-            }
-        });
-        req.send(JSON.stringify(test_drive_request));
-        event.preventDefault();
-
-
-    }
 
 </script>
 

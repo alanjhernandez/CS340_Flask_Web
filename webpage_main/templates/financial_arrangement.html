@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title%}
-Financial Arrangement
+Quality Auto Sales - inancial Arrangement
 {% endblock %}
 
 {% block style%}
@@ -17,14 +17,15 @@ Financial Arrangement
 
             <tr>
                 <td>Interest rate</td>
-                <td id="fincl_int_rate"><input type="number" name="fincl_int_rate" step="0.001"></td>
+                <td id="fincl_int_rate"><input type="number" name="fincl_int_rate" step="0.001" required></td>
 
             </tr>
 
             <tr>
 
                 <td>Number of Payment</td>
-                <td id="fincl_num_of_payment"><input type="number" name="fincl_num_of_payment"></td>
+                <td id="fincl_num_of_payment"><input type="number" name="fincl_num_of_payment" required step="1" min=0>
+                </td>
             </tr>
 
 
@@ -35,16 +36,11 @@ Financial Arrangement
     </fieldset>
 </form>
 
-
+<br>
 
 {% if content is defined%}
-<style>
-    th {
-        border-bottom: 1px solid black;
-    } 
-</style>
-<div>
-    <table style="border: 1px solid black;">
+<div id="result-table">
+    <table>
         <thead>
             <tr>
                 <th>Financial Arrangement ID</th>
@@ -64,7 +60,15 @@ Financial Arrangement
                 <td>{{i[1]}}</td>
                 <td>{{i[2]}}</td>
 
-                <td><button onclick="delete_fincl_option('{{i[0]}}');">Delete</button></td>
+                <td>
+                    <form action="#" method="POST" style="margin: 0 auto;display: inline;">
+                        <input type="hidden" name="page" value={{current_page}}>
+                        <input type="hidden" name="request_type" value="fincl_option_delete">
+                        <input type="hidden" name="dw_fincl_option_id" value='{{i[0]}}'>
+                        <input type="submit" value="Delete">
+                    </form>
+                </td>
+
                 <td><button onclick="edit_sales('{{i[0]}}','{{i[1]}}','{{i[2]}}','{{i[3]}}');">Edit</button>
                 </td>
             </tr>
@@ -72,7 +76,7 @@ Financial Arrangement
         </tbody>
         {% endif %}
     </table>
-
+    <br>
     <div class="page_button" style="margin: 0 auto; display:inline;">
         <form action="#" method="POST" style="margin: 0 auto;display: inline;">
             <input type="hidden" name="page" value={{prev_page}}>
@@ -109,17 +113,18 @@ Financial Arrangement
 
                     <tr>
                         <td>Financial Arrangement ID: </td>
-                        <td><input type="number" name="dw_fincl_option_id" id="fincl-id-update" readonly></td>
+                        <td><input type="number" name="dw_fincl_option_id" id="fincl-id-update" readonly required></td>
                     </tr>
 
                     <tr>
                         <td>Interest Rate:</td>
-                        <td><input type="number" name="int_rate" id="fincl-int-rate-update" step="0.001"></td>
+                        <td><input type="number" name="int_rate" id="fincl-int-rate-update" step="0.001" required></td>
                     </tr>
 
                     <tr>
                         <td>Number of Payment</td>
-                        <td><input type="number" name="num_of_payment" id="fincl-num-of-payment-update"></td>
+                        <td><input type="number" name="num_of_payment" id="fincl-num-of-payment-update" required
+                                step="1" min=0></td>
                     </tr>
 
 
@@ -176,31 +181,6 @@ Financial Arrangement
     }
 
 
-    function delete_fincl_option(dw_fincl_option_id) {
-
-        var req = new XMLHttpRequest();
-        var fincl_request = {}
-        fincl_request.request_type = "fincl_option_delete"
-        fincl_request.dw_fincl_option_id = dw_fincl_option_id
-        fincl_request.page = "{{ current_page }}"
-        console.log(fincl_request)
-
-        req.open('POST', '/financial_arrangement', true);
-        req.setRequestHeader('Content-Type', 'application/json');
-        req.addEventListener('load', function () {
-            if (req.status >= 200 && req.status < 400) {
-                console.log("Delete Request Success!")
-
-                location.reload();
-
-            } else {
-                console.log("Error in network request: " + req.statusText);
-            }
-        });
-        req.send(JSON.stringify(fincl_request));
-        event.preventDefault();
-
-    }
 
 </script>
 

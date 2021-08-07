@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title%}
-Vehicle Type
+Quality Auto Sales - Vehicle Types
 {% endblock %}
 
 {% block style%}
@@ -16,7 +16,7 @@ Vehicle Type
         <table>
 
             <tr>
-                <td>Vehicle Type ID </td>
+                <td>Vehicle Type ID</td>
                 <td id="vehicle-type-id"><input type="text" name="dw_vehicle_type_id"></td>
             </tr>
 
@@ -89,18 +89,12 @@ Vehicle Type
 
 
 
-
-<br>
-<button onclick="add_vehicle_type();">New Record</button>
-
+<p>
+    <button onclick="add_vehicle_type();">New Record</button>
+</p>
 {% if content is defined%}
-<style>
-    th {
-        border-bottom: 1px solid black;
-    } 
-</style>
-<div>
-    <table class="results" style="border: 1px solid black;">
+<div id="result-table">
+    <table>
         <thead>
             <tr>
                 <th>Vehicle Type ID</th>
@@ -117,7 +111,7 @@ Vehicle Type
             </tr>
         </thead>
         {% if content is defined %}
-        <tbody>
+        <tbody id="content-table">
             {% for i in content %}
             <tr>
                 <td>{{i[0]}}</td>
@@ -128,7 +122,14 @@ Vehicle Type
                 <td>{{i[5]}}</td>
                 <td>{{i[6]}}</td>
                 <td>{{i[7]}}</td>
-                <td><button onclick="delete_vehicle_type('{{i[0]}}');">Delete</button></td>
+                <td>
+                    <form action="#" method="POST" style="margin: 0 auto;display: inline;">
+                        <input type="hidden" name="page" value={{current_page}}>
+                        <input type="hidden" name="request_type" value="vehicle_type_delete">
+                        <input type="hidden" name="dw_vehicle_type_id" value='{{i[0]}}'>
+                        <input type="submit" value="Delete">
+                    </form>
+                </td>
                 <td><button
                         onclick="edit_vehicle_type('{{i[0]}}','{{i[1]}}','{{i[2]}}','{{i[3]}}','{{i[4]}}','{{i[5]}}','{{i[6]}}','{{i[7]}}');">Edit</button>
                 </td>
@@ -138,6 +139,7 @@ Vehicle Type
         {% endif %}
     </table>
 
+    <br>
     <div class="page_button" style="margin: 0 auto; display:inline;">
         <form action="#" method="POST" style="margin: 0 auto;display: inline;">
             <input type="hidden" name="page" value={{prev_page}}>
@@ -174,7 +176,8 @@ Vehicle Type
 
                     <tr>
                         <td>Vehicle Type ID </td>
-                        <td><input type="text" name="dw_vehicle_type_id" readonly id="vehicle-type-id-edit"></td>
+                        <td><input type="text" name="dw_vehicle_type_id" readonly id="vehicle-type-id-edit" required>
+                        </td>
                     </tr>
 
                     <tr>
@@ -221,7 +224,8 @@ Vehicle Type
 
                     <tr>
                         <td>Vehicle Price </td>
-                        <td><input type="integer" name="vehicle_price" id="vehicle-price-edit"></td>
+                        <td><input type="number" name="vehicle_price" id="vehicle-price-edit" step=0.0000001 required>
+                        </td>
                     </tr>
 
 
@@ -250,8 +254,8 @@ Vehicle Type
                 <table>
 
                     <tr>
-                        <td>Vehicle Type ID </td>
-                        <td><input type="text" name="dw_vehicle_type_id" readonly id="vehicle-type-id-add">
+                        <td>Vehicle Type ID (Auto-Generated) </td>
+                        <td><input type="text" name="dw_vehicle_type_id" readonly id="vehicle-type-id-add" required>
                         </td>
                     </tr>
 
@@ -307,7 +311,7 @@ Vehicle Type
 
                     <tr>
                         <td>Vehicle Price </td>
-                        <td id="vehicle-price"><input type="integer" name="vehicle_price"></td>
+                        <td id="vehicle-price"><input type="number" name="vehicle_price" required step=0.0000001></td>
                     </tr>
 
 
@@ -324,10 +328,12 @@ Vehicle Type
 </div>
 
 
-{% if status_msg is defined%}
-{{status_msg}}
-{% endif %}
 
+<p id="status_msg">
+    {% if status_msg is defined%}
+    {{status_msg}}
+    {% endif %}
+</p>
 
 
 
@@ -634,35 +640,6 @@ Vehicle Type
         document.getElementById("vehicle-trim-edit").value = vehicle_trim
         document.getElementById("vehicle-price-edit").value = vehicle_price
         document.getElementById("old_vehicle_type_update").value = dw_vehicle_type_id
-    }
-
-
-
-    function delete_vehicle_type(dw_vehicle_type_id) {
-
-        console.log("{{ current_page }}")
-        var req = new XMLHttpRequest();
-        var vehicle_type_request = {}
-        vehicle_type_request.request_type = "vehicle_type_delete"
-        vehicle_type_request.dw_vehicle_type_id = dw_vehicle_type_id
-        vehicle_type_request.page = "{{ current_page }}"
-        console.log(vehicle_type_request)
-
-        req.open('POST', '/vehicle_type', true);
-        req.setRequestHeader('Content-Type', 'application/json');
-        req.addEventListener('load', function () {
-            if (req.status >= 200 && req.status < 400) {
-                console.log("Delete Request Success!")
-
-                location.reload();
-
-            } else {
-                console.log("Error in network request: " + req.statusText);
-            }
-        });
-        req.send(JSON.stringify(vehicle_type_request));
-        event.preventDefault();
-
     }
 
 

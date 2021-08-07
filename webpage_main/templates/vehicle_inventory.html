@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title%}
-Vehicle Inventory
+Quality Auto Sales - Vehicle Inventory
 {% endblock %}
 
 {% block style%}
@@ -140,7 +140,7 @@ Vehicle Inventory
                         <td><label for="make">Vehicle Make</label></td>
 
                         <td colspan="3">
-                            <input list="make-list-add" id="make-list-input-add" name="make"></input>
+                            <input list="make-list-add" id="make-list-input-add" name="make" required></input>
                             <datalist id="make-list-add">
                             </datalist>
                         </td>
@@ -153,7 +153,7 @@ Vehicle Inventory
                         <td><label for="type">Vehicle Type</label></td>
 
                         <td colspan="3">
-                            <input list="type-list-add" id="type-list-input-add" name="type"></input>
+                            <input list="type-list-add" id="type-list-input-add" name="type" required></input>
                             <datalist id="type-list-add">
                             </datalist>
                         </td>
@@ -164,7 +164,7 @@ Vehicle Inventory
                     <tr>
                         <td><label for="model">Vehicle Model</label></td>
                         <td colspan="3">
-                            <input list="model-list-add" id="model-list-input-add" name="model"></input>
+                            <input list="model-list-add" id="model-list-input-add" name="model" required></input>
                             <datalist id="model-list-add">
                             </datalist>
                         </td>
@@ -173,7 +173,7 @@ Vehicle Inventory
                     <tr>
                         <td><label for="year">Vehicle Year</label></td>
                         <td colspan="3">
-                            <input list="year-list-add" id="year-list-input-add" name="year"></input>
+                            <input list="year-list-add" id="year-list-input-add" name="year" required></input>
                             <datalist id="year-list-add">
                             </datalist>
                         </td>
@@ -182,7 +182,7 @@ Vehicle Inventory
                     <tr>
                         <td><label for="color">Vehicle Colour</label></td>
                         <td colspan="3">
-                            <input list="color-list-add" id="color-list-input-add" name="color"></input>
+                            <input list="color-list-add" id="color-list-input-add" name="color" required></input>
                             <datalist id="color-list-add">
                             </datalist>
                         </td>
@@ -191,7 +191,7 @@ Vehicle Inventory
                     <tr>
                         <td><label for="trim">Vehicle Trim</label></td>
                         <td colspan="3">
-                            <input list="trim-list-add" id="trim-list-input-add" name="trim"></input>
+                            <input list="trim-list-add" id="trim-list-input-add" name="trim" required></input>
                             <datalist id="trim-list-add">
                             </datalist>
                         </td>
@@ -210,7 +210,7 @@ Vehicle Inventory
                             Store Location
                         </td>
                         <td colspan="3">
-                            <input list="store-list-add" id="store-list-input-add" name="store"></input>
+                            <input list="store-list-add" id="store-list-input-add" name="store" required></input>
                             <datalist id="store-list-add">
                             </datalist>
                         </td>
@@ -235,13 +235,8 @@ Vehicle Inventory
 
 <br>
 {% if prev_page is defined %}
-<style>
-    th {
-        border-bottom: 1px solid black;
-    } 
-</style>
-<div class="content-table">
-    <table style="border: 1px solid black;">
+<div class="content-table" id="result-table">
+    <table>
         <thead>
             <tr>
                 <th>VIN</th>
@@ -276,7 +271,15 @@ Vehicle Inventory
                 <td>{{i[8]}}</td>
                 <td>{{i[9]}}</td>
                 <td>{{i[10]}}</td>
-                <td><button onclick="delete_inventory('{{i[0]}}');">Delete</button></td>
+                <td>
+                    <form action="#" method="POST" style="margin: 0 auto;display: inline;">
+                        <input type="hidden" name="page" value={{current_page}}>
+                        <input type="hidden" name="request_type" value="delete">
+                        <input type="hidden" name="vin" value='{{i[0]}}'>
+                        <input type="submit" value="Delete">
+                    </form>
+                </td>
+
                 <td><button
                         onclick="update_inventory('{{i[0]}}', '{{i[1]}}', '{{i[2]}}', '{{i[3]}}', '{{i[4]}}', '{{i[5]}}','{{i[6]}}','{{i[7]}}','{{i[8]}}','{{i[9]}}','{{i[10]}}');">Edit</button>
                 </td>
@@ -287,6 +290,7 @@ Vehicle Inventory
         {% endif %}
     </table>
 
+    <br>
     <div class="page_button" style="margin: 0 auto; display:inline;">
         <form action="#" method="POST" style="margin: 0 auto;display: inline;">
             <input type="hidden" name="page" value={{prev_page}}>
@@ -346,7 +350,7 @@ Vehicle Inventory
                         <td><label for="make">Vehicle Make</label></td>
 
                         <td colspan="3">
-                            <input list="make-list-update" id="make-list-input-update" name="make"></input>
+                            <input list="make-list-update" id="make-list-input-update" name="make" required></input>
                             <datalist id="make-list-update">
                             </datalist>
                         </td>
@@ -359,7 +363,7 @@ Vehicle Inventory
                         <td><label for="type">Vehicle Type</label></td>
 
                         <td colspan="3">
-                            <input list="type-list-update" id="type-list-input-update" name="type"></input>
+                            <input list="type-list-update" id="type-list-input-update" name="type" required></input>
                             <datalist id="type-list-update">
                             </datalist>
                         </td>
@@ -370,7 +374,7 @@ Vehicle Inventory
                     <tr>
                         <td><label for="model">Vehicle Model</label></td>
                         <td colspan="3">
-                            <input list="model-list-update" id="model-list-input-update" name="model"></input>
+                            <input list="model-list-update" id="model-list-input-update" name="model" required></input>
                             <datalist id="model-list-update">
                             </datalist>
                         </td>
@@ -379,7 +383,7 @@ Vehicle Inventory
                     <tr>
                         <td><label for="year">Vehicle Year</label></td>
                         <td colspan="3">
-                            <input list="year-list-update" id="year-list-input-update" name="year"></input>
+                            <input list="year-list-update" id="year-list-input-update" name="year" required></input>
                             <datalist id="year-list-update">
                             </datalist>
                         </td>
@@ -388,7 +392,7 @@ Vehicle Inventory
                     <tr>
                         <td><label for="color">Vehicle Colour</label></td>
                         <td colspan="3">
-                            <input list="color-list-update" id="color-list-input-update" name="color"></input>
+                            <input list="color-list-update" id="color-list-input-update" name="color" required></input>
                             <datalist id="color-list-update">
                             </datalist>
                         </td>
@@ -397,7 +401,7 @@ Vehicle Inventory
                     <tr>
                         <td><label for="trim">Vehicle Trim</label></td>
                         <td colspan="3">
-                            <input list="trim-list-update" id="trim-list-input-update" name="trim"></input>
+                            <input list="trim-list-update" id="trim-list-input-update" name="trim" required></input>
                             <datalist id="trim-list-update">
                             </datalist>
                         </td>
@@ -417,7 +421,7 @@ Vehicle Inventory
                             Store Location
                         </td>
                         <td colspan="3">
-                            <input list="store-list-update" id="store-list-input-update" name="store"></input>
+                            <input list="store-list-update" id="store-list-input-update" name="store" required></input>
                             <datalist id="store-list-update">
                             </datalist>
                         </td>
@@ -447,10 +451,14 @@ Vehicle Inventory
 </div>
 
 
+<p>
 
-{% if status_msg is defined %}
-<p id="status-msg">{{status_msg}}</p>
-{% endif %}
+    {% if status_msg is defined %}
+    {{status_msg}}
+    {% endif %}
+
+
+</p>
 
 
 <script>
@@ -987,47 +995,6 @@ Vehicle Inventory
 
     });
 
-
-
-
-
-
-
-
-
-
-
-
-    var status_msg = document.getElementById("status-msg");
-
-    function delete_inventory(vin) {
-
-        console.log("{{ current_page }}")
-        var req = new XMLHttpRequest();
-        var testdrive_request = {}
-        testdrive_request.request_type = "delete"
-        testdrive_request.vin = vin
-        testdrive_request.page = "{{ current_page }}"
-        console.log(testdrive_request)
-
-        req.open('POST', '/vehinventory', true);
-        req.setRequestHeader('Content-Type', 'application/json');
-        req.addEventListener('load', function () {
-            if (req.status >= 200 && req.status < 400) {
-                console.log("Delete Request Success!")
-
-                location.reload();
-
-
-            } else {
-                console.log("Error in network request: " + req.statusText);
-            }
-        });
-        req.send(JSON.stringify(testdrive_request));
-        event.preventDefault();
-
-
-    }
 
     var add_modal = document.getElementById("add_modal");
     var add_span = document.getElementById("add-close");

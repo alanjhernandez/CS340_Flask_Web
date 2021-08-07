@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title%}
-Sales Record
+Quality Auto Sales - Sales
 {% endblock %}
 
 {% block style%}
@@ -18,9 +18,15 @@ Sales Record
 
 
             <tr>
+                <td><label for="dw_invoice_id">Invoice ID</label></td>
+                <td colspan="3"><input type="text" name="dw_invoice_id"></td>
+
                 <td><label for="vin">VIN</label></td>
                 <td colspan="3"><input type="text" name="vin"></td>
             </tr>
+
+
+
 
             <tr>
                 <td><label for="make">Vehicle Make</label></td>
@@ -31,11 +37,6 @@ Sales Record
                     </datalist>
                 </td>
 
-            </tr>
-
-
-
-            <tr>
                 <td><label for="type">Vehicle Type</label></td>
 
                 <td colspan="3">
@@ -44,7 +45,11 @@ Sales Record
                     </datalist>
                 </td>
 
+
             </tr>
+
+
+
 
 
             <tr>
@@ -54,9 +59,7 @@ Sales Record
                     <datalist id="model-list">
                     </datalist>
                 </td>
-            </tr>
 
-            <tr>
                 <td><label for="year">Vehicle Year</label></td>
                 <td colspan="3">
                     <input list="year-list" id="year-list-input" name="year"></input>
@@ -65,6 +68,9 @@ Sales Record
                 </td>
             </tr>
 
+
+
+
             <tr>
                 <td><label for="color">Vehicle Colour</label></td>
                 <td colspan="3">
@@ -72,9 +78,7 @@ Sales Record
                     <datalist id="color-list">
                     </datalist>
                 </td>
-            </tr>
 
-            <tr>
                 <td><label for="trim">Vehicle Trim</label></td>
                 <td colspan="3">
                     <input list="trim-list" id="trim-list-input" name="trim"></input>
@@ -84,11 +88,13 @@ Sales Record
             </tr>
 
 
+
+
+
             <tr>
                 <td><label for="customer_fname">Customer First Name</label></td>
                 <td colspan="3"><input type="text" name="customer_fname"></td>
-            </tr>
-            <tr>
+
                 <td><label for="customer_lname">Customer Last Name</label></td>
                 <td colspan="3"><input type="text" name="customer_lname"></td>
             </tr>
@@ -97,9 +103,7 @@ Sales Record
             <tr>
                 <td><label for="sales_fname">Sales First Name</label></td>
                 <td colspan="3"><input type="text" name="sales_fname"></td>
-            </tr>
 
-            <tr>
                 <td><label for="sales_lname">Sales Last Name</label></td>
                 <td colspan="3"><input type="text" name="sales_lname"></td>
             </tr>
@@ -116,93 +120,112 @@ Sales Record
 
 <p><button onclick="add_new_sales();">New Record</button></p>
 
-{% if prev_page is defined %}
-<style>
-    th {
-        border-bottom: 1px solid black;
-    } 
-</style>
-<table style="border: 1px solid black;">
-    <thead>
-        <tr>
-            <th>Invoice</th>
-            <th>Purchase Date</th>
-            <th>vin</th>
-            <th>Customer Name</th>
-            <th>Sales Name</th>
-            <th>Type</th>
-            <th>Make</th>
-            <th>Model</th>
-            <th>Year</th>
-            <th>Color</th>
-            <th>Trim</th>
-            <th>Price</th>
-            <th>Down Payment</th>
-            <th>Monthly Payment</th>
-            <th>Financial Option</th>
-            <th>Delete</th>
-            <th>Update</th>
-            <th>Payment Schedule</th>
+<div id="result-table">
 
 
-        </tr>
-    </thead>
-    {% if content is defined %}
-    <tbody id="content-table">
-        {% for i in content %}
-        <tr>
-            <td>{{i[0]}}</td>
-            <td>{{i[18]}}</td>
-            <td>{{i[1]}}</td>
-            <td> <button class="person_btn" onclick="check_customer('{{i[16]}}');">{{i[3] + ", " + i[2]}}</button></td>
-            <td> <button class="person_btn" onclick="check_sales('{{i[17]}}');">{{i[5] + ", " + i[4]}}</button></td>
-            <td>{{i[6]}}</td>
-            <td>{{i[7]}}</td>
-            <td>{{i[8]}}</td>
-            <td>{{i[9]}}</td>
-            <td>{{i[10]}}</td>
-            <td>{{i[11]}}</td>
-            <td>{{i[12]}}</td>
-            <td>{{i[13]}}</td>
-            <td>{{i[14]}}</td>
-            <td>{{i[15]}}</td>
-            <td><button onclick="delete_sales('{{i[0]}}','{{i[1]}}');">Delete</button></td>
-            <td><button
-                    onclick="edit_sales('{{i[0]}}','{{i[1]}}','{{i[2]}}','{{i[3]}}','{{i[4]}}','{{i[5]}}','{{i[6]}}','{{i[7]}}','{{i[8]}}','{{i[9]}}','{{i[10]}}','{{i[11]}}','{{i[12]}}','{{i[13]}}','{{i[14]}}','{{i[19]}}','{{i[16]}}','{{i[17]}}','{{i[18]}}');">Edit</button>
-            </td>
-            <td><button onclick="payment_schedule('{{i[0]}}');">Payments</button></td>
 
-        </tr>
-        {% endfor %}
-    </tbody>
-    {% endif %}
-</table>
+    {% if prev_page is defined %}
+    <table>
+        <thead>
+            <tr>
+                <th>Invoice</th>
+                <th>Purchase Date</th>
+                <th>vin</th>
+                <th>Customer Name</th>
+                <th>Sales Name</th>
+                <th>Type</th>
+                <th>Make</th>
+                <th>Model</th>
+                <th>Year</th>
+                <th>Color</th>
+                <th>Trim</th>
+                <th>Price</th>
+                <th>Down Payment</th>
+                <th>Monthly Payment</th>
+                <th>Financial Option</th>
+                <th>Delete</th>
+                <th>Update</th>
+                <th>Payment Schedule</th>
 
 
-<div class="page_button" style="margin: 0 auto; display:inline;">
-    <form action="#" method="POST" style="margin: 0 auto;display: inline;">
-        <input type="hidden" name="page" value={{prev_page}}>
-        <input type="hidden" name="request_type" value="sales_continue_search">
-        <input type="submit" value="Prev">
-    </form>
+            </tr>
+        </thead>
+        {% if content is defined %}
+        <tbody id="content-table">
+            {% for i in content %}
+            <tr>
+                <td>{{i[0]}}</td>
+                <td>{{i[18]}}</td>
+                <td>{{i[1]}}</td>
+                <td> <button class="person_btn" onclick="check_customer('{{i[16]}}');">{{i[3] + ", " + i[2]}}</button>
+                </td>
+                <td> <button class="person_btn" onclick="check_sales('{{i[17]}}');">{{i[5] + ", " + i[4]}}</button></td>
+                <td>{{i[6]}}</td>
+                <td>{{i[7]}}</td>
+                <td>{{i[8]}}</td>
+                <td>{{i[9]}}</td>
+                <td>{{i[10]}}</td>
+                <td>{{i[11]}}</td>
+                <td>{{i[12]}}</td>
+                <td>{{i[13]}}</td>
+                <td>{{i[14]}}</td>
+                <td>{{i[15]}}</td>
 
-    Page {{current_page}}
 
-    <form action="#" method="POST" style="margin: 0 auto;display: inline;">
-        <input type="hidden" name="page" value={{next_page}}>
-        <input type="hidden" name="request_type" value="sales_continue_search">
-        <input type="submit" value="Next">
-    </form>
+                <td>
+                    <form action="#" method="POST" style="margin: 0 auto;display: inline;">
+                        <input type="hidden" name="page" value={{current_page}}>
+                        <input type="hidden" name="request_type" value="sales_delete">
+                        <input type="hidden" name="dw_invoice_id" value='{{i[0]}}'>
+                        <input type="hidden" name="vin" value='{{i[1]}}'>
+                        <input type="submit" value="Delete">
+                    </form>
+                </td>
+
+
+                <td><button
+                        onclick="edit_sales('{{i[0]}}','{{i[1]}}','{{i[2]}}','{{i[3]}}','{{i[4]}}','{{i[5]}}','{{i[6]}}','{{i[7]}}','{{i[8]}}','{{i[9]}}','{{i[10]}}','{{i[11]}}','{{i[12]}}','{{i[13]}}','{{i[14]}}','{{i[19]}}','{{i[16]}}','{{i[17]}}','{{i[18]}}');">Edit</button>
+                </td>
+                <td><button onclick="payment_schedule('{{i[0]}}');">Payments</button></td>
+
+            </tr>
+            {% endfor %}
+        </tbody>
+        {% endif %}
+    </table>
+
+
+    <br>
+    <div class="page_button" style="margin: 0 auto; display:inline;">
+        <form action="#" method="POST" style="margin: 0 auto;display: inline;">
+            <input type="hidden" name="page" value={{prev_page}}>
+            <input type="hidden" name="request_type" value="sales_continue_search">
+            <input type="submit" value="Prev">
+        </form>
+
+        Page {{current_page}}
+
+        <form action="#" method="POST" style="margin: 0 auto;display: inline;">
+            <input type="hidden" name="page" value={{next_page}}>
+            <input type="hidden" name="request_type" value="sales_continue_search">
+            <input type="submit" value="Next">
+        </form>
+    </div>
+    <br>
+
 </div>
-<br>
 
 {% endif %}
 
-{% if status_msg is defined %}
 
-Status: {{status_msg}}
+<p>
+    {% if status_msg is defined %}
 
-{% endif %}
+    {{status_msg}}
+
+    {% endif %}
+
+</p>
 
 
 <div id="customer_modal" class="customer_modal">
@@ -353,7 +376,8 @@ Status: {{status_msg}}
 
                     <tr>
                         <td>Price</td>
-                        <td colspan="2"> <input type="number" id='add-sales-price' name="price" readonly></td>
+                        <td colspan="2"> <input type="number" id='add-sales-price' name="price" readonly required
+                                value=0 step=0.000000000001></td>
 
                     </tr>
 
@@ -369,7 +393,7 @@ Status: {{status_msg}}
                     <tr>
                         <td>Down Payment</td>
                         <td colspan="2"><input type="number" id="add-sales-dp" min=0 onfocusout="check_dp()"
-                                name="down_payment" required></input>
+                                name="down_payment" step=0.000000000001 required></input>
                         </td>
                     </tr>
 
@@ -377,13 +401,13 @@ Status: {{status_msg}}
                     <tr>
                         <td>Monthly Payment</td>
                         <td colspan="2"> <input type="number" id='add-sales-monthly-payment' name="monthly_payment"
-                                readonly></td>
+                                step=0.000000000001 readonly></td>
 
                     </tr>
 
                     <tr>
                         <td>Purchase Date</td>
-                        <td colspan="2"> <input type="date" name="date"></td>
+                        <td colspan="2"> <input type="date" name="date" required></td>
 
                     </tr>
 
@@ -429,7 +453,7 @@ Status: {{status_msg}}
 
                     <tr>
                         <td>Purchase Date</td>
-                        <td colspan="2"> <input type="date" id="edit-purchase-date" name="purchase_date"></td>
+                        <td colspan="2"> <input type="date" id="edit-purchase-date" name="purchase_date" required></td>
 
                     </tr>
 
@@ -459,7 +483,9 @@ Status: {{status_msg}}
 
                     <tr>
                         <td>Price</td>
-                        <td colspan="2"> <input type="number" id='edit-sales-price' name="price"></td>
+                        <td colspan="2"> <input type="number" id='edit-sales-price' name="price" step=0.000000000001
+                                required>
+                        </td>
 
                     </tr>
 
@@ -475,13 +501,14 @@ Status: {{status_msg}}
                     <tr>
                         <td>Down Payment</td>
                         <td colspan="2"><input type="number" id="edit-sales-dp" min=0 name="down_payment"
-                                required></input>
+                                step=0.000000000001 required></input>
                         </td>
                     </tr>
 
                     <tr>
                         <td>Monthly Payment</td>
-                        <td colspan="2"> <input type="number" id='edit-sales-monthly-payment' name="monthly_payment">
+                        <td colspan="2"> <input type="number" id='edit-sales-monthly-payment' step=0.000000000001
+                                name="monthly_payment">
                         </td>
 
                     </tr>
@@ -1321,36 +1348,6 @@ Status: {{status_msg}}
         });
         req.send(JSON.stringify(payment_request));
         event.preventDefault();
-
-    }
-
-    function delete_sales(invoice, vin) {
-
-        console.log("{{ current_page }}")
-        var req = new XMLHttpRequest();
-        var sales_request = {}
-        sales_request.request_type = "sales_delete"
-        sales_request.dw_invoice_id = invoice
-        sales_request.vin = vin
-        sales_request.page = "{{ current_page }}"
-        console.log(sales_request)
-
-        req.open('POST', '/modsales', true);
-        req.setRequestHeader('Content-Type', 'application/json');
-        req.addEventListener('load', function () {
-            if (req.status >= 200 && req.status < 400) {
-                console.log("Delete Request Success!")
-
-                location.reload();
-
-
-            } else {
-                console.log("Error in network request: " + req.statusText);
-            }
-        });
-        req.send(JSON.stringify(sales_request));
-        event.preventDefault();
-
 
     }
 

@@ -85,3 +85,12 @@ img {
     justify-content: space-around;
     display:flex;
 }
+
+
+
+#result-table table, #result-table th, #result-table td {
+  border: 1px solid black;
+  text-align: center;
+  padding-right : 5px;
+  padding-left : 5px;
+}

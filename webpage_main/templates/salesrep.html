@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title%}
-Sales
+Quality Auto Sales - Sales Representatives
 {% endblock %}
 
 {% block style%}
@@ -50,17 +50,12 @@ Sales
     </fieldset>
 </form>
 
-<br>
-<button onclick="add_sales();">New Record</button>
+<p><button onclick="add_sales();">New Record</button></p>
+
 
 {% if content is defined%}
-<style>
-    th {
-        border-bottom: 1px solid black;
-    } 
-</style>
-<div>
-    <table style="border: 1px solid black;">
+<div id="result-table">
+    <table>
         <thead>
             <tr>
                 <th>Sales ID</th>
@@ -82,7 +77,16 @@ Sales
                 <td>{{i[2]}}</td>
                 <td>{{i[3]}}</td>
 
-                <td><button onclick="delete_sales('{{i[0]}}');">Delete</button></td>
+                <td>
+                    <form action="#" method="POST" style="margin: 0 auto;display: inline;">
+                        <input type="hidden" name="page" value={{current_page}}>
+                        <input type="hidden" name="request_type" value="sales_delete">
+                        <input type="hidden" name="dw_sales_rep_id" value='{{i[0]}}'>
+                        <input type="submit" value="Delete">
+                    </form>
+                </td>
+
+
                 <td><button onclick="edit_sales('{{i[0]}}','{{i[1]}}','{{i[2]}}','{{i[3]}}');">Edit</button>
                 </td>
             </tr>
@@ -90,7 +94,7 @@ Sales
         </tbody>
         {% endif %}
     </table>
-
+    <br>
     <div class="page_button" style="margin: 0 auto; display:inline;">
         <form action="#" method="POST" style="margin: 0 auto;display: inline;">
             <input type="hidden" name="page" value={{prev_page}}>
@@ -127,24 +131,25 @@ Sales
 
                     <tr>
                         <td>Sales ID: </td>
-                        <td><input type="number" name="dw_sales_rep_id" id="sales-id-update" readonly></td>
+                        <td><input type="number" name="dw_sales_rep_id" id="sales-id-update" readonly required></td>
                     </tr>
 
                     <tr>
                         <td>First Name:</td>
-                        <td><input type="text" name="sales_first_name" id="sales-first-name-update"></td>
+                        <td><input type="text" name="sales_first_name" id="sales-first-name-update" required></td>
                     </tr>
 
                     <tr>
                         <td>Last Name:</td>
-                        <td><input type="text" name="sales_last_name" id="sales-last-name-update"></td>
+                        <td><input type="text" name="sales_last_name" id="sales-last-name-update" required></td>
                     </tr>
 
 
                     <tr>
                         <td>Primary Location: </td>
                         <td>
-                            <input list="store-list" id="sales-store-location-update" name="store_location"></input>
+                            <input list="store-list" id="sales-store-location-update" name="store_location"
+                                required></input>
                             <datalist id="store-list">
                             </datalist>
                         </td>
@@ -177,18 +182,19 @@ Sales
 
                     <tr>
                         <td>First Name:</td>
-                        <td><input type="text" name="sales_first_name" id="sales-first-name-add"></td>
+                        <td><input type="text" name="sales_first_name" id="sales-first-name-add" required></td>
                     </tr>
 
                     <tr>
                         <td>Last Name:</td>
-                        <td><input type="text" name="sales_last_name" id="sales-last-name-add"></td>
+                        <td><input type="text" name="sales_last_name" id="sales-last-name-add" required></td>
                     </tr>
 
                     <tr>
                         <td>Primary Location: </td>
                         <td>
-                            <input list="store-list" id="sales-store-location-add" name="store_location"></input>
+                            <input list="store-list" id="sales-store-location-add" name="store_location"
+                                required></input>
                             <datalist id="store-list">
                             </datalist>
                         </td>
@@ -208,9 +214,11 @@ Sales
 </div>
 
 
-{% if status_msg is defined%}
-{{status_msg}}
-{% endif %}
+<p>
+    {% if status_msg is defined%}
+    {{status_msg}}
+    {% endif %}
+</p>
 
 
 <script>
@@ -231,10 +239,10 @@ Sales
 
         var req = new XMLHttpRequest();
         var store_request = {}
-        store_request.request_type = "store_pull"
+        store_request.request_type = "inventory_store_pull"
         console.log(store_request)
 
-        req.open('POST', '/salesrep', true);
+        req.open('POST', '/info_check', true);
         req.setRequestHeader('Content-Type', 'application/json');
         req.addEventListener('load', function () {
             if (req.status >= 200 && req.status < 400) {
@@ -309,32 +317,6 @@ Sales
     }
 
 
-    function delete_sales(dw_sales_rep_id) {
-
-        console.log("{{ current_page }}")
-        var req = new XMLHttpRequest();
-        var sales_request = {}
-        sales_request.request_type = "sales_delete"
-        sales_request.dw_sales_rep_id = dw_sales_rep_id
-        sales_request.page = "{{ current_page }}"
-        console.log(sales_request)
-
-        req.open('POST', '/salesrep', true);
-        req.setRequestHeader('Content-Type', 'application/json');
-        req.addEventListener('load', function () {
-            if (req.status >= 200 && req.status < 400) {
-                console.log("Delete Request Success!")
-
-                location.reload();
-
-            } else {
-                console.log("Error in network request: " + req.statusText);
-            }
-        });
-        req.send(JSON.stringify(sales_request));
-        event.preventDefault();
-
-    }
 
 </script>
 

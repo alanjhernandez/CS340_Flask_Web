@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title%}
-Monthly Payment
+Quality Auto Sales - Monthly Payment
 {% endblock %}
 
 {% block style%}
@@ -16,13 +16,19 @@ Monthly Payment
         <table>
 
             <tr>
-                <td>Invoice ID: </td>
-                <td id="payment-invoice-id"><input type="text" name="dw_invoice_id"></td>
+                <td>Invoice ID </td>
+                <td id="payment-invoice-id"><input type="number" name="dw_invoice_id"></td>
             </tr>
 
             <tr>
+                <td>Payment ID </td>
+                <td id="payment-payment-id"><input type="number" name="dw_payment_id"></td>
+            </tr>
+
+
+            <tr>
                 <td>Customer ID </td>
-                <td id="payment-customer-id"><input type="text" name="dw_customer_id"></td>
+                <td id="payment-customer-id"><input type="number" name="dw_customer_id"></td>
             </tr>
 
             <tr>
@@ -49,18 +55,14 @@ Monthly Payment
 </form>
 
 
+<p>
+    <button onclick="add_monthly_payment();">New Record</button>
+</p>
 
-<br>
-<button onclick="add_monthly_payment();">New Record</button>
 
 {% if content is defined%}
-<style>
-    th {
-        border-bottom: 1px solid black;
-    } 
-</style>
-<div>
-    <table style="border: 1px solid black;">
+<div id="result-table">
+    <table>
         <thead>
             <tr>
                 <th>Customer ID</th>
@@ -92,8 +94,15 @@ Monthly Payment
                 <td>{{i[4]}}</td>
                 <td>{{i[5]}}</td>
                 <td>{{i[6]}}</td>
-                <td><button onclick="delete_monthly_payment('{{i[3]}}');">Delete</button>
+                <td>
+                    <form action="#" method="POST" style="margin: 0 auto;display: inline;">
+                        <input type="hidden" name="page" value={{current_page}}>
+                        <input type="hidden" name="request_type" value="monthly_payment_delete">
+                        <input type="hidden" name="dw_payment_id" value='{{i[3]}}'>
+                        <input type="submit" value="Delete">
+                    </form>
                 </td>
+
                 <td><button
                         onclick="edit_monthly_payment('{{i[1]}}','{{i[2]}}','{{i[3]}}','{{i[4]}}','{{i[5]}}','{{i[6]}}');">Edit</button>
                 </td>
@@ -102,7 +111,7 @@ Monthly Payment
         </tbody>
         {% endif %}
     </table>
-
+    <br>
     <div class="page_button" style="margin: 0 auto; display:inline;">
         <form action="#" method="POST" style="margin: 0 auto;display: inline;">
             <input type="hidden" name="page" value={{prev_page}}>
@@ -139,7 +148,8 @@ Monthly Payment
 
                     <tr>
                         <td>Invoice ID</td>
-                        <td><input type="text" name="dw_invoice_id" readonly id="payment-invoice-id-edit"></td>
+                        <td><input type="number" name="dw_invoice_id" readonly id="payment-invoice-id-edit" required>
+                        </td>
                     </tr>
 
                     <tr>
@@ -150,7 +160,7 @@ Monthly Payment
 
                     <tr>
                         <td>Payment ID </td>
-                        <td><input type="text" name="dw_payment_id" id="payment-id-edit" readonly required>
+                        <td><input type="number" name="dw_payment_id" id="payment-id-edit" readonly required>
                         </td>
                     </tr>
 
@@ -199,7 +209,7 @@ Monthly Payment
                         payment is used, please make sure the inputs are accurate.</h4>
                     <tr>
                         <td>Invoice ID </td>
-                        <td><input type="text" name="dw_invoice_id" id="payment-invoice-id-add" required
+                        <td><input type="number" name="dw_invoice_id" id="payment-invoice-id-add" required
                                 onfocusout="generate_invoice_info();">
                         </td>
                         <td id="payment-invoice-id-add-description"></td>
@@ -228,7 +238,7 @@ Monthly Payment
 
                     <tr>
                         <td>Payment Amount</td>
-                        <td><input type="text" name="monthly_payment_amount" id="payment-amount-add" required
+                        <td><input type="number" name="monthly_payment_amount" id="payment-amount-add" required
                                 step=0.000001></td>
 
                     </tr>
@@ -236,7 +246,7 @@ Monthly Payment
 
                     <tr>
                         <td>Current Balance</td>
-                        <td><input type="text" name="current_balance" id="payment-current-balance-add" required
+                        <td><input type="number" name="current_balance" id="payment-current-balance-add" required
                                 step=0.000001>
                             </input> </td>
 
@@ -373,10 +383,14 @@ Monthly Payment
 
 </div>
 
+<p>
 
-{% if status_msg is defined%}
-{{status_msg}}
-{% endif %}
+    {% if status_msg is defined%}
+    {{status_msg}}
+    {% endif %}
+
+</p>
+
 
 
 
@@ -532,33 +546,6 @@ Monthly Payment
 
     }
 
-
-    function delete_monthly_payment(dw_payment_id) {
-
-        console.log("{{ current_page }}")
-        var req = new XMLHttpRequest();
-        var monthly_payment_request = {}
-        monthly_payment_request.request_type = "monthly_payment_delete"
-        monthly_payment_request.dw_payment_id = dw_payment_id
-        monthly_payment_request.page = "{{ current_page }}"
-        console.log(monthly_payment_request)
-
-        req.open('POST', '/monthly_payment', true);
-        req.setRequestHeader('Content-Type', 'application/json');
-        req.addEventListener('load', function () {
-            if (req.status >= 200 && req.status < 400) {
-                console.log("Delete Request Success!")
-
-                location.reload();
-
-            } else {
-                console.log("Error in network request: " + req.statusText);
-            }
-        });
-        req.send(JSON.stringify(monthly_payment_request));
-        event.preventDefault();
-
-    }
 
 
 
