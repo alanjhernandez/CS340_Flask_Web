@@ -713,7 +713,101 @@ def customer():
 
     else:
         if request.method == "GET":
-            return render_template("customer.html")
+
+            if "customer_search" in session:
+                session.pop("customer_search")
+
+            db = connect_to_database()
+            dw_customer_id = ""
+            dob = ""
+            customer_first_name = ""
+            customer_last_name = ""
+            address = ""
+            zip_code = ""
+            city = ""
+            state = "" 
+            phone = ""
+            ssn = ""           
+            
+            query = f"""
+                    SELECT 
+                    dw_customer_id
+                    ,first_name
+                    ,last_name
+                    ,customer_dob
+                    ,address_1
+                    ,address_2
+                    ,zip_code
+                    ,city
+                    ,state
+                    ,tel_number
+                    ,ssn
+                    from Customers_Info
+                    where dw_customer_id like "%%{dw_customer_id}%%"
+                    and first_name like "%%{customer_first_name}%%"
+                    and last_name like "%%{customer_last_name}%%"
+              
+                    and (address_1 like "%%{address}%%" or  address_2 like "%%{address}%%")
+                    and zip_code like "%%{zip_code}%%"
+                    and state like "%%{state}%%"
+                    and city like "%%{city}%%"
+                    and tel_number like "%%{phone}%%"
+                    and ssn like "%%{ssn}%%"
+                    {dob}
+
+                    limit {row_per_page}
+                    """
+
+            results = execute_query(db, query)
+            customer_info_list = [list(r) for r in results.fetchall()]
+
+
+            query = f"""
+                    SELECT count(distinct dw_customer_id) as count
+                    from Customers_Info
+                    where dw_customer_id like "%%{dw_customer_id}%%"
+                    and first_name like "%%{customer_first_name}%%"
+                    and last_name like "%%{customer_last_name}%%"
+           
+                    and (address_1 like "%%{address}%%" or  address_2 like "%%{address}%%")
+                    and zip_code like "%%{zip_code}%%"
+                    and state like "%%{state}%%"
+                    and city like "%%{city}%%"
+                    and tel_number like "%%{phone}%%"
+                    and ssn like "%%{ssn}%%"
+                     {dob}
+                    """
+
+    
+            results = execute_query(db, query)
+            customer_count = [list(r) for r in results.fetchall()]
+           
+
+            session["customer_search"] = {}
+            session["customer_search"]["count"] = customer_count[0][0]
+            session["customer_search"]["key"] = {}
+            session["customer_search"]["key"]["dw_customer_id"] = dw_customer_id
+            session["customer_search"]["key"]["dob"] = dob
+            session["customer_search"]["key"]["customer_first_name"] = customer_first_name
+            session["customer_search"]["key"]["customer_last_name"] = customer_last_name
+            session["customer_search"]["key"]["address"] = address
+            session["customer_search"]["key"]["zip_code"] = zip_code
+            session["customer_search"]["key"]["city"] = city
+            session["customer_search"]["key"]["state"] = state
+            session["customer_search"]["key"]["phone"] = phone
+            session["customer_search"]["key"]["ssn"] = ssn
+
+ 
+
+            if customer_count[0][0] > row_per_page:
+                next_page = 2
+            else:
+                next_page = 1 
+            prev_page = 1
+
+            return render_template("customer.html", content = customer_info_list, prev_page = prev_page, current_page = 1, next_page = next_page)
+
+
 
         elif request.method == "POST" and request.form["request_type"] == "customer_new_search":
 
@@ -1893,7 +1987,6 @@ def vehicle_type():
 
 
 
-
 @app.route("/financial_arrangement", methods = ["POST","GET"])
 def financial_arrangement():
     row_per_page = 15
@@ -2114,9 +2207,6 @@ def financial_arrangement():
             prev_page = 1
 
             return render_template("financial_arrangement.html", content = fincl_arrangement_list, prev_page = prev_page, current_page = 1, next_page = next_page, status_msg = "Update Successful.") 
-
-
-
 
 
 
@@ -2415,9 +2505,6 @@ def info_check():
 
     else:
         return render_template("error404.html") 
-
-
-
 
 
 
@@ -3076,7 +3163,6 @@ def vehicle_inventory():
                 return render_template("vehicle_inventory.html", content = inventory_result, prev_page = prev_page, current_page = page, next_page = next_page, status_msg = status_msg ) 
             else:
                 return render_template("vehicle_inventory.html", status_msg = status_msg ) 
-
 
 
 
