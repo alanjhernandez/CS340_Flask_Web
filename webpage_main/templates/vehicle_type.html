@@ -94,8 +94,13 @@ Vehicle Type
 <button onclick="add_vehicle_type();">New Record</button>
 
 {% if content is defined%}
+<style>
+    th {
+        border-bottom: 1px solid black;
+    } 
+</style>
 <div>
-    <table>
+    <table class="results" style="border: 1px solid black;">
         <thead>
             <tr>
                 <th>Vehicle Type ID</th>
@@ -112,7 +117,7 @@ Vehicle Type
             </tr>
         </thead>
         {% if content is defined %}
-        <tbody id="content-table">
+        <tbody>
             {% for i in content %}
             <tr>
                 <td>{{i[0]}}</td>

@@ -113,8 +113,13 @@ Test Drive Record
 <p><button onclick="add_new_test_drive();">New Record</button></p>
 
 {% if content is defined %}
+<style>
+    th {
+        border-bottom: 1px solid black;
+    } 
+</style>
 <div>
-    <table>
+    <table style="border: 1px solid black;">
         <thead>
             <tr>
                 <th>Test Drive ID</th>

@@ -54,8 +54,13 @@ Sales
 <button onclick="add_sales();">New Record</button>
 
 {% if content is defined%}
+<style>
+    th {
+        border-bottom: 1px solid black;
+    } 
+</style>
 <div>
-    <table>
+    <table style="border: 1px solid black;">
         <thead>
             <tr>
                 <th>Sales ID</th>

@@ -117,7 +117,12 @@ Add/Modify/Search Sales Record
 <p><button onclick="add_new_sales();">New Record</button></p>
 
 {% if prev_page is defined %}
-<table>
+<style>
+    th {
+        border-bottom: 1px solid black;
+    } 
+</style>
+<table style="border: 1px solid black;">
     <thead>
         <tr>
             <th>Invoice</th>
