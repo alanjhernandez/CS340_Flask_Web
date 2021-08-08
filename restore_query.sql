@@ -159,7 +159,7 @@ create table cs340_cheungke.Monthly_Payments(
         REFERENCES Customers_Info(dw_customer_id)
         ON DELETE CASCADE ON UPDATE CASCADE ,
     FOREIGN KEY (dw_invoice_id)
-        REFERENCES Sales_Records(dw_invoice_id)
+        REFERENCES Customers_Salesreps(dw_invoice_id)
         ON DELETE CASCADE ON UPDATE CASCADE 
 );
 

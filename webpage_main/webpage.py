@@ -854,6 +854,29 @@ def customer():
         dw_customer_id = request.form["dw_customer_id"]
 
         query = f"""
+                UPDATE Vehicle_Inventories
+                SET sold_ind = '0'
+                where vin in(
+                select vin
+                from Sales_Records
+                where dw_invoice_id in (
+                select dw_invoice_id
+                from Customers_Salesreps
+                where dw_customer_id = '{dw_customer_id}'))
+
+                """
+        results = execute_query(db, query)
+
+        query = f"""
+                DELETE FROM Sales_Records
+                where dw_invoice_id in (
+                select dw_invoice_id
+                from Customers_Salesreps
+                where dw_customer_id = '{dw_customer_id}')
+                """
+        results = execute_query(db, query)
+
+        query = f"""
                 DELETE from Customers_Info
                 where dw_customer_id = '{dw_customer_id}'
                 """
@@ -930,8 +953,8 @@ def sales():
 
     if request.method == "GET":
 
-        if "sales_search" in session:
-            session.pop("sales_search")
+        if "sales_rep_search" in session:
+            session.pop("sales_rep_search")
 
         db = connect_to_database()
         dw_sales_rep_id = ""
@@ -974,13 +997,13 @@ def sales():
         sales_count = [list(r) for r in results.fetchall()]
         
 
-        session["sales_search"] = {}
-        session["sales_search"]["count"] = sales_count[0][0]
-        session["sales_search"]["key"] = {}
-        session["sales_search"]["key"]["dw_sales_rep_id"] = dw_sales_rep_id
-        session["sales_search"]["key"]["sales_location"] = sales_location
-        session["sales_search"]["key"]["sales_first_name"] = sales_first_name
-        session["sales_search"]["key"]["sales_last_name"] = sales_last_name
+        session["sales_rep_search"] = {}
+        session["sales_rep_search"]["count"] = sales_count[0][0]
+        session["sales_rep_search"]["key"] = {}
+        session["sales_rep_search"]["key"]["dw_sales_rep_id"] = dw_sales_rep_id
+        session["sales_rep_search"]["key"]["sales_location"] = sales_location
+        session["sales_rep_search"]["key"]["sales_first_name"] = sales_first_name
+        session["sales_rep_search"]["key"]["sales_last_name"] = sales_last_name
 
 
 
@@ -1043,13 +1066,13 @@ def sales():
         sales_count = [list(r) for r in results.fetchall()]
         
 
-        session["sales_search"] = {}
-        session["sales_search"]["count"] = sales_count[0][0]
-        session["sales_search"]["key"] = {}
-        session["sales_search"]["key"]["dw_sales_rep_id"] = dw_sales_rep_id
-        session["sales_search"]["key"]["sales_location"] = sales_location
-        session["sales_search"]["key"]["sales_first_name"] = sales_first_name
-        session["sales_search"]["key"]["sales_last_name"] = sales_last_name
+        session["sales_rep_search"] = {}
+        session["sales_rep_search"]["count"] = sales_count[0][0]
+        session["sales_rep_search"]["key"] = {}
+        session["sales_rep_search"]["key"]["dw_sales_rep_id"] = dw_sales_rep_id
+        session["sales_rep_search"]["key"]["sales_location"] = sales_location
+        session["sales_rep_search"]["key"]["sales_first_name"] = sales_first_name
+        session["sales_rep_search"]["key"]["sales_last_name"] = sales_last_name
 
 
 
@@ -1072,10 +1095,10 @@ def sales():
         row_per_page = 15
 
 
-        dw_sales_rep_id = session["sales_search"]["key"]["dw_sales_rep_id"] 
-        sales_location = session["sales_search"]["key"]["sales_location"] 
-        sales_first_name = session["sales_search"]["key"]["sales_first_name"] 
-        sales_last_name = session["sales_search"]["key"]["sales_last_name"] 
+        dw_sales_rep_id = session["sales_rep_search"]["key"]["dw_sales_rep_id"] 
+        sales_location = session["sales_rep_search"]["key"]["sales_location"] 
+        sales_first_name = session["sales_rep_search"]["key"]["sales_first_name"] 
+        sales_last_name = session["sales_rep_search"]["key"]["sales_last_name"] 
 
         page = int(request.form["page"])
         print(page)
@@ -1101,7 +1124,7 @@ def sales():
         sales_info_list = [list(r) for r in results.fetchall()]
 
 
-        if session["sales_search"]["count"]  > (nth_record + row_per_page):
+        if session["sales_rep_search"]["count"]  > (nth_record + row_per_page):
             next_page = page + 1
         else:
             next_page = page
@@ -1133,10 +1156,10 @@ def sales():
         results = execute_query(db, query)
 
 
-        dw_sales_rep_id = session["sales_search"]["key"]["dw_sales_rep_id"] 
-        sales_location = session["sales_search"]["key"]["sales_location"] 
-        sales_first_name = session["sales_search"]["key"]["sales_first_name"] 
-        sales_last_name = session["sales_search"]["key"]["sales_last_name"] 
+        dw_sales_rep_id = session["sales_rep_search"]["key"]["dw_sales_rep_id"] 
+        sales_location = session["sales_rep_search"]["key"]["sales_location"] 
+        sales_first_name = session["sales_rep_search"]["key"]["sales_first_name"] 
+        sales_last_name = session["sales_rep_search"]["key"]["sales_last_name"] 
 
         page = int(request.form["page"])
         print(page)
@@ -1175,10 +1198,10 @@ def sales():
         sales_count = [list(r) for r in results.fetchall()]
 
 
-        session["sales_search"]["count"] = sales_count[0][0]
+        session["sales_rep_search"]["count"] = sales_count[0][0]
 
 
-        if session["sales_search"]["count"]  > (nth_record + row_per_page):
+        if session["sales_rep_search"]["count"]  > (nth_record + row_per_page):
             next_page = page + 1
         else:
             next_page = page
@@ -1219,12 +1242,12 @@ def sales():
 
         status_msg = 'Insert Successful. The Sales ID is ' + str(dw_sales_rep_id[0])
         
-        if "sales_search" in session:
+        if "sales_rep_search" in session:
 
-            dw_sales_rep_id = session["sales_search"]["key"]["dw_sales_rep_id"] 
-            sales_location = session["sales_search"]["key"]["sales_location"] 
-            sales_first_name = session["sales_search"]["key"]["sales_first_name"] 
-            sales_last_name = session["sales_search"]["key"]["sales_last_name"] 
+            dw_sales_rep_id = session["sales_rep_search"]["key"]["dw_sales_rep_id"] 
+            sales_location = session["sales_rep_search"]["key"]["sales_location"] 
+            sales_first_name = session["sales_rep_search"]["key"]["sales_first_name"] 
+            sales_last_name = session["sales_rep_search"]["key"]["sales_last_name"] 
 
             page = int(request.form["page"])
             print(page)
@@ -1263,10 +1286,10 @@ def sales():
             sales_count = [list(r) for r in results.fetchall()]
 
 
-            session["sales_search"]["count"] = sales_count[0][0]
+            session["sales_rep_search"]["count"] = sales_count[0][0]
 
 
-            if session["sales_search"]["count"]  > (nth_record + row_per_page):
+            if session["sales_rep_search"]["count"]  > (nth_record + row_per_page):
                 next_page = page + 1
             else:
                 next_page = page
@@ -1290,6 +1313,32 @@ def sales():
 
         dw_sales_rep_id = request.form["dw_sales_rep_id"]
 
+
+        query = f"""
+                UPDATE Vehicle_Inventories
+                SET sold_ind = '0'
+                where vin in(
+                select vin
+                from Sales_Records
+                where dw_invoice_id in (
+                select dw_invoice_id
+                from Customers_Salesreps
+                where dw_sales_rep_id = '{dw_sales_rep_id}'))
+
+                """
+        results = execute_query(db, query)
+
+        query = f"""
+                DELETE FROM Sales_Records
+                where dw_invoice_id in (
+                select dw_invoice_id
+                from Customers_Salesreps
+                where dw_sales_rep_id = '{dw_sales_rep_id}')
+                """
+        results = execute_query(db, query)
+
+
+
         query = f"""
                 DELETE from Sales_Reps
                 where dw_sales_rep_id = '{dw_sales_rep_id}'
@@ -1300,11 +1349,11 @@ def sales():
         
 
 
-        dw_sales_rep_id = session["sales_search"]["key"]["dw_sales_rep_id"] 
-        sales_location = session["sales_search"]["key"]["sales_location"] 
-        sales_first_name = session["sales_search"]["key"]["sales_first_name"] 
-        sales_last_name = session["sales_search"]["key"]["sales_last_name"] 
-        session["sales_search"]["count"] -= 1
+        dw_sales_rep_id = session["sales_rep_search"]["key"]["dw_sales_rep_id"] 
+        sales_location = session["sales_rep_search"]["key"]["sales_location"] 
+        sales_first_name = session["sales_rep_search"]["key"]["sales_first_name"] 
+        sales_last_name = session["sales_rep_search"]["key"]["sales_last_name"] 
+        session["sales_rep_search"]["count"] -= 1
 
         page = int(request.form["page"])
         print(page)
@@ -1331,7 +1380,7 @@ def sales():
         sales_info_list = [list(r) for r in results.fetchall()]
 
 
-        if session["sales_search"]["count"]  > (nth_record + row_per_page):
+        if session["sales_rep_search"]["count"]  > (nth_record + row_per_page):
             next_page = page + 1
         else:
             next_page = page
@@ -1834,7 +1883,8 @@ def vehicle_type():
         vehicle_trim = request.form["vehicle_trim"].upper() 
         vehicle_type = request.form["vehicle_type"].upper() 
         vehicle_price = request.form["vehicle_price"] 
-        dw_vehicle_type_id = request.form["dw_vehicle_type_id"].upper()
+        dw_vehicle_type_id = vehicle_make[0:2] + vehicle_model[0:4] + vehicle_year + vehicle_color[0:3] + vehicle_trim[0:2]
+        dw_vehicle_type_id = dw_vehicle_type_id.upper()
         dw_vehicle_type_id_old = request.form["old_vehicle_type_id"].upper()
 
         if dw_vehicle_type_id_old == dw_vehicle_type_id:
@@ -2033,6 +2083,7 @@ def modify_sales():
 
         if "sales_search" in session:
             session.pop("sales_search")
+
         db = connect_to_database()
 
         make = ""
@@ -2595,11 +2646,7 @@ def modify_sales():
         else:
             current_balance = float(price) - float(down_payment)
 
-        if monthly_payment == "":
-            monthly_payment = "NULL"
-        
-        if dw_fincl_option_id == "":
-            dw_fincl_option_id = "NULL"
+
 
         query = f"""
         select dw_customer_id
@@ -2629,8 +2676,24 @@ def modify_sales():
         results = execute_query(db, query)
 
         vin_list = [list(r) for r in results.fetchall()]
+
+
+        query = f"""
+        select dw_fincl_option_id
+        from Financial_Options
+        where dw_fincl_option_id = '{dw_fincl_option_id}'
+        """
+        results = execute_query(db, query)
+
+        fincl_option_list = [list(r) for r in results.fetchall()]
+
+        if monthly_payment == "":
+            monthly_payment = "NULL"
         
-        if len(customer_list) > 0 and len(sales_list) > 0 and len(vin_list) > 0:
+        if dw_fincl_option_id == "":
+            dw_fincl_option_id = "NULL"
+        
+        if len(customer_list) > 0 and len(sales_list) > 0 and len(vin_list) > 0 and (len(fincl_option_list) > 0 or dw_fincl_option_id == "NULL"):
 
             query = f"""
                     INSERT INTO Sales_Records (purchase_date, dw_vehicle_type_id, vin, vehicle_price, dw_fincl_option_id, monthly_payment_amount, down_payment_amount) VALUES ("{purchase_date}","{dw_vehicle_type_id}","{vin}","{price}",{dw_fincl_option_id},{monthly_payment},"{down_payment}");
@@ -3886,11 +3949,37 @@ def monthly_payment():
                 payment_amount = payment_amount + current_balance
                 current_balance = 0
 
+
             query = f"""
-                    INSERT INTO Monthly_Payments (dw_invoice_id, payment_date, nth_payment, current_balance, vin, payment_amount, dw_customer_id) VALUES ('{dw_invoice_id}','{payment_date}','{nth_payment}','{current_balance}','{vin}','{payment_amount}',(select dw_customer_id from Customers_Salesreps where dw_invoice_id = '{dw_invoice_id}'))
+                    select dw_customer_id 
+                    from Customers_Salesreps 
+                    where dw_invoice_id = '{dw_invoice_id}'
                     """
             results = execute_query(db, query)
-            status_msg = "Insert Successful. The payment is " + str(payment_amount)
+
+            customer_list = [list(r) for r in results.fetchall()]
+
+
+            query = f"""
+                    select dw_invoice_id
+                    from Sales_Records
+                    where dw_invoice_id = '{dw_invoice_id}'
+                    """
+            results = execute_query(db, query)
+
+            sales_list = [list(r) for r in results.fetchall()]
+
+            if len(customer_list) > 0 and len(sales_list) > 0:
+
+                query = f"""
+                        INSERT INTO Monthly_Payments (dw_invoice_id, payment_date, nth_payment, current_balance, vin, payment_amount, dw_customer_id) VALUES ('{dw_invoice_id}','{payment_date}','{nth_payment}','{current_balance}','{vin}','{payment_amount}',(select dw_customer_id from Customers_Salesreps where dw_invoice_id = '{dw_invoice_id}'))
+                        """
+                results = execute_query(db, query)
+
+                status_msg = "Insert Successful. The payment is " + str(payment_amount)
+            
+            else:
+                status_msg = "Insert Failed. Invalid invoice information."
 
 
             if "payment_search" in session:
@@ -4589,8 +4678,6 @@ def vehicle_inventory():
             return render_template("vehicle_inventory.html", content = inventory_result, prev_page = prev_page, current_page = page, next_page = next_page, status_msg = "" ) 
 
         elif request.method  == "POST"  and request.form["request_type"] == "update-submit":
-
-            print(request.form)
 
 
             db = connect_to_database()
@@ -5558,19 +5645,45 @@ def test_drive():
 
         # original query: SET dw_test_drive_id = '{dw_test_drive_id}', dw_customer_id  = '{dw_customer_id}', test_drive_date  = '{test_drive_date}', check_out_time  = '{check_out_time}', return_time  = '{return_time}', vin  = '{vin}'
 
+
         query = f"""
-                UPDATE Test_Drives
-                SET dw_customer_id  = '{dw_customer_id}', test_drive_date  = '{test_drive_date}', check_out_time  = '{check_out_time}', return_time  = '{return_time}', vin  = '{vin}'
-                where dw_test_drive_id = '{dw_test_drive_id}'
+                select dw_customer_id
+                from Customers_Info
+                where dw_customer_id = '{dw_customer_id}'
                 """
         results = execute_query(db, query)
 
-        status_msg = 'Update Successful.'
+        customer_list = [list(r) for r in results.fetchall()]
+
+
+
+        query = f"""
+                select vin
+                from Vehicle_Inventories
+                where vin = '{vin}'
+                """
+        results = execute_query(db, query)
+
+        vin_list = [list(r) for r in results.fetchall()]
+
+
+        if len(vin_list) > 0 and len(customer_list) > 0:
+
+            query = f"""
+                    UPDATE Test_Drives
+                    SET dw_customer_id  = '{dw_customer_id}', test_drive_date  = '{test_drive_date}', check_out_time  = '{check_out_time}', return_time  = '{return_time}', vin  = '{vin}'
+                    where dw_test_drive_id = '{dw_test_drive_id}'
+                    """
+            results = execute_query(db, query)
+
+            status_msg = 'Update Successful.'
+        
+        else:
+            status_msg = 'Update Failed. Invalid Customer / Vehicle Information.'
 
 
         page = int(request.form["page"])
-        print(page)
-
+        
         nth_record = (page-1) * row_per_page 
 
 
@@ -5810,6 +5923,14 @@ def execute_query(db_connection = None, query = None, query_params = ()):
 
 
 
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('error404.html'), 404
+
+@app.errorhandler(500)
+def internal_server_error(e):
+    # note that we set the 500 status explicitly
+    return render_template('error500.html'), 500
 
 
 

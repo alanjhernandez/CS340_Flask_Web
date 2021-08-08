@@ -16,7 +16,11 @@ Cashflow Projection
 
 <form action="#" method="POST">
     <fieldset>
-        <legend>Store location and Date</legend>
+        <legend>
+            <h1>
+                Report Date and Store Location
+            </h1>
+        </legend>
 
 
         <table>
@@ -154,20 +158,19 @@ Cashflow Projection
         var req = new XMLHttpRequest();
         var store_request = {}
         store_request.request_type = "inventory_store_pull"
-        console.log(store_request)
+
 
         req.open('POST', '/info_check', true);
         req.setRequestHeader('Content-Type', 'application/json');
         req.addEventListener('load', function () {
             if (req.status >= 200 && req.status < 400) {
                 var response = JSON.parse(req.responseText);
-                console.log(response)
-                console.log("Store Request Success!")
+
                 store_list.innerHTML = ''
 
 
                 for (i = 0; i < response.length; i++) {
-                    console.log(i)
+
                     var option_tag = document.createElement("option")
                     option_tag.innerHTML = response[i]
                     option_tag.value = response[i]
@@ -195,21 +198,20 @@ Cashflow Projection
         var req = new XMLHttpRequest();
         var date_request = {}
         date_request.request_type = "date_pull"
-        console.log(date_request)
+
 
         req.open('POST', '/info_check', true);
         req.setRequestHeader('Content-Type', 'application/json');
         req.addEventListener('load', function () {
             if (req.status >= 200 && req.status < 400) {
                 var response = JSON.parse(req.responseText);
-                console.log(response)
-                console.log("Store Request Success!")
+
                 date_start_list.innerHTML = ''
                 date_end_list.innerHTML = ''
 
 
                 for (i = 0; i < response.length; i++) {
-                    console.log(i)
+
                     var option_tag = document.createElement("option")
                     option_tag.innerHTML = response[i]
                     option_tag.value = response[i]
@@ -233,21 +235,19 @@ Cashflow Projection
     }
 
     function add_month(month) {
-        console.log(month)
+
 
         var req = new XMLHttpRequest();
         var date_request = {}
         date_request.request_type = "add_month"
         date_request.add = month
-        console.log(date_request)
 
         req.open('POST', '/cfproject', true);
         req.setRequestHeader('Content-Type', 'application/json');
         req.addEventListener('load', function () {
             if (req.status >= 200 && req.status < 400) {
                 var response = JSON.parse(req.responseText);
-                console.log(response)
-                console.log("Month Request Success!")
+
                 pull_date()
             } else {
                 console.log("Error in network request: " + req.statusText);

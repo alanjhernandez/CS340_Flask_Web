@@ -14,7 +14,9 @@ Quality Auto Sales - Customer
 
 <form action="#" method="POST">
     <fieldset>
-        <legend>Customer Search Form</legend>
+        <legend>
+            <h1>Customer Search</h1>
+        </legend>
         <table>
 
             <tr>
@@ -160,7 +162,11 @@ Quality Auto Sales - Customer
 
         <form action="#" method="POST">
             <fieldset>
-                <legend>Customer Information</legend>
+                <legend>
+
+                    <h1>Customer Update</h1>
+
+                </legend>
                 <table>
 
                     <tr>
@@ -232,7 +238,10 @@ Quality Auto Sales - Customer
 
         <form action="#" method="POST">
             <fieldset>
-                <legend>Customer Information</legend>
+                <legend>
+                    <h1>Customer Input</h1>
+
+                </legend>
                 <table>
 
 
@@ -335,7 +344,6 @@ Quality Auto Sales - Customer
     }
 
     function add_customer() {
-        console.log(add_modal)
         add_modal.style.display = "block";
     }
 
@@ -357,34 +365,6 @@ Quality Auto Sales - Customer
     }
 
 
-    function delete_customer(dw_customer_id) {
-
-        console.log("{{ current_page }}")
-        var req = new XMLHttpRequest();
-        var customer_request = {}
-        customer_request.request_type = "customer_delete"
-        customer_request.dw_customer_id = dw_customer_id
-        customer_request.page = "{{ current_page }}"
-        console.log(customer_request)
-
-        req.open('POST', '/customer', true);
-        req.setRequestHeader('Content-Type', 'application/json');
-        req.addEventListener('load', function () {
-            if (req.status >= 200 && req.status < 400) {
-                console.log("Delete Request Success!")
-
-                location.reload();
-
-
-            } else {
-                console.log("Error in network request: " + req.statusText);
-            }
-        });
-        req.send(JSON.stringify(customer_request));
-        event.preventDefault();
-
-
-    }
 
 
 </script>

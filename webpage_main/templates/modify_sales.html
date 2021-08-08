@@ -12,7 +12,11 @@ Quality Auto Sales - Sales
 {% block content%}
 <form action="#" method="post">
     <fieldset>
-        <legend>Sales Record Search</legend>
+        <legend>
+            <h1>
+                Sales Record Search
+            </h1>
+        </legend>
 
         <table>
 
@@ -348,7 +352,12 @@ Quality Auto Sales - Sales
         <form action="#" method="POST">
             <fieldset>
 
-                <legend>Sales Information</legend>
+                <legend>
+                    <h1>
+                        Sales Record Input
+                    </h1>
+
+                </legend>
 
                 <table>
                     <tr>
@@ -439,8 +448,12 @@ Quality Auto Sales - Sales
         <form action="#" method="POST">
             <fieldset>
 
-                <legend>Sales Information - Please delete the sale record if the vehicle or financial payment is not
-                    correct.</legend>
+                <legend>
+                    <h1>
+                        Sales Record Update
+                    </h1>
+
+                </legend>
 
                 <table>
 
@@ -718,21 +731,6 @@ Quality Auto Sales - Sales
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     var customer_modal = document.getElementById("customer_modal");
     var customer_span = document.getElementsByClassName("close")[0];
     var sales_modal = document.getElementById("sales_modal");
@@ -765,11 +763,11 @@ Quality Auto Sales - Sales
     }
 
     add_span.onclick = function () {
-        payment_modal.style.display = "none";
+        add_modal.style.display = "none";
     }
 
     edit_span.onclick = function () {
-        payment_modal.style.display = "none";
+        edit_modal.style.display = "none";
     }
 
 
@@ -827,22 +825,20 @@ Quality Auto Sales - Sales
         var customer_name = document.getElementById("edit-sales-customer-name");
 
         if (customerid != "") {
-            console.log(customerid)
 
 
             var req = new XMLHttpRequest();
             var customer_request = {}
             customer_request.request_type = "customer_check"
             customer_request.dw_customer_id = customerid
-            console.log(customer_request)
+
 
             req.open('POST', '/info_check', true);
             req.setRequestHeader('Content-Type', 'application/json');
             req.addEventListener('load', function () {
                 if (req.status >= 200 && req.status < 400) {
                     var response = JSON.parse(req.responseText);
-                    console.log(response)
-                    console.log("Customer Info Request Success!")
+
 
                     if (response == "-1") {
                         customer_name.textContent = "No customer Information."
@@ -870,22 +866,19 @@ Quality Auto Sales - Sales
         var sales_name = document.getElementById("edit-sales-sales-name");
 
         if (salesid != "") {
-            console.log(salesid)
-
 
             var req = new XMLHttpRequest();
             var sales_request = {}
             sales_request.request_type = "sales_check"
             sales_request.dw_sales_rep_id = salesid
-            console.log(sales_request)
+
 
             req.open('POST', '/info_check', true);
             req.setRequestHeader('Content-Type', 'application/json');
             req.addEventListener('load', function () {
                 if (req.status >= 200 && req.status < 400) {
                     var response = JSON.parse(req.responseText);
-                    console.log(response)
-                    console.log("Sales Info Request Success!")
+
                     if (response == "-1") {
                         sales_name.textContent = "No sales representatives information"
                     } else {
@@ -918,15 +911,13 @@ Quality Auto Sales - Sales
         var financial_request = {}
         financial_request.request_type = "financial_check"
         financial_request.dw_fincl_option_id = dw_fincl_option_id
-        console.log(financial_request)
+
 
         req.open('POST', '/info_check', true);
         req.setRequestHeader('Content-Type', 'application/json');
         req.addEventListener('load', function () {
             if (req.status >= 200 && req.status < 400) {
                 var response = JSON.parse(req.responseText);
-                console.log(response)
-                console.log("Financial Info Request Success!")
 
                 var x = Math.pow(1 + response[1] / 12, response[2]);
                 var monthly_payment = ((vehicle_price - down_payment) * x * response[1] / 12) / (x - 1);
@@ -951,7 +942,7 @@ Quality Auto Sales - Sales
         var req = new XMLHttpRequest();
         var financial_request = {}
         financial_request.request_type = "financial_pull"
-        console.log(financial_request)
+
 
         req.open('POST', '/info_check', true);
         req.setRequestHeader('Content-Type', 'application/json');
