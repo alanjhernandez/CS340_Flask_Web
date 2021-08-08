@@ -3519,6 +3519,19 @@ def financial_arrangement():
         dw_fincl_option_id = request.form["dw_fincl_option_id"]
 
         query = f"""
+                UPDATE Vehicle_Inventories
+                SET sold_ind = '0'
+                where vin in(
+                select vin
+                from Sales_Records
+                where dw_fincl_option_id = '{dw_fincl_option_id}'
+                )
+
+                """
+        results = execute_query(db, query)
+
+
+        query = f"""
                 DELETE from Financial_Options where dw_fincl_option_id = '{dw_fincl_option_id}';
                 """
         results = execute_query(db, query)
@@ -5526,8 +5539,19 @@ def test_drive():
                         INSERT INTO Test_Drives (dw_customer_id, test_drive_date, check_out_time, return_time, vin) VALUES ("{dw_customer_id}","{test_drive_date}","{check_out_time}","{return_time}","{vin}");
                         """
 
-                results = execute_query(db, query)    
-                status_msg = 'Insert Successful'
+                results = execute_query(db, query)  
+
+
+                query = f"""
+                        SELECT max(dw_test_drive_id)
+                        from Test_Drives;
+                        """
+
+                results = execute_query(db, query)
+                dw_test_drive_id = [r[0] for r in results.fetchall()]
+
+
+                status_msg = 'Insert Successful. Test Drive ID: ' + str(dw_test_drive_id[0])
 
             else:
                 status_msg = 'Insert Failed. Vehicle not exists or sold / Customer Not Exists.'
