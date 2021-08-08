@@ -388,17 +388,15 @@ Quality Auto Sales - Vehicle Types
         var req = new XMLHttpRequest();
         var make_request = {}
         make_request.request_type = "inventory_make_pull"
-        console.log(make_request)
 
         req.open('POST', '/info_check', true);
         req.setRequestHeader('Content-Type', 'application/json');
         req.addEventListener('load', function () {
             if (req.status >= 200 && req.status < 400) {
                 var response = JSON.parse(req.responseText);
-                console.log(response)
+
 
                 for (i = 0; i < response.length; i++) {
-                    console.log(i)
                     var option_tag = document.createElement("option")
                     option_tag.innerHTML = response[i]
                     option_tag.value = response[i]
@@ -443,15 +441,13 @@ Quality Auto Sales - Vehicle Types
         var info_request = {}
         info_request.request_type = "inventory_info_pull"
         info_request.make = document.getElementById("make-list-input").value
-        console.log(info_request)
+
 
         req.open('POST', '/info_check', true);
         req.setRequestHeader('Content-Type', 'application/json');
         req.addEventListener('load', function () {
             if (req.status >= 200 && req.status < 400) {
                 var response = JSON.parse(req.responseText);
-                console.log(response)
-                console.log("Make Request Success!")
 
                 model_list.innerHTML = ''
                 for (i = 0; i < response[0].length; i++) {
@@ -517,15 +513,14 @@ Quality Auto Sales - Vehicle Types
         info_request.request_type = "inventory_trim_pull"
         info_request.make = document.getElementById("make-list-input").value
         info_request.model = document.getElementById("model-list-input").value
-        console.log(info_request)
+
 
         req.open('POST', '/info_check', true);
         req.setRequestHeader('Content-Type', 'application/json');
         req.addEventListener('load', function () {
             if (req.status >= 200 && req.status < 400) {
                 var response = JSON.parse(req.responseText);
-                console.log(response)
-                console.log("Trim Request Success!")
+
 
 
                 trim_list.innerHTML = ''
@@ -576,7 +571,6 @@ Quality Auto Sales - Vehicle Types
     var add_modal = document.getElementsByClassName("add_modal")[0];
     var add_span = document.getElementById("add-close");
 
-    console.log(add_modal)
 
     function add_vehicle_type() {
         add_modal.style.display = "block";
@@ -618,7 +612,6 @@ Quality Auto Sales - Vehicle Types
 
         if (typeof vehicle_make != "undefined" & typeof vehicle_type != "undefined" & typeof vehicle_model != "undefined" & typeof vehicle_year != "undefined" & typeof vehicle_color != "undefined" & typeof vehicle_trim != "undefined") {
 
-            console.log(vehicle_make.substring(0, 2) + vehicle_model.substring(0, 4) + vehicle_year + vehicle_color.substring(0, 3) + vehicle_trim.substring(0, 2))
             document.getElementById("vehicle-type-id-add").value = vehicle_make.substring(0, 2).toUpperCase() + vehicle_model.substring(0, 4).toUpperCase() + vehicle_year + vehicle_color.substring(0, 3).toUpperCase() + vehicle_trim.substring(0, 2).toUpperCase()
 
         }
@@ -640,7 +633,6 @@ Quality Auto Sales - Vehicle Types
 
         if (typeof vehicle_make != "undefined" & typeof vehicle_type != "undefined" & typeof vehicle_model != "undefined" & typeof vehicle_year != "undefined" & typeof vehicle_color != "undefined" & typeof vehicle_trim != "undefined") {
 
-            console.log(vehicle_make.substring(0, 2) + vehicle_model.substring(0, 4) + vehicle_year + vehicle_color.substring(0, 3) + vehicle_trim.substring(0, 2))
             document.getElementById("vehicle-type-id-edit").value = vehicle_make.substring(0, 2).toUpperCase() + vehicle_model.substring(0, 4).toUpperCase() + vehicle_year + vehicle_color.substring(0, 3).toUpperCase() + vehicle_trim.substring(0, 2).toUpperCase()
 
         }

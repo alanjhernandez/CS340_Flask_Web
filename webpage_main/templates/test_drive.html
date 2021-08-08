@@ -395,17 +395,17 @@ Quality Auto Sales - Test Drive Record
         var req = new XMLHttpRequest();
         var make_request = {}
         make_request.request_type = "inventory_make_pull"
-        console.log(make_request)
+
 
         req.open('POST', '/info_check', true);
         req.setRequestHeader('Content-Type', 'application/json');
         req.addEventListener('load', function () {
             if (req.status >= 200 && req.status < 400) {
                 var response = JSON.parse(req.responseText);
-                console.log(response)
+
 
                 for (i = 0; i < response.length; i++) {
-                    console.log(i)
+
                     var option_tag = document.createElement("option")
                     option_tag.innerHTML = response[i]
                     option_tag.value = response[i]
@@ -450,15 +450,13 @@ Quality Auto Sales - Test Drive Record
         var info_request = {}
         info_request.request_type = "inventory_info_pull"
         info_request.make = document.getElementById("make-list-input").value
-        console.log(info_request)
+
 
         req.open('POST', '/info_check', true);
         req.setRequestHeader('Content-Type', 'application/json');
         req.addEventListener('load', function () {
             if (req.status >= 200 && req.status < 400) {
                 var response = JSON.parse(req.responseText);
-                console.log(response)
-                console.log("Make Request Success!")
 
                 model_list.innerHTML = ''
                 for (i = 0; i < response[0].length; i++) {
@@ -524,15 +522,14 @@ Quality Auto Sales - Test Drive Record
         info_request.request_type = "inventory_trim_pull"
         info_request.make = document.getElementById("make-list-input").value
         info_request.model = document.getElementById("model-list-input").value
-        console.log(info_request)
+
 
         req.open('POST', '/info_check', true);
         req.setRequestHeader('Content-Type', 'application/json');
         req.addEventListener('load', function () {
             if (req.status >= 200 && req.status < 400) {
                 var response = JSON.parse(req.responseText);
-                console.log(response)
-                console.log("Trim Request Success!")
+
 
 
                 trim_list.innerHTML = ''
@@ -565,22 +562,19 @@ Quality Auto Sales - Test Drive Record
         var customer_name = document.getElementById("add-test_drive-customer-name");
 
         if (customerid != "") {
-            console.log(customerid)
-
 
             var req = new XMLHttpRequest();
             var customer_request = {}
             customer_request.request_type = "customer_check"
             customer_request.dw_customer_id = customerid
-            console.log(customer_request)
+
 
             req.open('POST', '/info_check', true);
             req.setRequestHeader('Content-Type', 'application/json');
             req.addEventListener('load', function () {
                 if (req.status >= 200 && req.status < 400) {
                     var response = JSON.parse(req.responseText);
-                    console.log(response)
-                    console.log("Customer Info Request Success!")
+
 
                     if (response == "-1") {
                         customer_name.textContent = "No customer Information."
@@ -611,22 +605,21 @@ Quality Auto Sales - Test Drive Record
 
 
         if (vin != "") {
-            console.log(vin)
+
 
 
             var req = new XMLHttpRequest();
             var sales_request = {}
             sales_request.request_type = "vehicle_check"
             sales_request.vin = vin
-            console.log(sales_request)
+
 
             req.open('POST', '/info_check', true);
             req.setRequestHeader('Content-Type', 'application/json');
             req.addEventListener('load', function () {
                 if (req.status >= 200 && req.status < 400) {
                     var response = JSON.parse(req.responseText);
-                    console.log(response)
-                    console.log("Vehicle Info Request Success!")
+
                     if (response == "-1") {
                         vin_description.textContent = "No vehicle information"
                     } else {
@@ -657,22 +650,20 @@ Quality Auto Sales - Test Drive Record
         var customer_name = document.getElementById("edit-test_drive-customer-name");
 
         if (customerid != "") {
-            console.log(customerid)
 
 
             var req = new XMLHttpRequest();
             var customer_request = {}
             customer_request.request_type = "customer_check"
             customer_request.dw_customer_id = customerid
-            console.log(customer_request)
+
 
             req.open('POST', '/info_check', true);
             req.setRequestHeader('Content-Type', 'application/json');
             req.addEventListener('load', function () {
                 if (req.status >= 200 && req.status < 400) {
                     var response = JSON.parse(req.responseText);
-                    console.log(response)
-                    console.log("Customer Info Request Success!")
+
 
                     if (response == "-1") {
                         customer_name.textContent = "No customer Information."
@@ -703,22 +694,19 @@ Quality Auto Sales - Test Drive Record
 
 
         if (vin != "") {
-            console.log(vin)
-
 
             var req = new XMLHttpRequest();
             var sales_request = {}
             sales_request.request_type = "vehicle_check"
             sales_request.vin = vin
-            console.log(sales_request)
+
 
             req.open('POST', '/info_check', true);
             req.setRequestHeader('Content-Type', 'application/json');
             req.addEventListener('load', function () {
                 if (req.status >= 200 && req.status < 400) {
                     var response = JSON.parse(req.responseText);
-                    console.log(response)
-                    console.log("Vehicle Info Request Success!")
+
                     if (response == "-1") {
                         vin_description.textContent = "No vehicle information"
                     } else {

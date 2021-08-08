@@ -501,10 +501,9 @@ Quality Auto Sales - Monthly Payment
 
         var dw_invoice_id = document.getElementById("payment-invoice-id-add").value
 
-        console.log(dw_invoice_id)
+
 
         if (dw_invoice_id != "") {
-            console.log("{{ current_page }}")
             var req = new XMLHttpRequest();
             var monthly_payment_request = {}
             monthly_payment_request.request_type = "monthly_payment_invoice_check"
@@ -516,7 +515,7 @@ Quality Auto Sales - Monthly Payment
             req.addEventListener('load', function () {
                 if (req.status >= 200 && req.status < 400) {
                     var response = JSON.parse(req.responseText);
-                    console.log(response)
+
                     if (response == "-1") {
                         document.getElementById("payment-invoice-id-add-description").textContent = "Invoice Not Exist."
                     } else {

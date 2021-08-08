@@ -246,20 +246,19 @@ Quality Auto Sales - Sales Representatives
         var req = new XMLHttpRequest();
         var store_request = {}
         store_request.request_type = "inventory_store_pull"
-        console.log(store_request)
+
 
         req.open('POST', '/info_check', true);
         req.setRequestHeader('Content-Type', 'application/json');
         req.addEventListener('load', function () {
             if (req.status >= 200 && req.status < 400) {
                 var response = JSON.parse(req.responseText);
-                console.log(response)
-                console.log("Store Request Success!")
+
                 store_list.innerHTML = ''
 
 
                 for (i = 0; i < response.length; i++) {
-                    console.log(i)
+
                     var option_tag = document.createElement("option")
                     option_tag.innerHTML = response[i]
                     option_tag.value = response[i]
@@ -308,7 +307,6 @@ Quality Auto Sales - Sales Representatives
     }
 
     function add_sales() {
-        console.log(add_modal)
         add_modal.style.display = "block";
     }
 
