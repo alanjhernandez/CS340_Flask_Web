@@ -39,8 +39,8 @@ def info_check():
 
             query = f"""
                     SELECT 
-                    store_location
-                    from Vehicle_Inventories as a
+                    primary_location as store_location
+                    from Sales_Reps as a
                     group by 1
                     """
 
@@ -2702,8 +2702,17 @@ def modify_sales():
 
             results = execute_query(db, query)    
 
+
             query = f"""
-                    INSERT INTO Monthly_Payments (dw_invoice_id, payment_date, nth_payment, current_balance, vin, payment_amount, dw_customer_id) VALUES ((select dw_invoice_id from Sales_Records where vin = '{vin}' limit 1),"{purchase_date}","0","{current_balance}","{vin}","{down_payment}","{dw_customer_id}");
+                    SELECT max(dw_invoice_id)
+                    from Sales_Records
+                    """
+
+            results = execute_query(db, query)
+            dw_invoice_id = [r[0] for r in results.fetchall()]
+
+            query = f"""
+                    INSERT INTO Monthly_Payments (dw_invoice_id, payment_date, nth_payment, current_balance, vin, payment_amount, dw_customer_id) VALUES ("{dw_invoice_id[0]}","{purchase_date}","0","{current_balance}","{vin}","{down_payment}","{dw_customer_id}");
                     """
             print(query)
 
@@ -2727,13 +2736,7 @@ def modify_sales():
             results = execute_query(db, query)     
 
 
-            query = f"""
-                    SELECT max(dw_invoice_id)
-                    from Sales_Records
-                    """
 
-            results = execute_query(db, query)
-            dw_invoice_id = [r[0] for r in results.fetchall()]
 
             status_msg = "Insert Successful. Invoice ID : " + str(dw_invoice_id[0])
 
@@ -4880,79 +4883,91 @@ def vehicle_inventory():
             results = execute_query(db, query)
             vin_list = [r[0] for r in results.fetchall()]
 
-            query = f"""
-                    
-                    select 
-                    min(parking_lot) as destination
-                    from (
-                    SELECT substring(parking_location,1,1) as parking_lot 
-                    ,count(distinct vin) as count 
-                    FROM Vehicle_Inventories
-                    WHERE store_location = "{store_location}"
-                    group by 1
-                    having count <> 1000
-                    ) as a
-                    
-                                       
 
+            query = f"""
+                    SELECT primary_location
+                    from Sales_Reps
+                    where primary_location = '{store_location}';
                     """
 
             results = execute_query(db, query)
-            parking_lot_not_full = [r[0] for r in results.fetchall()]
-            #print(parking_lot_not_full)
- 
-
-            query = f"""
-                    
-
-                    SELECT max(substring(parking_location,1,1)) as destination 
-                    FROM Vehicle_Inventories
-                    WHERE store_location = "{store_location}"
-  
-                    """
-
-            results = execute_query(db, query)
-            parking_lot_list = [r[0] for r in results.fetchall()]
-            #print(parking_lot_list)
+            store_list = [r[0] for r in results.fetchall()]
 
 
-            if len(parking_lot_not_full) > 0:
-                parking_destination = parking_lot_not_full[0]
-            else:
-                parking_destination = chr(ord(parking_lot_list[0]) + 1)
-            #print(chr(ord(parking_lot_list[0]) + 1))
+            if len(store_list) > 0:
+                query = f"""
+                        
+                        select 
+                        min(parking_lot) as destination
+                        from (
+                        SELECT substring(parking_location,1,1) as parking_lot 
+                        ,count(distinct vin) as count 
+                        FROM Vehicle_Inventories
+                        WHERE store_location = "{store_location}"
+                        group by 1
+                        having count <> 1000
+                        ) as a
+                        
+                                        
 
-            query = f"""
-                    select 
-                    substring(a.parking_location,2) as parked_spot
-                    from Vehicle_Inventories as a
+                        """
 
-                    inner join (
-                    select 
-                    min(parking_lot) as destination
-                    from (
-                    SELECT substring(parking_location,1,1) as parking_lot 
-                    ,count(distinct vin) as count 
-                    FROM Vehicle_Inventories
-                    WHERE store_location = "{store_location}"
-                    group by 1
-                    having count <> 1000
-                    ) as a
-                    ) as b
-                    on substring(a.parking_location,1,1) = b.destination
-                    
-                    WHERE a.store_location = "{store_location}";
+                results = execute_query(db, query)
+                parking_lot_not_full = [r[0] for r in results.fetchall()]
+                #print(parking_lot_not_full)
+    
 
-                    """
+                query = f"""
+                        
 
-            results = execute_query(db, query)
-            parking_list = set([int(r[0]) for r in results.fetchall()])
-            parking_num = min(set(range(1,1001)) - parking_list)
+                        SELECT max(substring(parking_location,1,1)) as destination 
+                        FROM Vehicle_Inventories
+                        WHERE store_location = "{store_location}"
+    
+                        """
 
-            final_parking_location = parking_destination + str(parking_num)
+                results = execute_query(db, query)
+                parking_lot_list = [r[0] for r in results.fetchall()]
+                #print(parking_lot_list)
 
 
-            if len(vehicle_type_id_list) > 0 and len(vin_list) == 0:
+                if len(parking_lot_not_full) > 0:
+                    parking_destination = parking_lot_not_full[0]
+                else:
+                    parking_destination = chr(ord(parking_lot_list[0]) + 1)
+                #print(chr(ord(parking_lot_list[0]) + 1))
+
+                query = f"""
+                        select 
+                        substring(a.parking_location,2) as parked_spot
+                        from Vehicle_Inventories as a
+
+                        inner join (
+                        select 
+                        min(parking_lot) as destination
+                        from (
+                        SELECT substring(parking_location,1,1) as parking_lot 
+                        ,count(distinct vin) as count 
+                        FROM Vehicle_Inventories
+                        WHERE store_location = "{store_location}"
+                        group by 1
+                        having count <> 1000
+                        ) as a
+                        ) as b
+                        on substring(a.parking_location,1,1) = b.destination
+                        
+                        WHERE a.store_location = "{store_location}";
+
+                        """
+
+                results = execute_query(db, query)
+                parking_list = set([int(r[0]) for r in results.fetchall()])
+                parking_num = min(set(range(1,1001)) - parking_list)
+
+                final_parking_location = parking_destination + str(parking_num)
+
+
+            if len(vehicle_type_id_list) > 0 and len(vin_list) == 0 and len(store_list) > 0:
                 vehicle_type_id = vehicle_type_id_list[0]
 
                 query = f"""
