@@ -5214,6 +5214,7 @@ def test_drive():
         clname = "" 
         test_drive_date_lower = "2014-01-01"
         test_drive_date_upper = "2030-12-31"
+        dw_test_drive_id = ""
 
 
         print(request.form)
@@ -5234,13 +5235,14 @@ def test_drive():
                 AND vehicle_make like "%%{make}%%"
                 AND vehicle_model like "%%{model}%%"
                 AND vehicle_year like "%%{year}%%"
-                AND vehicle_type like "%%{type}%%"
                 AND vehicle_color like "%%{color}%%"
+                AND vehicle_type like "%%{type}%%"
                 AND vehicle_trim like "%%{trim}%%"
                 AND first_name like "%%{cfname}%%"
                 AND last_name like "%%{clname}%%"
                 AND Test_Drives.vin like "%%{vin}%%"
                 AND test_drive_date between '{test_drive_date_lower}' and '{test_drive_date_upper}'
+                and dw_test_drive_id like '%%{dw_test_drive_id}%%'
 
                 order by Test_Drives.vin
                 limit {row_per_page}
@@ -5255,11 +5257,11 @@ def test_drive():
         query = f"""
                 SELECT
                 count(distinct Test_Drives.vin) as test_drive_count
-
+                
                 FROM Vehicle_Types JOIN Customers_Info JOIN Test_Drives JOIN Vehicle_Inventories
-                WHERE Test_Drives.dw_customer_id = Customers_Info.dw_customer_id 
-                AND Test_Drives.vin = Vehicle_Inventories.vin 
-                AND Vehicle_Inventories.dw_vehicle_type_id = Vehicle_Types.dw_vehicle_type_id 
+                WHERE Test_Drives.dw_customer_id = Customers_Info.dw_customer_id
+                AND Test_Drives.vin = Vehicle_Inventories.vin
+                AND Vehicle_Inventories.dw_vehicle_type_id = Vehicle_Types.dw_vehicle_type_id
                 AND vehicle_make like "%%{make}%%"
                 AND vehicle_model like "%%{model}%%"
                 AND vehicle_year like "%%{year}%%"
@@ -5270,7 +5272,8 @@ def test_drive():
                 AND last_name like "%%{clname}%%"
                 AND Test_Drives.vin like "%%{vin}%%"
                 AND test_drive_date between '{test_drive_date_lower}' and '{test_drive_date_upper}'
-                order by Test_Drives.vin
+		        and Test_Drives.dw_test_drive_id like '%%{dw_test_drive_id}%%'
+                
                 
                 """
 
@@ -5293,6 +5296,7 @@ def test_drive():
         session["test_drive_search"]["key"]["customer_lname"] = clname
         session["test_drive_search"]["key"]["test_drive_date_lower"] = test_drive_date_lower
         session["test_drive_search"]["key"]["test_drive_date_upper"] = test_drive_date_upper
+        session["test_drive_search"]["key"]["dw_test_drive_id"] = dw_test_drive_id
 
 
         if test_drive_count[0][0] > row_per_page:
@@ -5323,6 +5327,7 @@ def test_drive():
         clname = request.form["customer_lname"] 
         test_drive_date_lower = request.form["test_drive_date_lower"] 
         test_drive_date_upper = request.form["test_drive_date_upper"] 
+        dw_test_drive_id = request.form["dw_test_drive_id"] 
 
 
         print(request.form)
@@ -5343,13 +5348,14 @@ def test_drive():
                 AND vehicle_make like "%%{make}%%"
                 AND vehicle_model like "%%{model}%%"
                 AND vehicle_year like "%%{year}%%"
-                AND vehicle_type like "%%{type}%%"
                 AND vehicle_color like "%%{color}%%"
+                AND vehicle_type like "%%{type}%%"
                 AND vehicle_trim like "%%{trim}%%"
                 AND first_name like "%%{cfname}%%"
                 AND last_name like "%%{clname}%%"
                 AND Test_Drives.vin like "%%{vin}%%"
                 AND test_drive_date between '{test_drive_date_lower}' and '{test_drive_date_upper}'
+                and dw_test_drive_id like '%%{dw_test_drive_id}%%'
 
                 order by Test_Drives.vin
                 limit {row_per_page}
@@ -5364,11 +5370,11 @@ def test_drive():
         query = f"""
                 SELECT
                 count(distinct Test_Drives.vin) as test_drive_count
-
+                
                 FROM Vehicle_Types JOIN Customers_Info JOIN Test_Drives JOIN Vehicle_Inventories
-                WHERE Test_Drives.dw_customer_id = Customers_Info.dw_customer_id 
-                AND Test_Drives.vin = Vehicle_Inventories.vin 
-                AND Vehicle_Inventories.dw_vehicle_type_id = Vehicle_Types.dw_vehicle_type_id 
+                WHERE Test_Drives.dw_customer_id = Customers_Info.dw_customer_id
+                AND Test_Drives.vin = Vehicle_Inventories.vin
+                AND Vehicle_Inventories.dw_vehicle_type_id = Vehicle_Types.dw_vehicle_type_id
                 AND vehicle_make like "%%{make}%%"
                 AND vehicle_model like "%%{model}%%"
                 AND vehicle_year like "%%{year}%%"
@@ -5379,7 +5385,7 @@ def test_drive():
                 AND last_name like "%%{clname}%%"
                 AND Test_Drives.vin like "%%{vin}%%"
                 AND test_drive_date between '{test_drive_date_lower}' and '{test_drive_date_upper}'
-                order by Test_Drives.vin
+		        and Test_Drives.dw_test_drive_id like '%%{dw_test_drive_id}%%'
                 
                 """
 
@@ -5402,6 +5408,7 @@ def test_drive():
         session["test_drive_search"]["key"]["customer_lname"] = clname
         session["test_drive_search"]["key"]["test_drive_date_lower"] = test_drive_date_lower
         session["test_drive_search"]["key"]["test_drive_date_upper"] = test_drive_date_upper
+        session["test_drive_search"]["key"]["dw_test_drive_id"] = dw_test_drive_id
 
 
         if test_drive_count[0][0] > row_per_page:
@@ -5438,6 +5445,7 @@ def test_drive():
         clname = session["test_drive_search"]["key"]["customer_lname"] 
         test_drive_date_lower = session["test_drive_search"]["key"]["test_drive_date_lower"]
         test_drive_date_upper = session["test_drive_search"]["key"]["test_drive_date_upper"]
+        dw_test_drive_id = session["test_drive_search"]["key"]["dw_test_drive_id"]
         page = int(request.form["page"])
         print(page)
         nth_record = (page-1) * row_per_page 
@@ -5458,14 +5466,16 @@ def test_drive():
                 AND Vehicle_Inventories.dw_vehicle_type_id = Vehicle_Types.dw_vehicle_type_id 
                 AND vehicle_make like "%%{make}%%"
                 AND vehicle_model like "%%{model}%%"
-                AND vehicle_type like "%%{type}%%"
                 AND vehicle_year like "%%{year}%%"
                 AND vehicle_color like "%%{color}%%"
+                AND vehicle_type like "%%{type}%%"
                 AND vehicle_trim like "%%{trim}%%"
                 AND first_name like "%%{cfname}%%"
                 AND last_name like "%%{clname}%%"
                 AND Test_Drives.vin like "%%{vin}%%"
                 AND test_drive_date between '{test_drive_date_lower}' and '{test_drive_date_upper}'
+                and dw_test_drive_id like '%%{dw_test_drive_id}%%'
+
                 order by Test_Drives.vin
                 limit {nth_record}, {row_per_page}
                 """
@@ -5480,21 +5490,22 @@ def test_drive():
         query = f"""
                 SELECT
                 count(distinct Test_Drives.vin) as test_drive_count
+                
                 FROM Vehicle_Types JOIN Customers_Info JOIN Test_Drives JOIN Vehicle_Inventories
-                WHERE Test_Drives.dw_customer_id = Customers_Info.dw_customer_id 
-                AND Test_Drives.vin = Vehicle_Inventories.vin 
-                AND Vehicle_Inventories.dw_vehicle_type_id = Vehicle_Types.dw_vehicle_type_id 
+                WHERE Test_Drives.dw_customer_id = Customers_Info.dw_customer_id
+                AND Test_Drives.vin = Vehicle_Inventories.vin
+                AND Vehicle_Inventories.dw_vehicle_type_id = Vehicle_Types.dw_vehicle_type_id
                 AND vehicle_make like "%%{make}%%"
                 AND vehicle_model like "%%{model}%%"
-                AND vehicle_type like "%%{type}%%"
                 AND vehicle_year like "%%{year}%%"
+                AND vehicle_type like "%%{type}%%"
                 AND vehicle_color like "%%{color}%%"
                 AND vehicle_trim like "%%{trim}%%"
                 AND first_name like "%%{cfname}%%"
                 AND last_name like "%%{clname}%%"
                 AND Test_Drives.vin like "%%{vin}%%"
                 AND test_drive_date between '{test_drive_date_lower}' and '{test_drive_date_upper}'
-                order by Test_Drives.vin
+		        and Test_Drives.dw_test_drive_id like '%%{dw_test_drive_id}%%'
                 
                 """
 
@@ -5590,6 +5601,7 @@ def test_drive():
                 clname = session["test_drive_search"]["key"]["customer_lname"]
                 test_drive_date_lower = session["test_drive_search"]["key"]["test_drive_date_lower"]
                 test_drive_date_upper = session["test_drive_search"]["key"]["test_drive_date_upper"]
+                dw_test_drive_id = session["test_drive_search"]["key"]["dw_test_drive_id"]
 
 
                 
@@ -5617,6 +5629,8 @@ def test_drive():
                         AND last_name like "%%{clname}%%"
                         AND Test_Drives.vin like "%%{vin}%%"
                         AND test_drive_date between '{test_drive_date_lower}' and '{test_drive_date_upper}'
+                        and dw_test_drive_id like '%%{dw_test_drive_id}%%'
+
                         order by Test_Drives.vin
                         limit {nth_record}, {row_per_page}
                         """
@@ -5642,7 +5656,7 @@ def test_drive():
                         AND last_name like "%%{clname}%%"
                         AND Test_Drives.vin like "%%{vin}%%"
                         AND test_drive_date between '{test_drive_date_lower}' and '{test_drive_date_upper}'
-                        order by Test_Drives.vin
+                        and Test_Drives.dw_test_drive_id like '%%{dw_test_drive_id}%%'
                         
                     """
                 
@@ -5739,6 +5753,7 @@ def test_drive():
         clname = session["test_drive_search"]["key"]["customer_lname"]
         test_drive_date_lower = session["test_drive_search"]["key"]["test_drive_date_lower"]
         test_drive_date_upper = session["test_drive_search"]["key"]["test_drive_date_upper"]
+        dw_test_drive_id = session["test_drive_search"]["key"]["dw_test_drive_id"]
 
         query = f"""
                 SELECT 
@@ -5757,12 +5772,14 @@ def test_drive():
                 AND vehicle_model like "%%{model}%%"
                 AND vehicle_year like "%%{year}%%"
                 AND vehicle_color like "%%{color}%%"
-                AND vehicle_trim like "%%{trim}%%"
                 AND vehicle_type like "%%{type}%%"
+                AND vehicle_trim like "%%{trim}%%"
                 AND first_name like "%%{cfname}%%"
                 AND last_name like "%%{clname}%%"
                 AND Test_Drives.vin like "%%{vin}%%"
                 AND test_drive_date between '{test_drive_date_lower}' and '{test_drive_date_upper}'
+                and dw_test_drive_id like '%%{dw_test_drive_id}%%'
+
                 order by Test_Drives.vin
                 limit {nth_record}, {row_per_page}
                 """
@@ -5789,7 +5806,7 @@ def test_drive():
                 AND last_name like "%%{clname}%%"
                 AND Test_Drives.vin like "%%{vin}%%"
                 AND test_drive_date between '{test_drive_date_lower}' and '{test_drive_date_upper}'
-                order by Test_Drives.vin
+		        and Test_Drives.dw_test_drive_id like '%%{dw_test_drive_id}%%'
                 
             """
         
@@ -5843,6 +5860,7 @@ def test_drive():
         clname = session["test_drive_search"]["key"]["customer_lname"]
         test_drive_date_lower = session["test_drive_search"]["key"]["test_drive_date_lower"]
         test_drive_date_upper = session["test_drive_search"]["key"]["test_drive_date_upper"]
+        dw_test_drive_id = session["test_drive_search"]["key"]["dw_test_drive_id"]
 
         query = f"""
                 SELECT 
@@ -5867,7 +5885,10 @@ def test_drive():
                 AND last_name like "%%{clname}%%"
                 AND Test_Drives.vin like "%%{vin}%%"
                 AND test_drive_date between '{test_drive_date_lower}' and '{test_drive_date_upper}'
+                and dw_test_drive_id like '%%{dw_test_drive_id}%%'
+
                 order by Test_Drives.vin
+
                 limit {nth_record}, {row_per_page}
                 """
         
@@ -5894,7 +5915,7 @@ def test_drive():
                 AND last_name like "%%{clname}%%"
                 AND Test_Drives.vin like "%%{vin}%%"
                 AND test_drive_date between '{test_drive_date_lower}' and '{test_drive_date_upper}'
-                order by Test_Drives.vin
+		        and Test_Drives.dw_test_drive_id like '%%{dw_test_drive_id}%%'
                 
             """
         

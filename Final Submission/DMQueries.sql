@@ -1001,6 +1001,7 @@ AND first_name like "%:cfname%"
 AND last_name like "%:clname%"
 AND Test_Drives.vin like "%:vin%"
 AND test_drive_date between ':test_drive_date_lower' and ':test_drive_date_upper'
+AND dw_test_drive_id like "%:dw_test_drive_id%"
 
 order by Test_Drives.vin
 
@@ -1023,6 +1024,7 @@ AND first_name like "%:cfname%"
 AND last_name like "%:clname%"
 AND Test_Drives.vin like "%:vin%"
 AND test_drive_date between ':test_drive_date_lower' and ':test_drive_date_upper'
+AND dw_test_drive_id like "%:dw_test_drive_id%"
 order by Test_Drives.vin
 
 
