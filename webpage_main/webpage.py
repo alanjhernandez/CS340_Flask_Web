@@ -33,8 +33,10 @@ def home():
 
 @app.route("/info_check", methods = ["POST","GET"])
 def info_check():
+    #Used to pull different Information, such as store pull-down list, vehicle make list..., it won't render any pages.
     if request.is_json:
         if request.method  == "POST" and request.json["request_type"] == "inventory_store_pull":
+            #Pull store list
             db = connect_to_database()
 
             query = f"""
@@ -50,6 +52,7 @@ def info_check():
             return jsonify(store_list)
 
         elif request.method  == "POST" and request.json["request_type"] == "inventory_make_pull":
+            #Pull make list
             db = connect_to_database()
 
             query = f"""
@@ -66,6 +69,7 @@ def info_check():
             return jsonify(make_list)
 
         elif request.method  == "POST" and request.json["request_type"] == "inventory_info_pull":
+            #Pull the vehicle info for a make
             db = connect_to_database()
             make = request.json["make"]
 
@@ -126,6 +130,7 @@ def info_check():
 
 
         elif request.method  == "POST" and request.json["request_type"] == "inventory_trim_pull":
+            #pull trim information for a vehicle model
             db = connect_to_database()
             make = request.json["make"]
             model = request.json['model']
@@ -148,7 +153,7 @@ def info_check():
             return jsonify(trim_list)
 
         elif request.method  == "POST" and request.json["request_type"] == "customer_check":
-            
+            #pull customer info
             db = connect_to_database()
             dw_customer_id = request.json["dw_customer_id"] 
             
@@ -181,7 +186,7 @@ def info_check():
                 return jsonify("-1")
 
         elif request.method  == "POST" and request.json["request_type"] == "sales_check":
-            
+            #pull sales reps info
             db = connect_to_database()
             dw_sales_rep_id = request.json["dw_sales_rep_id"] 
             
@@ -205,7 +210,7 @@ def info_check():
                 return jsonify("-1")
 
         elif request.method  == "POST" and request.json["request_type"] == "vehicle_check":
-            
+            #pull vehicle info
             db = connect_to_database()
             vin = request.json["vin"] 
             
@@ -234,7 +239,7 @@ def info_check():
                 return jsonify("-1")
 
         elif request.method  == "POST" and request.json["request_type"] == "financial_pull":
-            
+            #pull financial options info
             db = connect_to_database()
             
             query = f"""
@@ -252,7 +257,7 @@ def info_check():
             return jsonify(financial_list)
 
         elif request.method  == "POST" and request.json["request_type"] == "financial_check":
-            
+            #pull financial option info for a specific dw_fincl_option_id
             db = connect_to_database()
             dw_fincl_option_id = request.json["dw_fincl_option_id"] 
             
@@ -272,7 +277,7 @@ def info_check():
             return jsonify(financial_list[0])
 
         elif request.method  == "POST" and request.json["request_type"] == "payment_check":
-            
+            #pull payment schedule
             db = connect_to_database()
             dw_invoice_id = request.json["dw_invoice_id"] 
             
@@ -305,6 +310,7 @@ def info_check():
 
             return jsonify(payment_json)
         elif request.method  == "POST" and request.json["request_type"] == "date_pull":
+            #pull the projection dates
             db = connect_to_database()
 
             query = f"""
@@ -333,7 +339,7 @@ def customer():
     row_per_page = 15
     
     if request.method == "GET":
-
+        # render the customer page
         if "customer_search" in session:
             session.pop("customer_search")
 
@@ -431,7 +437,7 @@ def customer():
 
 
     elif request.method == "POST" and request.form["request_type"] == "customer_new_search":
-
+        # return the customer page with search result
         db = connect_to_database()
         dw_customer_id = request.form["dw_customer_id"] 
         dob = request.form["dob"] 
@@ -538,7 +544,7 @@ def customer():
         return render_template("customer.html", content = customer_info_list, prev_page = prev_page, current_page = 1, next_page = next_page)
 
     elif request.method  == "POST"  and request.form["request_type"] == "customer_continue_search":
-
+        #return the customer page with search result - for pagination purpose
         db = connect_to_database()
 
         row_per_page = 15
@@ -606,7 +612,7 @@ def customer():
         return render_template("customer.html", content = customer_info_list, prev_page = prev_page, current_page = page, next_page = next_page, status_msg = "" ) 
 
     elif request.method  == "POST"  and request.form["request_type"] == "customer_update":
-
+        #update the cutomer info
         db = connect_to_database()
 
         row_per_page = 15
@@ -720,7 +726,7 @@ def customer():
         return render_template("customer.html", content = customer_info_list, prev_page = prev_page, current_page = page, next_page = next_page, status_msg = "Update Successful." ) 
 
     elif request.method  == "POST"  and request.form["request_type"] == "customer_add":
-
+        #add a new customer
         print(request.form)
 
 
@@ -848,7 +854,7 @@ def customer():
             return render_template("customer.html", status_msg = status_msg )                
 
     elif request.method  == "POST"  and request.form["request_type"] == "customer_delete":
-
+        #delete an exisitng customer
         db = connect_to_database()
 
         dw_customer_id = request.form["dw_customer_id"]
@@ -952,7 +958,7 @@ def sales():
     row_per_page = 15
 
     if request.method == "GET":
-
+        #render the sales rep page
         if "sales_rep_search" in session:
             session.pop("sales_rep_search")
 
@@ -1023,7 +1029,7 @@ def sales():
 
 
     elif request.method  == "POST" and request.form["request_type"] == "sales_new_search":
-
+        #return search result for sales rep
         db = connect_to_database()
         dw_sales_rep_id = request.form["dw_sales_rep_id"] 
         sales_location = request.form["store_location"] 
@@ -1089,7 +1095,7 @@ def sales():
         return render_template("salesrep.html", content = sales_info_list, prev_page = prev_page, current_page = 1, next_page = next_page)
 
     elif request.method  == "POST"  and request.form["request_type"] == "sales_continue_search":
-
+        #return search result for sales rep
         db = connect_to_database()
 
         row_per_page = 15
@@ -1137,7 +1143,7 @@ def sales():
         return render_template("salesrep.html", content = sales_info_list, prev_page = prev_page, current_page = page, next_page = next_page, status_msg = "" ) 
 
     elif request.method  == "POST"  and request.form["request_type"] == "sales_update":
-
+        #update the sales rep info
         db = connect_to_database()
 
         row_per_page = 15
@@ -1215,7 +1221,7 @@ def sales():
 
         
     elif request.method  == "POST"  and request.form["request_type"] == "sales_add":
-
+        #Add a new sales rep
         db = connect_to_database()
 
         row_per_page = 15
@@ -1306,7 +1312,7 @@ def sales():
 
 
     elif request.method  == "POST"  and request.form["request_type"] == "sales_delete":
-
+        # delete a sales rep
         db = connect_to_database()
 
         row_per_page = 15
@@ -1399,7 +1405,7 @@ def cf_projection():
 
     if request.is_json:
         if request.method  == "POST" and request.json["request_type"] == "add_month":
-            
+            # add projection month lower and upper bound
             db = connect_to_database()
             add = request.json["add"]
             print(add)
@@ -1422,10 +1428,11 @@ def cf_projection():
 
     else:
         if request.method == "GET":
+            # render a cf projection page
             return render_template("cf_projection.html")
 
         elif request.method == "POST" and request.form["request_type"] == "report_pull":
-             
+             # pull a report based on inputs
             db = connect_to_database()
 
             report_start_date = request.form["report_start_date"] 
@@ -1506,7 +1513,7 @@ def vehicle_type():
 
     
     if request.method == "GET":
-
+        #render the vehicle type page
         if "vehicle_type_search" in session:
             session.pop("vehicle_type_search")
 
@@ -1597,7 +1604,7 @@ def vehicle_type():
 
     
     elif request.method == "POST" and request.form['request_type'] == "vehicle_type_new_search":
-
+        # return vehicle type result
         db = connect_to_database()
 
         vehicle_make = request.form["vehicle_make"] 
@@ -1684,7 +1691,7 @@ def vehicle_type():
         return render_template("vehicle_type.html", content = vehicle_type_list, prev_page = prev_page, current_page = 1, next_page = next_page)
 
     elif request.method == "POST" and request.form['request_type'] == "vehicle_type_continue_search":
-
+        # return vehicle search result
         db = connect_to_database()
 
         row_per_page = 15
@@ -1745,7 +1752,7 @@ def vehicle_type():
         return render_template("vehicle_type.html", content = vehicle_type_list, prev_page = prev_page, current_page = page, next_page = next_page, status_msg = "" ) 
 
     elif request.method == "POST" and request.form['request_type'] == "vehicle_type_add":
-
+        # add a new vehicle type
         db = connect_to_database()
 
         row_per_page = 15
@@ -1871,7 +1878,7 @@ def vehicle_type():
             return render_template("vehicle_type.html", status_msg = status_msg )
 
     elif request.method == "POST" and request.form['request_type'] == "vehicle_type_update":
-
+        # update a vehicle type
         db = connect_to_database()
 
         row_per_page = 15
@@ -1998,7 +2005,7 @@ def vehicle_type():
         return render_template("vehicle_type.html", content = vehicle_type_list, prev_page = prev_page, current_page = page, next_page = next_page, status_msg = status_msg )
 
     elif request.method == "POST" and request.form["request_type"] == "vehicle_type_delete":
-
+        # delete a vehicle type
         db = connect_to_database()
 
         dw_vehicle_type_id = request.form["dw_vehicle_type_id"]
@@ -2080,7 +2087,7 @@ def modify_sales():
 
 
     if request.method  == "GET" and request.args.get('page') is None:
-
+        # render a sales page
         if "sales_search" in session:
             session.pop("sales_search")
 
@@ -2291,7 +2298,7 @@ def modify_sales():
 
     elif request.method  == "POST"  and request.form["request_type"] == "sales_new_search":
 
-
+        # return search result based on search inputs
         db = connect_to_database()
 
         make = request.form["make"] 
@@ -2500,7 +2507,7 @@ def modify_sales():
         return render_template("modify_sales.html", content = sales_list, prev_page = prev_page, current_page = 1, next_page = next_page)
 
     elif request.method  == "POST"  and request.form["request_type"] == "sales_continue_search":
-
+        # return search result based on inputs
         db = connect_to_database()
 
         row_per_page = 15
@@ -2627,6 +2634,7 @@ def modify_sales():
         return render_template("modify_sales.html", content = sales_list, prev_page = prev_page, current_page = page, next_page = next_page, status_msg = "" ) 
 
     elif request.method == "POST" and request.form["request_type"] == "sales_add":
+        # add a sales record
         db = connect_to_database()
 
 
@@ -2934,6 +2942,7 @@ def modify_sales():
             return render_template("modify_sales.html", status_msg = status_msg) 
     
     elif request.method  == "POST" and request.form["request_type"] == "sales_edit":
+        #update a sales record
         db = connect_to_database()
         vin = request.form["vin"] 
         dw_invoice_id = request.form["dw_invoice_id"] 
@@ -3189,6 +3198,7 @@ def modify_sales():
 
 
     elif request.method  == "POST" and request.form["request_type"] == "sales_delete":
+        #delete a sales record
         db = connect_to_database()
         dw_invoice_id = request.form["dw_invoice_id"] 
         vin = request.form["vin"] 
@@ -3337,7 +3347,7 @@ def financial_arrangement():
     row_per_page = 15
 
     if request.method == "GET":
-
+        #render the financial options page
         db = connect_to_database()
 
         query = f"""
@@ -3375,7 +3385,7 @@ def financial_arrangement():
         return render_template("financial_arrangement.html", content = fincl_arrangement_list, prev_page = prev_page, current_page = 1, next_page = next_page) 
 
     elif request.method == "POST" and request.form["request_type"] == "fincl_continue_read":
-
+        # display the financial options
         db = connect_to_database()
 
         page = int(request.form["page"])
@@ -3409,7 +3419,7 @@ def financial_arrangement():
 
 
     elif request.method == "POST" and request.form["request_type"] == "fincl_add":
-
+        # add a new financial option
         db = connect_to_database()
 
         int_rate = request.form["fincl_int_rate"]
@@ -3467,7 +3477,7 @@ def financial_arrangement():
         return render_template("financial_arrangement.html", content = fincl_arrangement_list, prev_page = prev_page, current_page = 1, next_page = next_page, status_msg = status_msg) 
 
     elif request.method == "POST" and request.form["request_type"] == "fincl_edit":
-
+        #edit a financial option
         db = connect_to_database()
 
         int_rate = request.form["int_rate"]
@@ -3517,6 +3527,7 @@ def financial_arrangement():
         return render_template("financial_arrangement.html", content = fincl_arrangement_list, prev_page = prev_page, current_page = 1, next_page = next_page, status_msg = "Update Successful.") 
 
     elif request.method == "POST" and request.form["request_type"] == "fincl_option_delete":
+        #delete a fincnail option
         db = connect_to_database()
 
         dw_fincl_option_id = request.form["dw_fincl_option_id"]
@@ -3581,7 +3592,7 @@ def monthly_payment():
     
     if request.is_json:
         if request.method == "POST" and request.json["request_type"] == "monthly_payment_invoice_check":
-
+            #return the payment schedule
             db = connect_to_database()
             dw_invoice_id = request.json["dw_invoice_id"] 
 
@@ -3635,6 +3646,7 @@ def monthly_payment():
 
     else:
         if request.method == "GET":
+            # render the payment page
             if "payment_search" in session:
                 session.pop("payment_search")
             db = connect_to_database()
@@ -3748,7 +3760,7 @@ def monthly_payment():
             return render_template("monthly_payment.html", content = payment_info_list, prev_page = prev_page, current_page = 1, next_page = next_page)
 
         elif request.method == "POST" and request.form["request_type"] == "monthly_payment_new_search":
-
+            # return payment record with specific inputs
             db = connect_to_database()
 
             dw_customer_id = request.form["dw_customer_id"] 
@@ -3860,7 +3872,7 @@ def monthly_payment():
             return render_template("monthly_payment.html", content = payment_info_list, prev_page = prev_page, current_page = 1, next_page = next_page)
 
         elif request.method  == "POST"  and request.form["request_type"] == "monthly_payment_continue_search":
-
+            # return search result
             db = connect_to_database()
 
             row_per_page = 15
@@ -3946,7 +3958,7 @@ def monthly_payment():
 
 
         elif request.method  == "POST"  and request.form["request_type"] == "monthly_payment_add":
-
+            # add a new monthly payment
             db = connect_to_database()
 
             row_per_page = 15
@@ -4111,7 +4123,7 @@ def monthly_payment():
 
 
         elif request.method  == "POST"  and request.form["request_type"] == "monthly_payment_update":
-
+            # update a monthly payment record
             db = connect_to_database()
 
             row_per_page = 15
@@ -4241,7 +4253,7 @@ def monthly_payment():
                 return render_template("monthly_payment.html", status_msg = status_msg)
 
         elif request.method  == "POST"  and request.form["request_type"] == "monthly_payment_delete":
-
+            #delete a monthly payment record
             db = connect_to_database()
 
             row_per_page = 15
@@ -4368,6 +4380,7 @@ def vehicle_inventory():
 
     if request.is_json:
         if request.method  == "POST" and request.json["request_type"] == "testdrive_check":
+            #return the test drive records
             db = connect_to_database()
             vin = request.json["vin"] 
             print(vin)
@@ -4407,6 +4420,7 @@ def vehicle_inventory():
 
     else:
         if request.method  == "GET":
+            #render inventory record
             db = connect_to_database()
             make = ""
             model = ""
@@ -4509,6 +4523,7 @@ def vehicle_inventory():
 
         
         elif request.method  == "POST" and request.form["request_type"] == "new_search":
+            #return the serach result based on inputs
 
 
             if "search" in session:
@@ -4619,6 +4634,7 @@ def vehicle_inventory():
             return render_template("vehicle_inventory.html", content = inventory_result[0:row_per_page], prev_page = prev_page, current_page = 1, next_page = next_page, status_msg = "") 
 
         elif request.method  == "POST"  and request.form["request_type"] == "continue_search":
+            #return search result based on inputs
 
             db = connect_to_database()
             make = session["search"]["key"]["make"]
@@ -4694,7 +4710,7 @@ def vehicle_inventory():
             return render_template("vehicle_inventory.html", content = inventory_result, prev_page = prev_page, current_page = page, next_page = next_page, status_msg = "" ) 
 
         elif request.method  == "POST"  and request.form["request_type"] == "update-submit":
-
+            #update a vehicle inventory
 
             db = connect_to_database()
 
@@ -4841,6 +4857,7 @@ def vehicle_inventory():
             return render_template("vehicle_inventory.html", content = inventory_result, prev_page = prev_page, current_page = page, next_page = next_page, status_msg = status_msg ) 
 
         elif request.method  == "POST"  and request.form["request_type"] == "add-submit":
+            # add a new vehicle inventory
 
             print(request.form)
 
@@ -5086,6 +5103,7 @@ def vehicle_inventory():
 
 
         elif request.method  == "POST" and request.form["request_type"] == "delete":
+            #delete a vehicle inventory
             db = connect_to_database()
             vin = request.form["vin"] 
             page = int(request.form["page"])
@@ -5197,6 +5215,7 @@ def test_drive():
     row_per_page = 15
 
     if request.method  == "GET" and request.args.get('page') is None:
+        #render the test drive page
 
         if "test_drive_search" in session:
             session.pop("test_drive_search")
@@ -5312,7 +5331,7 @@ def test_drive():
 
 
     elif request.method  == "POST"  and request.form["request_type"] == "test_drive_new_search":
-
+        #return test drive search result
 
         db = connect_to_database()
 
@@ -5428,7 +5447,7 @@ def test_drive():
 
     
     elif request.method  == "POST"  and request.form["request_type"] == "test_drive_continue_search":
-
+        #return test drive test result
         db = connect_to_database()
 
         row_per_page = 15
@@ -5684,6 +5703,7 @@ def test_drive():
 
 
     elif request.method == "POST" and request.form['request_type'] == "test_drive_edit":
+        #update a test drive record
 
         db = connect_to_database()
 
@@ -5833,6 +5853,7 @@ def test_drive():
 
 
     elif request.method  == "POST" and request.form["request_type"] == "test_drive_delete":
+        #delete the test drive record
         db = connect_to_database()
         dw_test_drive_id = request.form["dw_test_drive_id"] 
         page = int(request.form["page"])
